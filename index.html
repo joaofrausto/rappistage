@@ -2212,6 +2212,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 128: login pelo Cloudflare Access (sem senha), lista de acesso = e-mails agm das marcas + ADMIN_EMAILS, botão Sair, modo local de teste. */
 /* RappiStage 127: "Faturamento" padronizado (sem Income/Total Price) e KPIs dos gráficos das lupas sem duplicação. */
 /* RappiStage 126: tabela das etapas do funil no fim da lupa, opcional por checkbox; sem os textos de fonte e de VSO incompleto. */
 /* RappiStage 125: sai o card RT na loja; lupas com título + explicação (Picking, Found, Defect, MKD) e tabela das etapas do funil (Conversão). */
@@ -2369,27 +2370,18 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
         </div>
       </div>
 
-      <div class="login-title">Bem-vindo de volta 👋</div>
-      <div class="login-sub">Entre com suas credenciais de AGM para montar a apresentação da sua próxima reunião.</div>
-
-      <div class="login-error" id="login-error">E-mail ou senha inválidos. Use seu e-mail corporativo e a senha de acesso à plataforma.</div>
-
-      <form id="login-form">
+      <!-- RappiStage 128: sem senha — a identidade vem do Cloudflare Access (e-mail @rappi.com confirmado por código). -->
+      <div class="login-title" id="auth-title">Verificando seu acesso…</div>
+      <div class="login-sub" id="auth-sub">Confirmando seu e-mail Rappi pelo acesso da plataforma.</div>
+      <div id="auth-denied" style="display:none;margin-top:6px;background:#FFF1EA;border:1px solid #FFC9B0;border-radius:14px;padding:16px 18px;color:#7C2D12;font-size:14.5px;font-weight:700;line-height:1.5;"></div>
+      <div id="auth-local" style="display:none;margin-top:6px;">
+        <div style="background:#FEF3C7;border:1.5px dashed #D97706;color:#92400E;border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:800;margin-bottom:12px;">🧪 MODO LOCAL — apenas para teste. Fora do rappistage.pages.dev não existe o login Rappi; escolha um perfil para simular.</div>
         <div class="field">
-          <label for="login-email">E-mail corporativo</label>
-          <div style="position:relative;">
-            <input type="text" id="login-email" placeholder="seu.nome" autocomplete="username" value="" style="padding-right:112px;" oninput="var d=document.getElementById('login-email-domain');if(d)d.style.display=this.value.indexOf('@')>-1?'none':'';">
-            <span id="login-email-domain" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#8A817C;font-weight:600;pointer-events:none;">@rappi.com</span>
-          </div>
+          <label for="auth-local-select">Perfil (teste)</label>
+          <select id="auth-local-select" style="width:100%;padding:12px 14px;border:1.5px solid var(--ink-300);border-radius:12px;font-size:14px;font-family:inherit;background:#fff;"></select>
         </div>
-        <div class="field">
-          <label for="login-password">Senha</label>
-          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" value="">
-        </div>
-        <button type="submit" class="btn btn-primary login-btn">Entrar na plataforma →</button>
-      </form>
-
-      <div class="login-hint">Protótipo funcional com dados fictícios · <b>Front-end only</b><br>Pronto para futura integração com base de dados real.</div>
+        <button type="button" class="btn btn-primary login-btn" id="auth-local-btn">Entrar como este perfil (teste) →</button>
+      </div>
     </div>
   </section>
 
@@ -2533,6 +2525,7 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
           <button class="btn btn-ghost btn-sm" id="my-presentations-btn" title="Ver apresentações salvas na plataforma">📁 Minhas Apresentações</button>
           <button class="btn btn-ghost btn-sm" id="visual-customize-btn" title="Personalizar imagem de fundo da capa e cores da apresentação">⚙️ Personalizar</button>
           <span class="selection-counter" id="selection-counter">0 / 0 itens selecionados</span>
+          <button class="btn btn-ghost btn-sm" id="auth-logout-btn" title="Sair da plataforma" onclick="rsLogout()">⎋ Sair</button>
         </div>
       </div>
 
@@ -4979,24 +4972,37 @@ document.getElementById('add-brand-btn').addEventListener('click', () => {
 /* ---------------------------------------------------------------------------
    4. TELA DE LOGIN
 --------------------------------------------------------------------------- */
-const loginForm = document.getElementById('login-form');
-const loginError = document.getElementById('login-error');
-
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const emailRaw = document.getElementById('login-email').value.trim();
-  const email = !emailRaw ? '' : (emailRaw.indexOf('@') > -1 ? emailRaw : emailRaw + '@rappi.com'); // RappiStage 112: domínio @rappi.com já setado
-  const pass = document.getElementById('login-password').value.trim();
-
-  // Validação (mock): e-mail corporativo válido + senha fixa da plataforma
-  const emailOk = /\S+@\S+\.\S+|\S+@\S+/.test(email);
-  const passOk = pass === 'Rappi1234';
-
-  if(!emailOk || !passOk){
-    loginError.classList.add('show');
-    return;
-  }
-  loginError.classList.remove('show');
+/* RappiStage 128: entrada pelo Cloudflare Access (sem senha). A plataforma lê o e-mail confirmado pelo Access em
+   /cdn-cgi/access/get-identity e procura a pessoa na lista que já existe aqui no HTML: os e-mails "agm" das marcas
+   (BRANDS — cada AGM vê só as marcas dele) + ADMIN_EMAILS (administrador). Comparação sempre em minúsculas e sem
+   espaços. Fora do pages.dev (arquivo local / localhost) não existe esse endpoint: aparece um seletor de perfil só
+   para teste. Os dados salvos no navegador continuam separados por e-mail como antes (agmEmail). */
+const RS_AUTH = { local:false, email:null };
+function rsNormEmail(e){ return String(e || '').replace(/\s+/g, '').toLowerCase(); }
+function rsAllowedEmails(){
+  const set = new Set();
+  ADMIN_EMAILS.forEach(e => { if(e) set.add(rsNormEmail(e)); });
+  (BRANDS || []).forEach(b => { if(b && b.agm && !b.rsDyn) set.add(rsNormEmail(b.agm)); });
+  return Array.from(set).sort();
+}
+function rsIsLocalHost(){
+  const h = String(location.hostname || '').toLowerCase();
+  return location.protocol === 'file:' || h === '' || h === 'localhost' || h === '127.0.0.1' || h === '[::1]' || h.endsWith('.localhost');
+}
+function rsAuthMsg(title, sub, denied){
+  const t = document.getElementById('auth-title'), su = document.getElementById('auth-sub'), dn = document.getElementById('auth-denied');
+  if(t) t.textContent = title; if(su) su.textContent = sub || '';
+  if(dn){ dn.style.display = denied ? '' : 'none'; dn.textContent = denied || ''; }
+}
+function rsAuthShowLocal(){
+  const box = document.getElementById('auth-local'), sel = document.getElementById('auth-local-select');
+  rsAuthMsg('Modo local', 'Escolha o perfil para testar a plataforma.', '');
+  if(sel && !sel.options.length) rsAllowedEmails().forEach(e => { const o = document.createElement('option'); o.value = e; o.textContent = agmDisplayName(e) + ' — ' + e + (isAdminUser(e) ? ' (admin)' : ''); sel.appendChild(o); });
+  if(box) box.style.display = '';
+}
+function rsEnterAs(email){
+  email = rsNormEmail(email);
+  RS_AUTH.email = email;
   state.user = { email };
   // Só usuários da lista fixa ADMIN_EMAILS veem o botão de "Configurações do Administrador".
   const adminFabBtn = document.getElementById('admin-fab-btn');
@@ -5014,7 +5020,28 @@ loginForm.addEventListener('submit', (e) => {
   if(onlyVerticalCards.length === 1){ onlyVerticalCards[0].click(); goToSetupStep(0); }
   state._singleVertical = onlyVerticalCards.length === 1;
   goToScreen('screen-setup');
-});
+}
+function rsLogout(){
+  state.user = null; RS_AUTH.email = null;
+  if(RS_AUTH.local){ rsAuthShowLocal(); goToScreen('screen-login'); return; }
+  location.href = '/cdn-cgi/access/logout';
+}
+async function rsAuthInit(){
+  if(rsIsLocalHost()){ RS_AUTH.local = true; rsAuthShowLocal(); return; }
+  let email = '';
+  try{
+    const r = await fetch('/cdn-cgi/access/get-identity', { credentials:'include' });
+    if(r.ok){ const j = await r.json(); email = rsNormEmail(j && j.email); }
+  }catch(e){ email = ''; }
+  if(!email){ rsAuthMsg('Não foi possível confirmar seu acesso', 'Recarregue a página. Se continuar, fale com João Frausto.', ''); return; }
+  if(rsAllowedEmails().indexOf(email) === -1){
+    rsAuthMsg('Acesso não configurado', email, 'Seu acesso ainda não foi configurado. Fale com João Frausto.');
+    return;
+  }
+  rsEnterAs(email);
+}
+document.getElementById('auth-local-btn').addEventListener('click', () => { const sel = document.getElementById('auth-local-select'); if(sel && sel.value) rsEnterAs(sel.value); });
+setTimeout(rsAuthInit, 0);
 
 /* Nome de exibição do AGM a partir do e-mail (ex.: joao.frausto@rappi.com -> João Frausto) */
 
@@ -5758,7 +5785,7 @@ meetingGrid.querySelectorAll('.meeting-card').forEach(card => {
 
 document.getElementById('setup-back-btn').addEventListener('click', () => {
   if(setupCurrentStep === 0){
-    goToScreen('screen-login');
+    rsLogout(); // RappiStage 128: Sair → logout do Cloudflare Access (no modo local, volta ao seletor de perfil)
   } else {
     let prev = setupCurrentStep - 1;
     if(setupStepOrder[prev] === 'vertical' && state._singleVertical) prev--;
