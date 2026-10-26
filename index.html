@@ -2212,6 +2212,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 129: lupa de Defect Rate com aba "Detalhamento por pedido" (motivo, detalhe, produtos, comentário do cliente, valor, canal). */
 /* RappiStage 128: login pelo Cloudflare Access (sem senha), lista de acesso = e-mails agm das marcas + ADMIN_EMAILS, botão Sair, modo local de teste. */
 /* RappiStage 127: "Faturamento" padronizado (sem Income/Total Price) e KPIs dos gráficos das lupas sem duplicação. */
 /* RappiStage 126: tabela das etapas do funil no fim da lupa, opcional por checkbox; sem os textos de fonte e de VSO incompleto. */
@@ -2699,6 +2700,7 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
       <button type="button" class="chip-toggle-btn" data-dd-tab="convtype" id="dd-tab-btn-convtype" hidden>🧩 Conversão por Type</button>
       <button type="button" class="chip-toggle-btn" data-dd-tab="stockout" id="dd-tab-btn-stockout" hidden>📦 Cancelamento por Stockout</button>
       <button type="button" class="chip-toggle-btn" data-dd-tab="vitrine" id="dd-tab-btn-vitrine" hidden>🖼️ Vitrine de ruptura</button>
+      <button type="button" class="chip-toggle-btn" data-dd-tab="pedidos" id="dd-tab-btn-pedidos" hidden>🧾 Detalhamento por pedido</button>
     </div>
     <div id="drilldown-content" class="drilldown-box"></div>
     <div id="drilldown-chart-content" class="drilldown-box hidden"></div>
@@ -2706,6 +2708,7 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
     <div id="drilldown-convtype-content" class="drilldown-box hidden"></div>
     <div id="drilldown-stockout-content" class="drilldown-box hidden"></div>
     <div id="drilldown-vitrine-content" class="drilldown-box hidden"></div>
+    <div id="drilldown-pedidos-content" class="drilldown-box hidden"></div>
     <div id="dd-funil-foot"></div>
     <div class="modal-actions" style="justify-content:flex-end; margin-top:6px;">
       <button class="btn btn-ghost btn-sm" id="drilldown-close-btn">Fechar</button>
@@ -13057,7 +13060,8 @@ function setDrilldownTab(tab){
   if(tab !== 'convtype') drilldownConvTypeContent.classList.add('hidden');
   drilldownStockoutContent.classList.toggle('hidden', tab !== 'stockout'); // RappiStage 83
   drilldownVitrineContent.classList.toggle('hidden', tab !== 'vitrine'); // RappiStage 115
-  if(tab === 'stockout' || tab === 'vitrine'){
+  { const pc = document.getElementById('drilldown-pedidos-content'); if(pc) pc.classList.toggle('hidden', tab !== 'pedidos'); } // RappiStage 129
+  if(tab === 'stockout' || tab === 'vitrine' || tab === 'pedidos'){
     cleanupOrphanChartInstances();
     drilldownChartContent.classList.add('hidden'); drilldownChartContent.innerHTML = '';
     drilldownLojasContent.classList.add('hidden'); drilldownLojaNivelContent.classList.add('hidden');
@@ -13215,6 +13219,8 @@ function openDrilldown(kpiLabel, initialTab){
   const showVit = (dd === 'cancelamento' || dd === 'motivos') && rsIsActive();
   ddTabBtnVitrine.hidden = !showVit; drilldownVitrineContent.innerHTML = showVit ? rsVitrineHTML() : '';
   { const gb = drilldownTabToggle.querySelector('[data-dd-tab="graficos"]'); if(gb) gb.hidden = !!(showVit && noChart); if(showVit && noChart) drilldownTabToggle.hidden = false; }
+  { const showPed = dd === 'defect' && rsIsActive(), pb = document.getElementById('dd-tab-btn-pedidos'), pc = document.getElementById('drilldown-pedidos-content'); // RappiStage 129
+    if(pb) pb.hidden = !showPed; if(pc) pc.innerHTML = showPed ? rsDefPedHTML() : ''; }
   setDrilldownTab(noChart ? 'lojas' : (initialTab || 'graficos'));
   drilldownModal.classList.add('show');
 }
@@ -14601,6 +14607,11 @@ function rsParserStart(fileName){
       if(!gr || !pi) return;
       const o = {}; RS_PERIOD_FIELDS.forEach(f => { o[f] = num(cell(row, f)); });
       (B.periodo[own(gr)] || (B.periodo[own(gr)] = {}))[own(pi)] = o;
+    } else if(bloco === 'pedido_defeito'){ // RappiStage 129: detalhamento por pedido do Defect Rate
+      const oid = cell(row, 'item'), me = cell(row, 'metrica'); if(!oid || !me) return;
+      const P0 = B.defPed || (B.defPed = {});
+      const o = P0[oid] || (P0[oid] = { oid, d: cell(row, 'data'), pid: cell(row, 'physical_id') });
+      if(me === 'valor_tp' || me === 'valor_income') o[me] = num(cell(row, 'valor')); else o[me] = cell(row, 'loja');
     } else if(bloco === 'ranking'){
       const gr = cell(row, 'granularidade'), pi = cell(row, 'periodo_inicio'), tipo = cell(row, 'tipo');
       if(!gr || !pi || !tipo) return;
@@ -15085,6 +15096,44 @@ function rsVitrineHTML(){
     return aviso + head + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;">' + cards + '</div>';
   }) + rsSourceNote(R);
 }
+/* RappiStage 129: aba "Detalhamento por pedido" da lupa de Defect Rate — cada pedido com defeito do período, com motivo,
+   detalhe, produtos reclamados, comentário do cliente (quando ele deixou), valor do pedido e canal do atendimento. */
+function rsDefPedHTML(){
+  const R = activeRealData(); if(!R || R.source !== 'rs') return '';
+  const th = 'padding:7px 10px;text-align:left;font-size:11px;font-weight:800;color:#5E5652;text-transform:uppercase;border-bottom:1.5px solid #E5E0DC;background:#FAF8F6;white-space:nowrap;cursor:pointer;user-select:none;';
+  const td = 'padding:8px 10px;border-bottom:1px solid #F3EFEC;font-size:12.5px;vertical-align:top;';
+  const fd = d => d ? d.slice(8, 10) + '/' + d.slice(5, 7) + '/' + d.slice(0, 4) : '—';
+  const EXTRA = { "i don't agree with the refunded amount":'Não concorda com o valor reembolsado', "i was charged a different amount than the invoice":'Cobrado valor diferente da nota', "the refund hasn't appeared in my account":'Reembolso não apareceu na conta' };
+  const tr = x => { const k = x.toLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim(); return EXTRA[k] || rsDefeitoPT(x); };
+  const pt = t => String(t || '').split(' | ').filter(x => x && !/^(Not Applicable|Unidentified)( \/ (Not Applicable|Unidentified))?$/i.test(x.trim())).map(tr).filter((x, i, a) => a.indexOf(x) === i).join(' · ');
+  const uq = t => String(t || '').split(' | ').map(x => x.trim()).filter((x, i, a) => x && a.indexOf(x) === i); // RappiStage 129: sem repetidos
+  const vfield = R.fatBasis === 'income' ? 'valor_income' : 'valor_tp';
+  const sh = (ci, t) => '<th data-ci="' + ci + '" onclick="rsOpsSort(this)" title="Clique para ordenar" style="' + th + '">' + t + ' <span class="rs-sort-ar" style="color:#C9C1BC;font-size:11px;">↕</span></th>';
+  return '<h3>🧾 Detalhamento por pedido — Defect Rate</h3><div class="dd-sub">Pedidos com defeito reportado pelo cliente ' + (R.meetingType === 'monthly' ? 'no mês ' : R.meetingType === 'quarterly' ? 'no trimestre ' : 'na semana ') + escapeHtml(R.period.currentLabel) + '. O comentário aparece quando o cliente escreveu um ao reclamar do produto.</div>' +
+    rsSections(R, (D, bi) => {
+      if(!D.hasDefPed) return '<div class="dd-empty-state">A base importada ainda não traz os pedidos com defeito. Rode a query atualizada (v129) no Snowflake e suba o CSV novo.</div>';
+      const L = D.defPedidos || [];
+      if(!L.length) return '<div class="dd-empty-state">Nenhum pedido com defeito neste período.</div>';
+      const nCom = L.filter(o => o.comentario).length, tot = L.reduce((t, o) => t + (o[vfield] || 0), 0);
+      const chip = (t, v) => '<div style="border:1px solid #EFE9E5;border-radius:12px;padding:8px 14px;background:#fff;"><div style="font-size:10.5px;font-weight:800;color:#837A76;text-transform:uppercase;letter-spacing:.3px;">' + t + '</div><div style="font-size:19px;font-weight:800;color:#1E1B1A;">' + v + '</div></div>';
+      const id = 'rs-defped-' + bi;
+      return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;">' + chip('Pedidos com defeito', rsInt(L.length)) + chip('Com comentário do cliente', rsInt(nCom)) + chip('Valor desses pedidos', rsBRL(tot)) + '</div>' +
+        '<label style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:#5E5652;cursor:pointer;margin:0 0 8px;"><input type="checkbox" style="accent-color:#E8501B;" onchange="var t=document.getElementById(\'' + id + '\');var on=this.checked;t.querySelectorAll(\'tbody tr\').forEach(function(r){r.style.display=(on&&!r.getAttribute(\'data-com\'))?\'none\':\'\';});"> Mostrar só pedidos com comentário do cliente</label>' +
+        '<div style="overflow-x:auto;"><table class="dd-table" id="' + id + '" style="width:100%;min-width:1100px;border-collapse:collapse;"><thead><tr>' +
+        sh(0, 'Data') + sh(1, 'Pedido') + sh(2, 'Loja') + sh(3, 'Motivo do defeito') + sh(4, 'Detalhe') + sh(5, 'Produto(s) reclamado(s)') + sh(6, 'Comentário do cliente') + sh(7, 'Valor do pedido') + sh(8, 'Canal') +
+        '</tr></thead><tbody>' + L.map(o => '<tr' + (o.comentario ? ' data-com="1"' : '') + '>' +
+          '<td data-v="' + (o.d ? o.d.replace(/-/g, '') : '') + '" style="' + td + 'white-space:nowrap;">' + fd(o.d) + '</td>' +
+          '<td style="' + td + 'font-weight:800;font-family:ui-monospace,Consolas,monospace;white-space:nowrap;">' + escapeHtml(o.oid) + '</td>' +
+          '<td style="' + td + 'white-space:nowrap;">' + escapeHtml(o.loja) + '</td>' +
+          '<td style="' + td + 'font-weight:700;">' + escapeHtml(pt(o.motivo) || '—') + '</td>' +
+          '<td style="' + td + 'color:#5E5652;">' + escapeHtml(pt(o.detalhe) || '—') + '</td>' +
+          '<td style="' + td + 'min-width:200px;">' + (o.produtos ? uq(o.produtos).map(x => escapeHtml(x.replace(/^([^:]*):\s*/, (m0, k) => { const t = k.split(/\s*,\s*/).map(z => ({ 'incomplete order':'Pedido incompleto', 'different product':'Produto diferente', 'product in poor condition':'Produto em más condições' })[z.toLowerCase()] || z).filter(Boolean).join(', '); return t ? t + ': ' : ''; }))).join('<br>') : '<span style="color:#A39A95;">—</span>') + '</td>' +
+          '<td style="' + td + 'min-width:240px;' + (o.comentario ? 'background:#FFF7F2;' : '') + '">' + (o.comentario ? uq(o.comentario).map(x => '“' + escapeHtml(x) + '”').join('<br>') : '<span style="color:#A39A95;">sem comentário</span>') + '</td>' +
+          '<td data-v="' + (o[vfield] || 0) + '" style="' + td + 'white-space:nowrap;">' + (o[vfield] ? rsBRL(o[vfield]) : '—') + '</td>' +
+          '<td style="' + td + 'color:#5E5652;white-space:nowrap;">' + escapeHtml(o.canal || '—') + '</td></tr>').join('') +
+        '</tbody></table></div>';
+    }) + rsSourceNote(R);
+}
 function rsStockoutHTML(){
   const R = activeRealData(); if(!R || R.source !== 'rs') return '';
   const tg = "var k=this.getAttribute('data-k'),tb=this.closest('tbody');tb.querySelectorAll('tr.rs-c-'+k).forEach(function(r){r.style.display=r.style.display==='none'?'':'none'});var i=this.querySelector('.rs-tg');if(i)i.textContent=i.textContent==='➕'?'➖':'➕';";
@@ -15438,6 +15487,11 @@ function rsBuildDataset(B, base, type, periodValue, brand){
     o.cancelAnt = (lj && lj.p && lj.p.pedidosTotal > 0 && mcLojaPrev.length) ? mcLojaPrev.filter(x => x.pid === o.pid).reduce((s2, x) => s2 + (x.valor || 0), 0) / lj.p.pedidosTotal * 100 : null;
     return o;
   }).sort((a, b) => b.total - a.total);
+  /* RappiStage 129: pedidos com defeito do período (cur = mesmo recorte dos KPIs, inclusive to date). */
+  const defIni = rsIso(cur.start), defFim = rsIso(cur.end - 1);
+  const defPedidos = Object.keys(B.defPed || {}).map(k => B.defPed[k]).filter(o => o.d && o.d >= defIni && o.d <= defFim)
+    .map(o => Object.assign({}, o, { loja: (B.stores.get(o.pid) || {}).nome || (o.pid ? 'Loja ' + o.pid : '—') }))
+    .sort((a, b) => a.d < b.d ? 1 : a.d > b.d ? -1 : 0);
   /* RappiStage 83: produtos que deram stockout nos pedidos cancelados by partner por stockout
      (ranking produto_stockout: marca + linhas por loja física). */
   const stkAll = rsRank(B, type, curRk, 'produto_stockout');
@@ -15563,7 +15617,7 @@ function rsBuildDataset(B, base, type, periodValue, brand){
       partial, rkFb: partial && !tdOk, td: tdOk, rankLabel: rsPeriodLong(type, curRk), rankPrevLabel: rsPeriodLong(type, prevRk) }, // RappiStage 101 / 117 (rkFb = fallback p/ período fechado)
     m: { cur:mCur, prev:mPrev, l4w:mL4 }, users, usersPrev, S, conv10, convTdDias, tipos, lojas,
     lojasComVenda: comp.length, vendasTP, toDate, meta, produtos, makers,
-    motivosCanc: mc, motivosCancTotal: mcTot, motivosCancLoja, hasMotivoLoja: !!base.hasMotivoLoja, stockoutProdutos, stockoutCanc, hasVitrine: !!base.hasVitrine, hasStockoutProd: !!base.hasStockoutProd, motivosDefeito: md, buscas, buscasTotal,
+    motivosCanc: mc, motivosCancTotal: mcTot, motivosCancLoja, hasMotivoLoja: !!base.hasMotivoLoja, stockoutProdutos, stockoutCanc, hasVitrine: !!base.hasVitrine, defPedidos, hasDefPed: !!B.defPed, hasStockoutProd: !!base.hasStockoutProd, motivosDefeito: md, buscas, buscasTotal,
     mecanicas, mecanicasPrev, invest, investPrev, fatInvest, demografia,
     trend8w, lojas_semana, gmv_rows, pedidos_rows, ticket_rows,
     stats: { rows: base.rows, ordersCurrent: mCur.pedidos || 0, storesCurrent: comp.length },
@@ -18683,6 +18737,7 @@ ${slidesHtml}
       <button type="button" class="dd-tab-btn" data-dd-tab="convtype" id="ddTabBtnConvType" hidden>🧩 Conversão por Type</button>
       <button type="button" class="dd-tab-btn" data-dd-tab="stockout" id="ddTabBtnStockout" hidden>📦 Cancelamento por Stockout</button>
       <button type="button" class="dd-tab-btn" data-dd-tab="vitrine" id="ddTabBtnVitrine" hidden>🖼️ Vitrine de ruptura</button>
+      <button type="button" class="dd-tab-btn" data-dd-tab="pedidos" id="ddTabBtnPedidos" hidden>🧾 Detalhamento por pedido</button>
     </div>
     <div id="ddBox"></div>
     <div id="ddChartBox" class="hidden"></div>
@@ -18690,6 +18745,7 @@ ${slidesHtml}
     <div id="ddConvTypeBox" class="hidden"></div>
     <div id="ddStockoutBox" class="hidden"></div>
     <div id="ddVitrineBox" class="hidden"></div>
+    <div id="ddPedidosBox" class="hidden"></div>
     <div id="ddFunilFoot"></div>
   </div>
 </div>
@@ -18783,7 +18839,7 @@ document.getElementById('pdfBtn').addEventListener('click', () => {
    abas (Gráficos, Detalhamento por loja, Conversão a nível loja / por Type, Cancelamento por Stockout…)
    para páginas logo depois do slide do KPI. Gráficos viram imagem; listas que abrem/fecham vão abertas;
    tabelas com rolagem vão inteiras. As páginas extras somem depois da impressão. */
-var PDF_BOX = { graficos:'ddChartBox', lojas:'ddBox', lojanivel:'ddLojaNivelBox', convtype:'ddConvTypeBox', stockout:'ddStockoutBox', vitrine:'ddVitrineBox' };
+var PDF_BOX = { graficos:'ddChartBox', lojas:'ddBox', lojanivel:'ddLojaNivelBox', convtype:'ddConvTypeBox', stockout:'ddStockoutBox', vitrine:'ddVitrineBox', pedidos:'ddPedidosBox' };
 function pdfWait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 function pdfEsc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function pdfCloneBox(box){
@@ -19252,6 +19308,7 @@ const DD_DATA = ${JSON.stringify((function(){
       if(t === 'conversao'){ ddFinal[key].lojaNivelHtml = rsColPickStrip(rsConvLojaNivelHTML()); ddFinal[key].convTypeHtml = rsColPickStrip(rsConvTypeHTML()); }
       if(t === 'cancelamento'){ ddFinal[key].mchartHtml = rsMotivoChartsHtml(); ddFinal[key].stockoutHtml = rsStockoutHTML(); ddFinal[key].vitrineHtml = rsVitrineHTML(); }
       if(t === 'motivos') ddFinal[key].vitrineHtml = rsVitrineHTML(); // RappiStage 115
+      if(t === 'defect') ddFinal[key].pedidosHtml = rsDefPedHTML(); // RappiStage 129
     });
     /* chaves específicas primeiro: a apresentação acha a lupa pela 1ª chave contida no rótulo do card */
     const ordered = {};
@@ -20244,6 +20301,9 @@ function openDrilldown(label){
   document.getElementById('ddVitrineBox').innerHTML = showVit ? d.vitrineHtml : '';
   var gBtn = document.querySelector('#ddTabToggle [data-dd-tab="graficos"]'); if(gBtn) gBtn.hidden = !!(showVit && noChart);
   if(showVit && noChart) document.getElementById('ddTabToggle').hidden = false;
+  var showPed = !!(d && d.pedidosHtml); // RappiStage 129
+  document.getElementById('ddTabBtnPedidos').hidden = !showPed;
+  document.getElementById('ddPedidosBox').innerHTML = showPed ? d.pedidosHtml : '';
   setDdTab(noChart ? 'lojas' : 'graficos');
   document.getElementById('ddOverlay').classList.add('show');
 }
@@ -20268,7 +20328,8 @@ function setDdTab(tab){
   var stkBox = document.getElementById('ddStockoutBox'); // RappiStage 83
   stkBox.classList.toggle('hidden', tab !== 'stockout');
   document.getElementById('ddVitrineBox').classList.toggle('hidden', tab !== 'vitrine'); // RappiStage 115
-  if(tab === 'stockout' || tab === 'vitrine'){
+  document.getElementById('ddPedidosBox').classList.toggle('hidden', tab !== 'pedidos'); // RappiStage 129
+  if(tab === 'stockout' || tab === 'vitrine' || tab === 'pedidos'){
     chartBox.classList.add('hidden'); chartBox.innerHTML = '';
     lojasBox.classList.add('hidden'); lojaNivelBox.classList.add('hidden');
     return;
