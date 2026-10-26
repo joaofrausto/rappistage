@@ -2212,6 +2212,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 132: Defect Rate só com culpa da loja (query v132) — textos da lupa ajustados. */
 /* RappiStage 131: checkbox por pedido no Detalhamento por pedido (Defect) + valor sempre em TOTAL PRICE dos produtos. */
 /* RappiStage 130: checkbox em cada coluna do Detalhamento por pedido (Defect Rate) — desmarcada não vai para a apresentação nem para os PDFs. */
 /* RappiStage 129: lupa de Defect Rate com aba "Detalhamento por pedido" (motivo, detalhe, produtos, comentário do cliente, valor, canal). */
@@ -13161,7 +13162,7 @@ function rsLupaHead(label){
   var L = String(label || ''), txt = '', funil = false;
   if(/picking/i.test(L)) txt = '<b>Picking Time</b> é o tempo médio, em minutos, que a loja leva para <b>separar o pedido</b> — do aceite até o pedido pronto para o entregador. Quanto menor, melhor; a referência é ficar <b>dentro de 15 min</b>. Na tabela por loja aparecem também o <b>RT na loja</b> (tempo que o entregador espera no balcão) e o <b>Total na loja</b> (Picking + RT na loja).';
   else if(/found\s*rate/i.test(L)) txt = '<b>Found Rate</b> é a % dos <b>itens pedidos que foram encontrados e entregues</b> (itens entregues ÷ itens pedidos). Quanto maior, melhor: cada ponto abaixo de 100% é item que faltou na prateleira (ruptura) e chegou incompleto ao cliente.';
-  else if(/defect/i.test(L)) txt = '<b>Defect Rate</b> é a % dos <b>pedidos com algum defeito reportado pelo cliente</b> (item faltando, errado ou danificado, atraso, problema com o pedido…) sobre os pedidos da base. Quanto menor, melhor; os motivos mostram o que mais gera reclamação.';
+  else if(/defect/i.test(L)) txt = '<b>Defect Rate</b> é a % dos <b>pedidos com defeito causado pela loja</b> — o cliente reclamou de produto errado, danificado ou faltando, ou de pedido diferente/incompleto — sobre os pedidos da base. Problemas do entregador, cobrança/reembolso e pedido que não chegou não entram. Quanto menor, melhor.';
   else if(/^mkd/i.test(L)) txt = '<b>MKD</b> (markdown) é o <b>desconto aplicado direto no preço dos produtos</b>. <b>MKD %</b> = valor de markdown ÷ preço cheio dos itens vendidos — mostra quanto do preço cheio a marca abriu mão em desconto no período.';
   var h = '<div class="rs-lupa-head" style="margin:0 0 12px;">' +
     '<div style="font-size:20px;font-weight:800;color:#1E1B1A;line-height:1.25;">' + esc(L) + '</div>' +
@@ -15116,7 +15117,7 @@ function rsDefPedHTML(forExport){
   const uq = t => String(t || '').split(' | ').map(x => x.trim()).filter((x, i, a) => x && a.indexOf(x) === i); // RappiStage 129: sem repetidos
   const vfield = 'valor_tp'; // RappiStage 131: sempre o TOTAL PRICE dos produtos do pedido (não segue a régua income)
   const sh = (ci, t) => '<th data-ci="' + ci + '" onclick="rsOpsSort(this)" title="Clique para ordenar" style="' + th + '">' + t + ' <span class="rs-sort-ar" style="color:#C9C1BC;font-size:11px;">↕</span></th>';
-  return '<h3>🧾 Detalhamento por pedido — Defect Rate</h3><div class="dd-sub">Pedidos com defeito reportado pelo cliente ' + (R.meetingType === 'monthly' ? 'no mês ' : R.meetingType === 'quarterly' ? 'no trimestre ' : 'na semana ') + escapeHtml(R.period.currentLabel) + '. O comentário aparece quando o cliente escreveu um ao reclamar do produto.</div>' +
+  return '<h3>🧾 Detalhamento por pedido — Defect Rate</h3><div class="dd-sub">Pedidos com defeito causado pela loja (produto errado, danificado ou faltando, pedido diferente ou incompleto) ' + (R.meetingType === 'monthly' ? 'no mês ' : R.meetingType === 'quarterly' ? 'no trimestre ' : 'na semana ') + escapeHtml(R.period.currentLabel) + '. O comentário aparece quando o cliente escreveu um ao reclamar do produto.</div>' +
     rsSections(R, (D, bi) => {
       if(!D.hasDefPed) return '<div class="dd-empty-state">A base importada ainda não traz os pedidos com defeito. Rode a query atualizada (v129) no Snowflake e suba o CSV novo.</div>';
       const LA = D.defPedidos || [];
