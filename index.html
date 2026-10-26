@@ -2212,6 +2212,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 130: checkbox em cada coluna do Detalhamento por pedido (Defect Rate) — desmarcada não vai para a apresentação nem para os PDFs. */
 /* RappiStage 129: lupa de Defect Rate com aba "Detalhamento por pedido" (motivo, detalhe, produtos, comentário do cliente, valor, canal). */
 /* RappiStage 128: login pelo Cloudflare Access (sem senha), lista de acesso = e-mails agm das marcas + ADMIN_EMAILS, botão Sair, modo local de teste. */
 /* RappiStage 127: "Faturamento" padronizado (sem Income/Total Price) e KPIs dos gráficos das lupas sem duplicação. */
@@ -13220,7 +13221,7 @@ function openDrilldown(kpiLabel, initialTab){
   ddTabBtnVitrine.hidden = !showVit; drilldownVitrineContent.innerHTML = showVit ? rsVitrineHTML() : '';
   { const gb = drilldownTabToggle.querySelector('[data-dd-tab="graficos"]'); if(gb) gb.hidden = !!(showVit && noChart); if(showVit && noChart) drilldownTabToggle.hidden = false; }
   { const showPed = dd === 'defect' && rsIsActive(), pb = document.getElementById('dd-tab-btn-pedidos'), pc = document.getElementById('drilldown-pedidos-content'); // RappiStage 129
-    if(pb) pb.hidden = !showPed; if(pc) pc.innerHTML = showPed ? rsDefPedHTML() : ''; }
+    if(pb) pb.hidden = !showPed; if(pc){ pc.innerHTML = showPed ? rsDefPedHTML() : ''; if(showPed) rsColPickMount(pc); } } // RappiStage 130: checkbox por coluna
   setDrilldownTab(noChart ? 'lojas' : (initialTab || 'graficos'));
   drilldownModal.classList.add('show');
 }
@@ -15119,7 +15120,7 @@ function rsDefPedHTML(){
       const id = 'rs-defped-' + bi;
       return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;">' + chip('Pedidos com defeito', rsInt(L.length)) + chip('Com comentário do cliente', rsInt(nCom)) + chip('Valor desses pedidos', rsBRL(tot)) + '</div>' +
         '<label style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:#5E5652;cursor:pointer;margin:0 0 8px;"><input type="checkbox" style="accent-color:#E8501B;" onchange="var t=document.getElementById(\'' + id + '\');var on=this.checked;t.querySelectorAll(\'tbody tr\').forEach(function(r){r.style.display=(on&&!r.getAttribute(\'data-com\'))?\'none\':\'\';});"> Mostrar só pedidos com comentário do cliente</label>' +
-        '<div style="overflow-x:auto;"><table class="dd-table" id="' + id + '" style="width:100%;min-width:1100px;border-collapse:collapse;"><thead><tr>' +
+        '<div style="overflow-x:auto;"><table class="dd-table" data-colpick="def-ped" id="' + id + '" style="width:100%;min-width:1100px;border-collapse:collapse;"><thead><tr>' +
         sh(0, 'Data') + sh(1, 'Pedido') + sh(2, 'Loja') + sh(3, 'Motivo do defeito') + sh(4, 'Detalhe') + sh(5, 'Produto(s) reclamado(s)') + sh(6, 'Comentário do cliente') + sh(7, 'Valor do pedido') + sh(8, 'Canal') +
         '</tr></thead><tbody>' + L.map(o => '<tr' + (o.comentario ? ' data-com="1"' : '') + '>' +
           '<td data-v="' + (o.d ? o.d.replace(/-/g, '') : '') + '" style="' + td + 'white-space:nowrap;">' + fd(o.d) + '</td>' +
@@ -19308,7 +19309,7 @@ const DD_DATA = ${JSON.stringify((function(){
       if(t === 'conversao'){ ddFinal[key].lojaNivelHtml = rsColPickStrip(rsConvLojaNivelHTML()); ddFinal[key].convTypeHtml = rsColPickStrip(rsConvTypeHTML()); }
       if(t === 'cancelamento'){ ddFinal[key].mchartHtml = rsMotivoChartsHtml(); ddFinal[key].stockoutHtml = rsStockoutHTML(); ddFinal[key].vitrineHtml = rsVitrineHTML(); }
       if(t === 'motivos') ddFinal[key].vitrineHtml = rsVitrineHTML(); // RappiStage 115
-      if(t === 'defect') ddFinal[key].pedidosHtml = rsDefPedHTML(); // RappiStage 129
+      if(t === 'defect') ddFinal[key].pedidosHtml = rsColPickStrip(rsDefPedHTML()); // RappiStage 129 / 130: sem as colunas desmarcadas
     });
     /* chaves específicas primeiro: a apresentação acha a lupa pela 1ª chave contida no rótulo do card */
     const ordered = {};
