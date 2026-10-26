@@ -2212,6 +2212,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 131: checkbox por pedido no Detalhamento por pedido (Defect) + valor sempre em TOTAL PRICE dos produtos. */
 /* RappiStage 130: checkbox em cada coluna do Detalhamento por pedido (Defect Rate) — desmarcada não vai para a apresentação nem para os PDFs. */
 /* RappiStage 129: lupa de Defect Rate com aba "Detalhamento por pedido" (motivo, detalhe, produtos, comentário do cliente, valor, canal). */
 /* RappiStage 128: login pelo Cloudflare Access (sem senha), lista de acesso = e-mails agm das marcas + ADMIN_EMAILS, botão Sair, modo local de teste. */
@@ -15099,7 +15100,12 @@ function rsVitrineHTML(){
 }
 /* RappiStage 129: aba "Detalhamento por pedido" da lupa de Defect Rate — cada pedido com defeito do período, com motivo,
    detalhe, produtos reclamados, comentário do cliente (quando ele deixou), valor do pedido e canal do atendimento. */
-function rsDefPedHTML(){
+function rsDefPedOff(oid){ return !!(state.rsDefPedOff && state.rsDefPedOff[oid]); } // RappiStage 131: pedido desmarcado = não vai para a apresentação
+function rsDefPedPaint(t){ if(!t) return; let n = 0, tot = 0; t.querySelectorAll('tbody tr').forEach(r => { const cb = r.querySelector('.rs-defped-sel'); if(!cb) return; tot++; if(cb.checked) n++; r.style.opacity = cb.checked ? '' : '0.4'; });
+  const c = document.getElementById(t.id + '-cnt'); if(c) c.textContent = n + ' de ' + tot + ' pedidos vão para a apresentação'; }
+function rsDefPedToggle(cb){ state.rsDefPedOff = state.rsDefPedOff || {}; const oid = cb.getAttribute('data-oid'); if(cb.checked) delete state.rsDefPedOff[oid]; else state.rsDefPedOff[oid] = true; rsDefPedPaint(cb.closest('table')); }
+function rsDefPedAll(id, on){ const t = document.getElementById(id); if(!t) return; t.querySelectorAll('.rs-defped-sel').forEach(cb => { if(cb.closest('tr').style.display === 'none') return; cb.checked = on; rsDefPedToggle(cb); }); }
+function rsDefPedHTML(forExport){
   const R = activeRealData(); if(!R || R.source !== 'rs') return '';
   const th = 'padding:7px 10px;text-align:left;font-size:11px;font-weight:800;color:#5E5652;text-transform:uppercase;border-bottom:1.5px solid #E5E0DC;background:#FAF8F6;white-space:nowrap;cursor:pointer;user-select:none;';
   const td = 'padding:8px 10px;border-bottom:1px solid #F3EFEC;font-size:12.5px;vertical-align:top;';
@@ -15108,22 +15114,27 @@ function rsDefPedHTML(){
   const tr = x => { const k = x.toLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim(); return EXTRA[k] || rsDefeitoPT(x); };
   const pt = t => String(t || '').split(' | ').filter(x => x && !/^(Not Applicable|Unidentified)( \/ (Not Applicable|Unidentified))?$/i.test(x.trim())).map(tr).filter((x, i, a) => a.indexOf(x) === i).join(' · ');
   const uq = t => String(t || '').split(' | ').map(x => x.trim()).filter((x, i, a) => x && a.indexOf(x) === i); // RappiStage 129: sem repetidos
-  const vfield = R.fatBasis === 'income' ? 'valor_income' : 'valor_tp';
+  const vfield = 'valor_tp'; // RappiStage 131: sempre o TOTAL PRICE dos produtos do pedido (não segue a régua income)
   const sh = (ci, t) => '<th data-ci="' + ci + '" onclick="rsOpsSort(this)" title="Clique para ordenar" style="' + th + '">' + t + ' <span class="rs-sort-ar" style="color:#C9C1BC;font-size:11px;">↕</span></th>';
   return '<h3>🧾 Detalhamento por pedido — Defect Rate</h3><div class="dd-sub">Pedidos com defeito reportado pelo cliente ' + (R.meetingType === 'monthly' ? 'no mês ' : R.meetingType === 'quarterly' ? 'no trimestre ' : 'na semana ') + escapeHtml(R.period.currentLabel) + '. O comentário aparece quando o cliente escreveu um ao reclamar do produto.</div>' +
     rsSections(R, (D, bi) => {
       if(!D.hasDefPed) return '<div class="dd-empty-state">A base importada ainda não traz os pedidos com defeito. Rode a query atualizada (v129) no Snowflake e suba o CSV novo.</div>';
-      const L = D.defPedidos || [];
-      if(!L.length) return '<div class="dd-empty-state">Nenhum pedido com defeito neste período.</div>';
+      const LA = D.defPedidos || [];
+      if(!LA.length) return '<div class="dd-empty-state">Nenhum pedido com defeito neste período.</div>';
+      const L = forExport ? LA.filter(o => !rsDefPedOff(o.oid)) : LA; // RappiStage 131: na apresentação só os pedidos marcados
+      if(!L.length) return '<div class="dd-empty-state">Nenhum pedido selecionado para a apresentação.</div>';
       const nCom = L.filter(o => o.comentario).length, tot = L.reduce((t, o) => t + (o[vfield] || 0), 0);
       const chip = (t, v) => '<div style="border:1px solid #EFE9E5;border-radius:12px;padding:8px 14px;background:#fff;"><div style="font-size:10.5px;font-weight:800;color:#837A76;text-transform:uppercase;letter-spacing:.3px;">' + t + '</div><div style="font-size:19px;font-weight:800;color:#1E1B1A;">' + v + '</div></div>';
       const id = 'rs-defped-' + bi;
-      return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;">' + chip('Pedidos com defeito', rsInt(L.length)) + chip('Com comentário do cliente', rsInt(nCom)) + chip('Valor desses pedidos', rsBRL(tot)) + '</div>' +
+      return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;">' + chip('Pedidos com defeito', rsInt(LA.length)) + (L.length < LA.length ? chip('Pedidos selecionados', rsInt(L.length)) : '') + chip('Com comentário do cliente', rsInt(nCom)) + chip('Total Price desses pedidos', rsBRL(tot)) + '</div>' +
+        (forExport ? '' : '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:12.5px;"><span style="font-weight:700;color:#5E5652;">☑ Marque na 1ª coluna os pedidos que vão para a apresentação e PDFs:</span>' +
+          '<button type="button" class="btn btn-ghost btn-sm" onclick="rsDefPedAll(\'' + id + '\', true)">Marcar todos</button><button type="button" class="btn btn-ghost btn-sm" onclick="rsDefPedAll(\'' + id + '\', false)">Desmarcar todos</button>' +
+          '<span id="' + id + '-cnt" style="color:#837A76;font-weight:700;">' + rsInt(L.filter(o => !rsDefPedOff(o.oid)).length) + ' de ' + rsInt(L.length) + ' pedidos vão para a apresentação</span></div>') +
         '<label style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:#5E5652;cursor:pointer;margin:0 0 8px;"><input type="checkbox" style="accent-color:#E8501B;" onchange="var t=document.getElementById(\'' + id + '\');var on=this.checked;t.querySelectorAll(\'tbody tr\').forEach(function(r){r.style.display=(on&&!r.getAttribute(\'data-com\'))?\'none\':\'\';});"> Mostrar só pedidos com comentário do cliente</label>' +
         '<div style="overflow-x:auto;"><table class="dd-table" data-colpick="def-ped" id="' + id + '" style="width:100%;min-width:1100px;border-collapse:collapse;"><thead><tr>' +
-        sh(0, 'Data') + sh(1, 'Pedido') + sh(2, 'Loja') + sh(3, 'Motivo do defeito') + sh(4, 'Detalhe') + sh(5, 'Produto(s) reclamado(s)') + sh(6, 'Comentário do cliente') + sh(7, 'Valor do pedido') + sh(8, 'Canal') +
-        '</tr></thead><tbody>' + L.map(o => '<tr' + (o.comentario ? ' data-com="1"' : '') + '>' +
-          '<td data-v="' + (o.d ? o.d.replace(/-/g, '') : '') + '" style="' + td + 'white-space:nowrap;">' + fd(o.d) + '</td>' +
+        sh(0, 'Data') + sh(1, 'Pedido') + sh(2, 'Loja') + sh(3, 'Motivo do defeito') + sh(4, 'Detalhe') + sh(5, 'Produto(s) reclamado(s)') + sh(6, 'Comentário do cliente') + sh(7, 'Valor do pedido (Total Price)') + sh(8, 'Canal') +
+        '</tr></thead><tbody>' + L.map(o => { const off = !forExport && rsDefPedOff(o.oid); return '<tr' + (o.comentario ? ' data-com="1"' : '') + (off ? ' style="opacity:.4;"' : '') + '>' +
+          '<td data-v="' + (o.d ? o.d.replace(/-/g, '') : '') + '" style="' + td + 'white-space:nowrap;">' + (forExport ? '' : '<input type="checkbox" class="rs-defped-sel" data-oid="' + escapeHtml(o.oid) + '"' + (off ? '' : ' checked') + ' onclick="event.stopPropagation()" onchange="rsDefPedToggle(this)" title="Levar este pedido para a apresentação" style="accent-color:#E8501B;margin:0 6px 0 0;vertical-align:-2px;cursor:pointer;">') + fd(o.d) + '</td>' +
           '<td style="' + td + 'font-weight:800;font-family:ui-monospace,Consolas,monospace;white-space:nowrap;">' + escapeHtml(o.oid) + '</td>' +
           '<td style="' + td + 'white-space:nowrap;">' + escapeHtml(o.loja) + '</td>' +
           '<td style="' + td + 'font-weight:700;">' + escapeHtml(pt(o.motivo) || '—') + '</td>' +
@@ -15131,7 +15142,7 @@ function rsDefPedHTML(){
           '<td style="' + td + 'min-width:200px;">' + (o.produtos ? uq(o.produtos).map(x => escapeHtml(x.replace(/^([^:]*):\s*/, (m0, k) => { const t = k.split(/\s*,\s*/).map(z => ({ 'incomplete order':'Pedido incompleto', 'different product':'Produto diferente', 'product in poor condition':'Produto em más condições' })[z.toLowerCase()] || z).filter(Boolean).join(', '); return t ? t + ': ' : ''; }))).join('<br>') : '<span style="color:#A39A95;">—</span>') + '</td>' +
           '<td style="' + td + 'min-width:240px;' + (o.comentario ? 'background:#FFF7F2;' : '') + '">' + (o.comentario ? uq(o.comentario).map(x => '“' + escapeHtml(x) + '”').join('<br>') : '<span style="color:#A39A95;">sem comentário</span>') + '</td>' +
           '<td data-v="' + (o[vfield] || 0) + '" style="' + td + 'white-space:nowrap;">' + (o[vfield] ? rsBRL(o[vfield]) : '—') + '</td>' +
-          '<td style="' + td + 'color:#5E5652;white-space:nowrap;">' + escapeHtml(o.canal || '—') + '</td></tr>').join('') +
+          '<td style="' + td + 'color:#5E5652;white-space:nowrap;">' + escapeHtml(o.canal || '—') + '</td></tr>'; }).join('') +
         '</tbody></table></div>';
     }) + rsSourceNote(R);
 }
@@ -19309,7 +19320,7 @@ const DD_DATA = ${JSON.stringify((function(){
       if(t === 'conversao'){ ddFinal[key].lojaNivelHtml = rsColPickStrip(rsConvLojaNivelHTML()); ddFinal[key].convTypeHtml = rsColPickStrip(rsConvTypeHTML()); }
       if(t === 'cancelamento'){ ddFinal[key].mchartHtml = rsMotivoChartsHtml(); ddFinal[key].stockoutHtml = rsStockoutHTML(); ddFinal[key].vitrineHtml = rsVitrineHTML(); }
       if(t === 'motivos') ddFinal[key].vitrineHtml = rsVitrineHTML(); // RappiStage 115
-      if(t === 'defect') ddFinal[key].pedidosHtml = rsColPickStrip(rsDefPedHTML()); // RappiStage 129 / 130: sem as colunas desmarcadas
+      if(t === 'defect') ddFinal[key].pedidosHtml = rsColPickStrip(rsDefPedHTML(true)); // RappiStage 129 / 130: sem as colunas desmarcadas
     });
     /* chaves específicas primeiro: a apresentação acha a lupa pela 1ª chave contida no rótulo do card */
     const ordered = {};
