@@ -2212,6 +2212,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 133: nova etapa 1 do setup, Gerar o CSV: query embutida com o e-mail do login. */
 /* RappiStage 132: Defect Rate só com culpa da loja (query v132) — textos da lupa ajustados. */
 /* RappiStage 131: checkbox por pedido no Detalhamento por pedido (Defect) + valor sempre em TOTAL PRICE dos produtos. */
 /* RappiStage 130: checkbox em cada coluna do Detalhamento por pedido (Defect Rate) — desmarcada não vai para a apresentação nem para os PDFs. */
@@ -2398,15 +2399,1021 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
         <img id="setup-logo-medium" class="setup-logo-medium" alt="Rappi">
       </div>
       <div class="setup-header">
-        <div class="eyebrow" id="setup-eyebrow">Passo 1 de 5</div>
+        <div class="eyebrow" id="setup-eyebrow">Passo 1 de 6</div>
         <h1>Configurar nova <span class="gradient-text">reunião</span></h1>
         <p>Selecione a marca parceira e o tipo de reunião para carregar os blocos de conteúdo padrão.</p>
       </div>
 
       <div class="setup-progress" id="setup-progress-dots"></div>
 
+      <div class="setup-card" id="query-card">
+        <div class="setup-step-label"><span class="step-num">1</span> Gerar o CSV no Snowflake</div>
+        <ol style="margin:0 0 14px;padding-left:20px;font-size:14px;line-height:1.7;color:#5E5652;">
+          <li>Clique em <b>Copiar query</b>. Ela já vai com o seu e-mail de login.</li>
+          <li>No Snowflake, abra uma planilha nova do Snowsight, cole a query e clique em <b>Run All</b> (Ctrl + Shift + Enter). Leva cerca de 10 minutos.</li>
+          <li>Quando terminar, baixe o resultado como <b>CSV</b> e clique em <b>Próximo</b> para subir o arquivo.</li>
+        </ol>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+          <button type="button" class="btn btn-primary btn-sm" id="rs-query-copy">📋 Copiar query</button>
+          <span style="font-size:13px;color:#5E5652;">E-mail na query: <b id="rs-query-email"></b></span>
+        </div>
+        <div id="rs-query-msg" role="status" style="font-size:13px;font-weight:600;color:#B8320F;min-height:20px;margin-bottom:8px;"></div>
+        <textarea id="rs-query-text" readonly spellcheck="false" aria-label="Query do RappiStage" style="width:100%;height:170px;resize:vertical;box-sizing:border-box;font:12px/1.5 ui-monospace,Consolas,monospace;color:#1E1B1A;background:#FAF8F6;border:1px solid #E5E0DC;border-radius:8px;padding:10px;white-space:pre;overflow:auto;"></textarea>
+        <div style="font-size:12px;color:#837A76;margin-top:6px;">Versão da query: 26/10/2026. Já tem um CSV recente? Clique em <b>Próximo</b>.</div>
+      </div>
+      <script type="text/plain" id="rs-query-src">/* =====================================================================================
+   RappiStage — QUERY ÚNICA (1 arquivo para subir na plataforma)
+
+   COMO USAR (Snowsight):
+     1. Ajuste os 3 parâmetros abaixo (AGM, início e fim da janela).
+     2. Rode TUDO (Ctrl+Shift+Enter / "Run All") — os SET e a query.
+     3. Baixe o resultado da query como CSV e suba na plataforma.
+
+   SAÍDA: 1 linha por registro, coluna `bloco` diz o tipo da linha:
+     lojas_dia      1 loja × 1 dia — colunas data … funil_opc  (= antigo 1_lojas_dia.csv)
+     marca_periodo  1 marca × 1 período — granularidade, periodo_inicio, usuarios_* , meta_gmv
+                    (= antigo 2_marca_periodo.csv)
+     ranking        marca × período × tipo × item × métrica — tipo, item, metrica, valor, loja_id
+                    (= antigo 3_rankings.csv)
+   Cada bloco usa EXATAMENTE os mesmos nomes de coluna dos 3 CSVs antigos; as colunas que não
+   são do bloco vêm vazias. `agm` (e-mail) é a última coluna.
+
+   FATURAMENTO EM 2 RÉGUAS (a plataforma deixa o AGM escolher; GMV não é mais o faturamento):
+     faturamento_total_price  preço dos itens (ORDER_PRODUCTS_BR.TOTAL_PRICE, itens não deletados).
+     faturamento_income       Income = TOTAL_PRICE − MARKDOWN_DISCOUNT dos itens (= FATURAMENTO da
+                              SPA_BR.TBL_PBI_SUMMARY, a base do relatório). NÃO usar UE.PNL × TRM: não bate.
+                              FIN_UE.PNL/PNL_ORDERS estão parados em 16/06/2026 e a COMMISSIONABLE_SALES da
+                              TBL_PBI_SUMMARY está vazia desde julho — sem dado de set/out.
+     funil                    GLOBAL_CONVERSIONS com STORE_FLAG = TRUE (não RAPPI_FLAG).
+     buscas                   RP_GOLD_DB_PROD.SEARCH_AND_PERSONALIZATION.DM_LOCAL_SEARCH (a FIVETRAN saiu).
+     gmv                      fica SÓ para o % de atingimento da meta, que é cadastrada em GMV.
+     Ticket médio = faturamento escolhido / pedidos.
+
+   COLUNAS NOVAS (v2):
+     brand_id, vertical   em todas as linhas (BRAND_GROUP_ID e SUBVERTICAL do cadastro).
+     physical_id,         loja FÍSICA = chave oficial STORES_BR.PHYSICAL_STORE_ID, que junta os
+     physical_nome        STORE_IDs da mesma loja (renomeada, "copy", Rappido, Turbo...). Agregue
+                          as lojas por physical_id. Loja sem cadastro físico = o próprio STORE_ID.
+                          physical_nome (v87) = STORE_NAME da loja principal (mais pedidos), não o
+                          PHYSICAL_STORE_NAME do cadastro; a coluna `loja` traz o STORE_NAME de cada STORE_ID.
+     buscas_total         (marca_periodo) total de buscas da marca no período → share % dos termos.
+   MÉTRICAS NOVAS no bloco ranking:
+     produto_stockout (v86) → produtos dos pedidos cancelados by partner por STOCKOUT (Stockout + Light Availability
+       = "Cancelamento via Mitienda"): pedidos, pedidos_falta_confirmada, pedidos_anterior, unidades, total_price, lojas (marca)
+       e pedidos por loja física. Item com PRODUCT_FINAL_STATE = 'stockout' = falta confirmada; pedido cancelado SEM item
+       marcado (a loja cancela o pedido inteiro) entra com todos os itens do pedido. Top 100 por período.
+     produto_stockout (v115) → + 'sku' (ID Rappi; a coluna "loja" traz a URL da foto), 'pedidos_entregues' e
+                                'pedidos_entregues_ruptura' (vitrine de ruptura: % ruptura = (cancelados + entregues c/ falta) ÷ (cancelados + entregues))
+     produto_stockout (v116) → + 'pedidos_entregues_ruptura' por loja física e 'pedido_cancelado|AAAA-MM-DD' (valor = ORDER_ID,
+                                physical_id = loja; últimos 6 meses) para o detalhe do produto na vitrine
+     pedido_defeito (v129, bloco próprio) → 1 linha por campo de cada pedido com defeito (últimos 6 meses): item = ORDER_ID,
+                                data = dia do defeito, physical_id = loja, metrica = motivo | detalhe | canal | produtos | comentario
+                                (texto na coluna "loja") | valor_tp (TOTAL PRICE dos produtos do pedido, coluna "valor")
+     stockout_resumo (v86) → item 'pedidos': cancelados_stockout, com_item_marcado, com_itens (cobertura da análise por produto);
+     produto/maker → total_price, total_price_anterior; busca → buscas_anterior; motivo_cancelamento → pedidos_anterior:
+       valor do MESMO item no período anterior, mesmo fora do top (0 = não vendeu/não apareceu;
+       vazio = período anterior antes de DT_INI).
+     mecanica → dias_ativos (dias com consumo; burn rate = budget_consumido / dias_ativos).
+     mecanica Markdown e Cupons → faturamento_gerado_total_price e faturamento_gerado_income
+       (faturamento dos pedidos com o incentivo, nas 2 réguas).
+     motivo_defeito por loja agora vem por physical_id (loja_id vazio).
+     motivo_cancelamento (by partner): sem physical_id = total da marca; COM physical_id = cada
+       motivo de cada loja física no período (+ pedidos_anterior) → lojas ofensoras e em quê.
+       Taxa da loja = pedidos do motivo / Σ pedidos_total da loja (lojas_dia, mesmo período).
+     demografia: faixas da plataforma 18-23, 24-29, 30-35, 36-41, 42-47, 48+.
+   Taxas NÃO vêm prontas: sempre numerador e denominador (a plataforma calcula).
+   Vazio = sem dado (nunca 0 no lugar de "não sei").
+
+   VOLUME (medido 01/10/2026, 15 meses): 1 AGM ≈ 300 mil linhas / 50–60 MB / 2–4 min
+   (joao.frausto 288 mil, marco.bonora 304 mil). AGM = '%' (todos os AGMs de Retail) passa de
+   3 milhões de linhas / ~500 MB — prefira rodar AGM por AGM, ou encurte a janela (DT_INI).
+
+   META: casa por AGM + nome da marca (METAS_AGM_BR.BRAND = BRAND_GROUP_NAME). Onde a planilha
+   de metas usa outro nome (ex.: "CARREFOUR GROCERIES"/"CARREFOUR PHARMA" × marca "Carrefour")
+   a meta fica vazia — de propósito, para não comparar meta de uma vertical com GMV de todas.
+
+   REGRAS (do SNOWFLAKE_GUIDE e do contrato kpi_mcp, validadas na extração de 01/10/2026):
+   - Vendas: ORDER_DIMENSIONS_BR com COUNT_TO_GMV = TRUE; data oficial CLOSED_AT.
+   - Cancelamento e Defect: templates Silver (ORDERS_BR + CANCELLATIONS_BR + OPS_ORDERS_BR; DEFECTS_BR).
+     Cancelamento = só BY PARTNER (CANCELLATIONS_BR.CATEGORY = 'Partner', régua cancel_rate_partner do
+     contrato): pedidos_cancelados e os motivos são só os do parceiro; pedidos_total é a base inteira.
+     Defect conta PEDIDOS distintos com defeito (não a soma de DEFECT_COUNT, que infla 12–17%).
+     Defect = só CULPA DA LOJA (v132): reclamação do cliente de produto errado/danificado/faltando, pedido
+     completamente diferente ou incompleto. Entregador, cobrança/reembolso, pedido não chegou etc. ficam de fora.
+   - Found rate: estados reais 'initial','added','stockout' (FOUND/NOT_FOUND não existem);
+     dedup por (pedido, produto); REPLACED não conta como encontrado.
+   - Tempo na loja em 2 steps (os que a marca aciona), régua dos fechamentos:
+       picking  = PREPARATION_TIME (separação pelo picker)  → picking_minutos_total / pedidos_com_picking
+       RT loja  = TIME_IN_STORE (tempo do RT na loja)       → rt_loja_minutos_total / pedidos_com_rt_loja
+     (PICKING_TIME vem zerado em 64–93% dos pedidos — não usar.)
+   - Catálogo sempre com COUNTRY = 'BR'. Novos usuários: ORDER_TYPE_ALL = 'FIRST ORDER'.
+   - RappiAds = só o comprado pelo parceiro (IS_PAID_BY_RAPPI = FALSE), por data de faturamento.
+   - Cupons e ofertas = burn do parceiro em NET_SPEND (régua da família invest).
+   - Meta: SPA_BR.METAS_AGM_BR (só mensal; só há meses carregados a partir de set/26).
+   - Carteira: lojas Retail com AGM (TBL_DIM_STORES). Ficam fora: sem AGM (none@rappi.com ou vazio),
+     STORE_ID 0 e lojas TURBO (AGM turbo@rappi.com, subvertical TURBO, store type ou nome com "turbo").
+   - Semana = segunda a domingo. Períodos que começam antes de DT_INI são descartados.
+   - PERÍODO DA REUNIÃO: marca_periodo e ranking trazem só períodos FECHADOS. Weekly usa
+     granularidade 'semana', Monthly 'mes', Quarterly 'trimestre'; o período mais recente de cada
+     granularidade é a última semana/mês/trimestre completo antes de DT_FIM. O período em
+     andamento só existe no lojas_dia (diário), para WTD/MTD/QTD.
+   ===================================================================================== */
+
+SET AGM    = 'seu.email@rappi.com';                                     -- e-mail do AGM; '%' = todos
+SET DT_INI = DATEADD(MONTH, -15, DATE_TRUNC(MONTH, CURRENT_DATE))::DATE;   -- 1º dia do mês, 15 meses atrás
+SET DT_FIM = CURRENT_DATE;                                                 -- exclusivo → dados até D-1
+
+WITH
+/* ---------- carteira: 1 linha por loja (Retail; TBL_DIM_STORES é a base da VW_CARTEIRA_BR) ---------- */
+LOJAS AS (
+    SELECT DS.STORE_ID,
+           -- CARREFOUR é dividido entre 2 AGMs pelo STORE_TYPE: farmácia (carrefour_farm e carrefour_super_farm_nc)
+           -- = joao.frausto; todo o resto (supermercados, seara, tecnologia, etc.) = marco.bonora
+           IFF(S.BRAND_GROUP_NAME = 'Carrefour',
+               IFF(S.STORE_TYPE IN ('carrefour_farm', 'carrefour_super_farm_nc'), 'joao.frausto@rappi.com', 'marco.bonora@rappi.com'),
+               DS.AGM) AS AGM,
+           S.STORE_NAME, S.STORE_TYPE, S.BRAND_GROUP_ID, S.BRAND_GROUP_NAME AS MARCA,
+           DS.SUBVERTICAL AS VERTICAL,
+           -- loja física (chave oficial do cadastro: junta os STORE_IDs da mesma loja); sem cadastro = o próprio STORE_ID
+           COALESCE(S.PHYSICAL_STORE_ID, DS.PHYSICAL_STORE_ID, DS.STORE_ID) AS PHYS,
+           COALESCE(S.PHYSICAL_STORE_NAME, DS.PHYSICAL_STORE_NAME, S.STORE_NAME) AS PHYS_NOME
+    FROM RP_SILVER_DB_PROD.CPGS_LOCAL_ANALYTICS.TBL_DIM_STORES DS
+    JOIN RP_SILVER_DB_PROD.CPGS_LOCAL_ANALYTICS.TBL_SNP_STORES_SOT C
+      ON C.BRAND_GROUP = DS.BRAND_GROUP AND C.COUNTRY = 'BR' AND C.IS_LATEST = TRUE
+    JOIN RP_SILVER_DB_PROD.DES_PROD.STORES_BR S ON S.STORE_ID = DS.STORE_ID
+    WHERE DS.COUNTRY = 'BR'
+      AND NULLIF(TRIM(DS.AGM), '') IS NOT NULL
+      AND LOWER(DS.AGM) NOT IN ('none@rappi.com', 'turbo@rappi.com')   -- sem AGM e carteira Turbo ficam fora
+      -- lojas Turbo ficam fora (subvertical TURBO, store type *_turbo_* e "Turbo By ..." dos parceiros)
+      AND COALESCE(DS.SUBVERTICAL, '') <> 'TURBO'
+      AND COALESCE(S.STORE_TYPE, '') NOT ILIKE '%turbo%'
+      AND COALESCE(S.STORE_NAME, '') NOT ILIKE '%turbo%'
+      AND IFF(S.BRAND_GROUP_NAME = 'Carrefour',
+              IFF(S.STORE_TYPE IN ('carrefour_farm', 'carrefour_super_farm_nc'), 'joao.frausto@rappi.com', 'marco.bonora@rappi.com'),
+              DS.AGM) LIKE $AGM
+      AND DS.STORE_ID <> 0                    -- STORE_ID 0 = balde de pedidos sem loja
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY DS.STORE_ID ORDER BY DS.AGM) = 1
+),
+GR AS (SELECT COLUMN1 AS GR FROM VALUES ('semana'), ('mes'), ('trimestre'), ('semana_td'), ('mes_td'), ('trimestre_td')),
+/* v117: granularidades "_td" (to date) — todo período cortado no MESMO nº de dias do período em aberto (o do D-1):
+   ex. hoje 22/10 → mes_td = 01–21/10 vs 01–21/09; semana_td = seg–qua vs seg–qua da semana anterior. Só os 3 últimos
+   períodos (atual + 2 anteriores, p/ variação e retenção); dia fora do corte → período NULL (descartado no fim).
+   A plataforma usa _td quando o AGM escolhe um período em aberto (rankings, motivos, stockout, usuários, mecânicas). */
+
+/* ---------- pedidos válidos (data oficial CLOSED_AT, COUNT_TO_GMV). Volta 3 meses para a retenção ---------- */
+PED_EXT AS (
+    SELECT T.ORDER_ID, T.CLOSED_AT::DATE AS D, T.STORE_ID, L.AGM, L.MARCA, T.GMV,
+           T.APPLICATION_USER_ID AS U, T.IS_PRIME_ORDER, T.ORDER_TYPE_ALL, T.PREPARATION_TIME, T.TIME_IN_STORE
+    FROM RP_GOLD_DB_PROD.DES_PROD.ORDER_DIMENSIONS_BR T
+    JOIN LOJAS L ON L.STORE_ID = T.STORE_ID
+    WHERE T.COUNT_TO_GMV = TRUE
+      AND T.CLOSED_AT::DATE >= DATEADD(MONTH, -3, $DT_INI) AND T.CLOSED_AT::DATE < $DT_FIM
+),
+PED AS (SELECT * FROM PED_EXT WHERE D >= $DT_INI),
+
+VENDAS AS (
+    SELECT D, STORE_ID, SUM(GMV) AS GMV, COUNT(DISTINCT ORDER_ID) AS PEDIDOS,
+           -- "Picking Time" do fechamento = PREPARATION_TIME (segundos; 0 = sem medição)
+           SUM(IFF(PREPARATION_TIME > 0, PREPARATION_TIME, 0)) / 60 AS PICK_MIN,
+           COUNT_IF(PREPARATION_TIME > 0) AS PICK_N,
+           -- "RT wait in store" do fechamento = TIME_IN_STORE (segundos que o RT ficou na loja)
+           SUM(IFF(TIME_IN_STORE > 0, TIME_IN_STORE, 0)) / 60 AS RT_MIN,
+           COUNT_IF(TIME_IN_STORE > 0) AS RT_N
+    FROM PED GROUP BY 1, 2
+),
+
+/* ---------- nome da loja física = STORE_NAME da loja principal (a de mais pedidos na janela) — v87 ----------
+   o PHYSICAL_STORE_NAME do cadastro pode vir de uma loja secundária (ex.: "Ri Happy Barbie, (1011) MIRUNA" no
+   lugar de "Ri Happy, (1011) Miruna"); a plataforma mostra sempre o nome da loja (STORE_NAME). */
+PHYS_LOJA AS (
+    SELECT L.PHYS, L.STORE_NAME
+    FROM LOJAS L LEFT JOIN VENDAS V ON V.STORE_ID = L.STORE_ID
+    GROUP BY 1, 2
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY L.PHYS ORDER BY SUM(COALESCE(V.PEDIDOS, 0)) DESC, L.STORE_NAME) = 1
+),
+
+/* ---------- cancelamento: template oficial Silver (linha a linha, reaproveitado nos motivos) ---------- */
+CANCEL_ROW AS (
+    SELECT COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE AS D, O.STORE_ID, L.AGM, L.MARCA, L.PHYS,
+           C.ORDER_ID, C.CATEGORY, C.SUBCATEGORY,
+           -- só cancelamento BY PARTNER (responsabilidade da loja: Stockout, Shopper Delay, Delay in Store...)
+           CASE WHEN C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Partner'
+                THEN 1 ELSE 0 END AS CANC
+    FROM RP_SILVER_DB_PROD.DES_PROD.ORDERS_BR O
+    JOIN LOJAS L ON L.STORE_ID = O.STORE_ID
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.CANCELLATIONS_BR C ON C.ORDER_ID = O.ORDER_ID
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.OPS_ORDERS_BR OPS ON OPS.ORDER_ID = O.ORDER_ID
+    WHERE OPS.IS_OPS = TRUE AND OPS.VALID_CARGO != 'non_valid_cargo' AND O.SYNTHETIC = FALSE
+      AND COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE >= $DT_INI
+      AND COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE <  $DT_FIM
+),
+CANCEL AS (
+    SELECT D, STORE_ID, COUNT(ORDER_ID) AS TOTAL, SUM(CANC) AS CANC FROM CANCEL_ROW GROUP BY 1, 2
+),
+
+/* ---------- itens: 1 linha por (pedido, produto), a não deletada primeiro (régua do found rate do PBI) ---------- */
+ITENS_ROW AS (
+    SELECT P.ORDER_ID, P.PRODUCT_ID, P.ORDER_PRODUCT_ID, P.UNITS, P.TOTAL_PRICE, P.PRODUCT_FINAL_STATE,
+           P.STOCKOUT_REPLACED, P.DB_DELETED, O.D, O.STORE_ID, O.AGM, O.MARCA
+    FROM RP_SILVER_DB_PROD.DES_PROD.ORDER_PRODUCTS_BR P
+    JOIN PED O ON O.ORDER_ID = P.ORDER_ID AND O.D = P.CLOSED_AT::DATE
+    WHERE P.CLOSED_AT::DATE >= $DT_INI AND P.CLOSED_AT::DATE < $DT_FIM
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY P.ORDER_ID, P.PRODUCT_ID
+                               ORDER BY P.DB_DELETED ASC, P.ORDER_PRODUCT_ID DESC) = 1
+),
+ITENS_DET AS (
+    SELECT I.*, COALESCE(DT.MARKDOWN_DISCOUNT, 0) AS MKD, COALESCE(DT.TERRICOS_DISCOUNT, 0) AS CRM
+    FROM ITENS_ROW I
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.ORDER_PRODUCT_DETAILS_BR DT ON DT.ORDER_PRODUCT_ID = I.ORDER_PRODUCT_ID
+),
+ITENS AS (
+    SELECT D, STORE_ID,
+           SUM(IFF(DB_DELETED = FALSE, TOTAL_PRICE + MKD + CRM, 0))                       AS GMV_BRUTO,   -- preço cheio
+           SUM(IFF(DB_DELETED = FALSE, MKD, 0))                                           AS MKD_VALOR,
+           SUM(IFF((PRODUCT_FINAL_STATE IN ('initial','added') AND DB_DELETED = FALSE)
+                   OR PRODUCT_FINAL_STATE = 'stockout', UNITS, 0))                        AS ITENS_PEDIDOS,
+           SUM(IFF(PRODUCT_FINAL_STATE IN ('initial','added') AND DB_DELETED = FALSE, UNITS, 0)) AS ITENS_ENTREGUES,
+           SUM(IFF(PRODUCT_FINAL_STATE = 'stockout' AND STOCKOUT_REPLACED = FALSE, TOTAL_PRICE, 0)) AS RUPTURA
+    FROM ITENS_DET GROUP BY 1, 2
+),
+
+/* ---------- faturamento em 2 réguas (a plataforma escolhe): TOTAL PRICE ou INCOME ---------- */
+TP_PED AS (     -- TOTAL PRICE = preço dos itens do pedido (ORDER_PRODUCTS_BR.TOTAL_PRICE, itens não deletados)
+                -- INCOME = TOTAL PRICE − MARKDOWN_DISCOUNT dos itens = coluna FATURAMENTO da SPA_BR.TBL_PBI_SUMMARY
+                -- (a base do relatório; conferido na Panvel 07/09–04/10: 421.843 / 430.248 / 440.183 / 435.098)
+                -- SEM a dedup (pedido, produto) do found rate: o faturamento soma TODAS as linhas de item
+    SELECT P.ORDER_ID, O.D, SUM(P.TOTAL_PRICE) AS TP,
+           SUM(P.TOTAL_PRICE - COALESCE(DT.MARKDOWN_DISCOUNT, 0)) AS INC
+    FROM RP_SILVER_DB_PROD.DES_PROD.ORDER_PRODUCTS_BR P
+    JOIN PED O ON O.ORDER_ID = P.ORDER_ID AND O.D = P.CLOSED_AT::DATE
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.ORDER_PRODUCT_DETAILS_BR DT ON DT.ORDER_PRODUCT_ID = P.ORDER_PRODUCT_ID
+    WHERE P.DB_DELETED = FALSE AND P.CLOSED_AT::DATE >= $DT_INI AND P.CLOSED_AT::DATE < $DT_FIM
+    GROUP BY 1, 2
+),
+FAT_PED AS (    -- 1 linha por pedido válido, com as 2 réguas em R$
+    SELECT O.D, O.STORE_ID, O.AGM, O.MARCA, O.ORDER_ID, COALESCE(T.TP, 0) AS TP, COALESCE(T.INC, 0) AS INC
+    FROM PED O
+    LEFT JOIN TP_PED T  ON T.ORDER_ID = O.ORDER_ID AND T.D = O.D
+),
+FAT AS (SELECT D, STORE_ID, SUM(TP) AS TP, SUM(INC) AS INC FROM FAT_PED GROUP BY 1, 2),
+
+/* ---------- defect: template oficial DEFECTS_BR (linha a linha, reaproveitado nos motivos) ---------- */
+DEF_ROW AS (   -- a dedup roda no BR inteiro e SÓ DEPOIS filtra a carteira (um DEFECT_ID pode cruzar lojas)
+    -- v132: Defect Rate = SÓ defeito com culpa da loja → reclamação do cliente sobre o pedido que a loja montou
+    --       (produto errado/danificado/faltando, pedido completamente diferente, pedido incompleto).
+    --       Os demais (entregador/RT, cobrança e reembolso, pedido não chegou, promoções, tickets do parceiro) viram
+    --       DEFECT_COUNT = 0: a linha continua na base (ORDER_COUNT), só não conta como defeito.
+    SELECT X.* REPLACE (IFF(COALESCE(X.USER_TYPE, '') NOT IN ('RT', 'Partner')
+                            AND TRIM(X.LEVEL_1, ' ' || CHR(9) || CHR(10) || CHR(13)) = 'Problems with the order'
+                            AND TRIM(X.LEVEL_2, ' ' || CHR(9) || CHR(10) || CHR(13)) IN ('I have incorrect, damaged, or missing products',
+                                                         'I received a completely different order', 'Incomplete order'),
+                            X.DEFECT_COUNT, 0) AS DEFECT_COUNT),
+           L.AGM, L.MARCA, L.PHYS FROM (
+        SELECT D.USER_TYPE, D.ORDER_ID, D.DATE::DATE AS D, O.STORE_ID, D.LEVEL_1, D.LEVEL_2, D.LEVEL_3,   -- v129: + LEVEL_3 (detalhe por pedido)
+               D.DEFECT_COUNT, D.ORDER_COUNT, D.COUNTRY, D.IS_DEFECT, D.SYNTHETIC, D.DEFECT_SCOPE,
+               D.IS_VALID, D.IS_ESCALATED, D.IS_OPS, D.CHANNEL,
+               CASE WHEN NOT (O.IS_CANCELLED = TRUE AND D.DEFECT_COUNT = 1) THEN 'Remove' END AS TICKET_CANCEL,
+               CASE WHEN NLT.IS_ABANDONED = TRUE THEN TRUE ELSE FALSE END AS IS_ABANDONED,
+               ROW_NUMBER() OVER (PARTITION BY D.COUNTRY, D.ORDER_ID, D.LEVEL_1, D.LEVEL_2
+                                  ORDER BY D.DATE DESC) AS UNIQUE_COUNT,
+               CASE WHEN (UNIQUE_COUNT = 1 AND D.DEFECT_COUNT = 1) OR (D.ORDER_COUNT = 1)
+                    THEN TRUE ELSE FALSE END AS UNIQUE_DEFECT
+        FROM RP_SILVER_DB_PROD.DES_PROD.DEFECTS_BR D
+        LEFT JOIN RP_GOLD_DB_PROD.DES_PROD.ORDER_DIMENSIONS_BR O ON D.ORDER_ID = O.ORDER_ID
+        LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.NON_LIVE_TICKETS_BR NLT
+               ON D.TICKET_ID = NLT.KUSTOMER_CONVERSATION_ID AND D.COUNTRY = NLT.COUNTRY
+        WHERE D.DATE::DATE >= $DT_INI AND D.DATE::DATE < $DT_FIM
+        QUALIFY ROW_NUMBER() OVER (PARTITION BY D.COUNTRY, D.DEFECT_ID ORDER BY D.DATE DESC) = 1
+    ) X
+    JOIN LOJAS L ON L.STORE_ID = X.STORE_ID
+    WHERE COUNTRY = 'BR' AND IS_DEFECT = TRUE AND SYNTHETIC = FALSE AND DEFECT_SCOPE = TRUE
+      AND IS_VALID = TRUE AND IS_ESCALATED = FALSE AND IS_OPS = TRUE AND CHANNEL != 'Live - Chat'
+      AND TICKET_CANCEL = 'Remove' AND IS_ABANDONED = FALSE AND UNIQUE_DEFECT = TRUE
+),
+DEFEITOS AS (
+    SELECT D, STORE_ID, SUM(ORDER_COUNT) AS BASE,
+           COUNT(DISTINCT IFF(DEFECT_COUNT > 0, ORDER_ID, NULL)) AS DEF     -- pedidos com defeito, não defeitos
+    FROM DEF_ROW GROUP BY 1, 2
+),
+
+/* ---------- funil SST → OPC (STORE_FLAG = TRUE, a atribuição por loja do relatório de conversão) ---------- */
+FUNIL AS (
+    SELECT F.SNAPSHOT::DATE AS D, F.STORE_ID,
+           SUM(F.SST) AS SST, SUM(F.SS) AS SS, SUM(F.VPD) AS VPD, SUM(F.ATC) AS ATC, SUM(F.VC) AS VC, SUM(F.VSO) AS VSO, SUM(F.PTC) AS PTC, SUM(F.OP) AS OP, SUM(F.OPC) AS OPC
+    FROM RP_SILVER_DB_PROD.GLOBAL_CONVERSIONS.GLOBAL_CONVERSIONS F
+    JOIN LOJAS L ON L.STORE_ID = F.STORE_ID
+    WHERE F.COUNTRY = 'BR' AND F.STORE_FLAG = TRUE
+      AND F.SNAPSHOT::DATE >= $DT_INI AND F.SNAPSHOT::DATE < $DT_FIM
+    GROUP BY 1, 2
+),
+CHAVES AS (
+    SELECT D, STORE_ID FROM VENDAS UNION SELECT D, STORE_ID FROM CANCEL
+    UNION SELECT D, STORE_ID FROM ITENS UNION SELECT D, STORE_ID FROM DEFEITOS
+    UNION SELECT D, STORE_ID FROM FUNIL
+),
+
+/* ---------- usuários por marca × período (contagem distinta: calculada direto em cada período) ---------- */
+GRAOS AS (
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, X.U, X.ORDER_ID, X.IS_PRIME_ORDER, X.ORDER_TYPE_ALL
+    FROM PED_EXT X CROSS JOIN GR G
+),
+USR AS (
+    SELECT GR, P, AGM, MARCA,
+           COUNT(DISTINCT U)                                                 AS ATIVOS,
+           COUNT(DISTINCT IFF(IS_PRIME_ORDER, U, NULL))                       AS PRO,
+           COUNT(DISTINCT IFF(ORDER_TYPE_ALL = 'FIRST ORDER', ORDER_ID, NULL)) AS NOVOS
+    FROM GRAOS WHERE P >= $DT_INI GROUP BY 1, 2, 3, 4
+),
+UP AS (SELECT DISTINCT GR, P, AGM, MARCA, U FROM GRAOS),
+RET AS (   -- ativos no período que também compraram no período anterior
+    SELECT A.GR, A.P, A.AGM, A.MARCA, COUNT(*) AS RETIDOS
+    FROM UP A
+    JOIN UP B ON B.GR = A.GR AND B.AGM = A.AGM AND B.MARCA = A.MARCA AND B.U = A.U
+            AND B.P = CASE REPLACE(A.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, A.P)
+                                WHEN 'mes' THEN DATEADD(MONTH, -1, A.P)
+                                ELSE DATEADD(MONTH, -3, A.P) END
+    WHERE A.P >= $DT_INI
+    GROUP BY 1, 2, 3, 4
+),
+METAS AS (   -- meta mensal por AGM × marca (planilha "TARGETS BY BRAND")
+    SELECT REF_MONTH::DATE AS P, LOWER(AGM_EMAIL) AS AGM, UPPER(BRAND) AS BRAND, SUM(TARGET_BRL) AS META
+    FROM RP_GOLD_DB_PROD.SPA_BR.METAS_AGM_BR
+    WHERE COUNTRY = 'BR'
+    GROUP BY 1, 2, 3
+),
+
+/* ---------- produtos que deram stockout nos pedidos CANCELADOS by partner por stockout (v83) ----------
+   pedido cancelado com SUBCATEGORY Stockout / Light Availability ("Cancelamento via Mitienda (stockout)");
+   produto = item do pedido com PRODUCT_FINAL_STATE = 'stockout' (1 linha por pedido × produto). */
+STK_CANC AS (   -- pedidos cancelados by partner por stockout (base de tudo: bate com motivo_cancelamento)
+    SELECT D, AGM, MARCA, PHYS, ORDER_ID FROM CANCEL_ROW
+    WHERE CANC = 1 AND SUBCATEGORY IN ('Stockout', 'Light Availability')
+),
+STK_ITEM AS (   -- itens desses pedidos (1 linha por pedido × produto); MARK = item marcado como falta
+    SELECT C.D, C.AGM, C.MARCA, C.PHYS, C.ORDER_ID, P.PRODUCT_ID, P.UNITS, P.TOTAL_PRICE, P.DB_DELETED,
+           IFF(P.PRODUCT_FINAL_STATE = 'stockout', 1, 0) AS MARK
+    FROM STK_CANC C
+    JOIN RP_SILVER_DB_PROD.DES_PROD.ORDER_PRODUCTS_BR P ON P.ORDER_ID = C.ORDER_ID
+    WHERE (P.CLOSED_AT IS NULL OR P.CLOSED_AT::DATE >= DATEADD(DAY, -7, $DT_INI))
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY P.ORDER_ID, P.PRODUCT_ID ORDER BY P.DB_DELETED ASC, P.ORDER_PRODUCT_ID DESC) = 1
+),
+STK_ROW AS (    -- falta confirmada (item marcado) OU, no pedido sem nenhum item marcado, todos os itens do pedido
+    SELECT * FROM (SELECT I.*, MAX(I.MARK) OVER (PARTITION BY I.ORDER_ID) AS ORD_MARK FROM STK_ITEM I)
+    WHERE MARK = 1 OR (ORD_MARK = 0 AND DB_DELETED = FALSE)
+),
+
+/* ---------- rankings ---------- */
+PROD_ID AS (
+    SELECT D, AGM, MARCA, PRODUCT_ID, SUM(TOTAL_PRICE) AS TP, SUM(UNITS) AS UN, COUNT(DISTINCT ORDER_ID) AS PED
+    FROM ITENS_DET WHERE DB_DELETED = FALSE GROUP BY 1, 2, 3, 4
+),
+CAT AS (   -- catálogo SEMPRE com COUNTRY = 'BR'; 1 linha por produto
+    SELECT X.PRODUCT_ID, COALESCE(RP.EAN, PG.EAN, CP.EAN) AS EAN, COALESCE(RP.NAME, PG.NAME, CP.NAME) AS NOME,
+           CP.MAKER,
+           -- v115/v116: foto do catálogo (vitrine de ruptura): PHOTO_URL do CPGS; senão a imagem do PRODUCTS_GRABILITY;
+           -- senão a foto de outro produto com o mesmo EAN. v116: parte do catálogo já guarda a URL completa (napp, vtex…)
+           -- e vinha "https://images.rappi.com.br/products/https://…" (link quebrado) → fica só a URL de dentro.
+           REGEXP_REPLACE(COALESCE(CP.PHOTO_URL,
+                    IFF(PG.IMAGE IS NULL OR PG.IMAGE IN ('', 'NO-IMAGE'), NULL, IFF(PG.IMAGE ILIKE 'http%', PG.IMAGE, 'https://images.rappi.com.br/products/' || PG.IMAGE)),
+                    FE.FOTO),
+                '^https?://images\\.rappi\\.com\\.br/products/(https?://)', '\\1') AS IMG
+    FROM (SELECT PRODUCT_ID FROM PROD_ID UNION SELECT PRODUCT_ID FROM STK_ROW) X
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.RETAILER_PRODUCTS RP
+           ON RP.PRODUCT_ID = X.PRODUCT_ID AND RP.COUNTRY = 'BR'
+    LEFT JOIN RP_SILVER_DB_PROD.CPGS_LOCAL_ANALYTICS.TBL_RETAILER_PRODUCT_CP CP
+           ON CP.PRODUCT_ID = X.PRODUCT_ID AND CP.COUNTRY = 'BR'
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.PRODUCTS_GRABILITY_BR PG
+           ON PG.PRODUCT_ID = X.PRODUCT_ID AND X.PRODUCT_ID <> 0
+    LEFT JOIN (SELECT EAN, MAX(PHOTO_URL) AS FOTO FROM RP_SILVER_DB_PROD.CPGS_LOCAL_ANALYTICS.TBL_RETAILER_PRODUCT_CP
+               WHERE COUNTRY = 'BR' AND PHOTO_URL IS NOT NULL AND EAN IS NOT NULL GROUP BY 1) FE
+           ON FE.EAN = COALESCE(RP.EAN, PG.EAN, CP.EAN)
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY X.PRODUCT_ID ORDER BY CP.MAKER NULLS LAST, RP.EAN NULLS LAST, CP.PHOTO_URL NULLS LAST) = 1
+),
+PROD_ALL AS (   -- todos os produtos por período (base do top e do "anterior")
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA,
+           COALESCE(C.EAN, C.NOME, 'Produto ' || X.PRODUCT_ID) AS CHAVE,
+           MAX(C.EAN) AS EAN, MAX(C.NOME) AS NOME, SUM(X.TP) AS GMV, SUM(X.UN) AS UN, SUM(X.PED) AS PED
+    FROM PROD_ID X LEFT JOIN CAT C ON C.PRODUCT_ID = X.PRODUCT_ID CROSS JOIN GR G
+    GROUP BY 1, 2, 3, 4, 5
+),
+PROD_TOP AS (   -- top 20 produtos por GMV de item
+    SELECT * FROM PROD_ALL WHERE P >= $DT_INI
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY GR, P, AGM, MARCA ORDER BY GMV DESC, CHAVE) <= 20
+),
+PROD_PER AS (
+    SELECT T.*, IFF(CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END >= $DT_INI, COALESCE(A.GMV, 0), NULL) AS GMV_ANT
+    FROM PROD_TOP T
+    LEFT JOIN PROD_ALL A ON A.GR = T.GR AND A.AGM = T.AGM AND A.MARCA = T.MARCA AND A.CHAVE = T.CHAVE
+                      AND A.P = CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END
+),
+MAKER_ALL AS (
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, COALESCE(C.MAKER, 'Sem maker') AS MAKER, SUM(X.TP) AS GMV
+    FROM PROD_ID X LEFT JOIN CAT C ON C.PRODUCT_ID = X.PRODUCT_ID CROSS JOIN GR G
+    GROUP BY 1, 2, 3, 4, 5
+),
+MAKER_TOP AS (  -- top 15 makers
+    SELECT * FROM MAKER_ALL WHERE P >= $DT_INI
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY GR, P, AGM, MARCA ORDER BY GMV DESC, MAKER) <= 15
+),
+MAKER_PER AS (
+    SELECT T.*, IFF(CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END >= $DT_INI, COALESCE(A.GMV, 0), NULL) AS GMV_ANT
+    FROM MAKER_TOP T
+    LEFT JOIN MAKER_ALL A ON A.GR = T.GR AND A.AGM = T.AGM AND A.MARCA = T.MARCA AND A.MAKER = T.MAKER
+                      AND A.P = CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END
+),
+CANCEL_ALL AS (
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA,
+           COALESCE(X.CATEGORY, 'Sem categoria') || ' / ' || COALESCE(X.SUBCATEGORY, 'Sem subcategoria') AS ITEM,
+           COUNT(*) AS N
+    FROM CANCEL_ROW X CROSS JOIN GR G
+    WHERE X.CANC = 1
+    GROUP BY 1, 2, 3, 4, 5
+),
+CANCEL_PER AS (
+    SELECT T.*, IFF(CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END >= $DT_INI, COALESCE(A.N, 0), NULL) AS N_ANT
+    FROM CANCEL_ALL T
+    LEFT JOIN CANCEL_ALL A ON A.GR = T.GR AND A.AGM = T.AGM AND A.MARCA = T.MARCA AND A.ITEM = T.ITEM
+                      AND A.P = CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END
+),
+CANCEL_LOJA_ALL AS (   -- motivos by partner por loja FÍSICA × período (quem é ofensora e em quê)
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, X.PHYS,
+           COALESCE(X.CATEGORY, 'Sem categoria') || ' / ' || COALESCE(X.SUBCATEGORY, 'Sem subcategoria') AS ITEM,
+           COUNT(*) AS N
+    FROM CANCEL_ROW X CROSS JOIN GR G
+    WHERE X.CANC = 1
+    GROUP BY 1, 2, 3, 4, 5, 6
+),
+CANCEL_LOJA_PER AS (   -- + o mesmo motivo na mesma loja no período anterior (0 = não teve)
+    SELECT T.*, IFF(CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END >= $DT_INI, COALESCE(A.N, 0), NULL) AS N_ANT
+    FROM CANCEL_LOJA_ALL T
+    LEFT JOIN CANCEL_LOJA_ALL A ON A.GR = T.GR AND A.AGM = T.AGM AND A.MARCA = T.MARCA
+                               AND A.PHYS = T.PHYS AND A.ITEM = T.ITEM AND A.P = CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END
+),
+STK_ALL AS (    -- produto × período (marca): pedidos cancelados, unidades, R$ (TOTAL_PRICE) e lojas físicas afetadas
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA,
+           COALESCE(C.EAN, 'sem EAN') || ' | ' || COALESCE(C.NOME, 'Produto ' || X.PRODUCT_ID) AS ITEM,
+           COUNT(DISTINCT X.ORDER_ID) AS PED, COUNT(DISTINCT IFF(X.MARK = 1, X.ORDER_ID, NULL)) AS PED_CONF,
+           SUM(X.UNITS) AS UN, SUM(X.TOTAL_PRICE) AS TP, COUNT(DISTINCT X.PHYS) AS LJ
+    FROM STK_ROW X LEFT JOIN CAT C ON C.PRODUCT_ID = X.PRODUCT_ID CROSS JOIN GR G
+    GROUP BY 1, 2, 3, 4, 5
+),
+STK_PER AS (    -- top 100 produtos por pedidos cancelados + pedidos do mesmo produto no período anterior
+    SELECT T.*, IFF(CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END >= $DT_INI, COALESCE(A.PED, 0), NULL) AS PED_ANT
+    FROM (SELECT * FROM STK_ALL WHERE P >= $DT_INI
+          QUALIFY ROW_NUMBER() OVER (PARTITION BY GR, P, AGM, MARCA ORDER BY PED DESC, PED_CONF DESC, TP DESC, ITEM) <= 100) T
+    LEFT JOIN STK_ALL A ON A.GR = T.GR AND A.AGM = T.AGM AND A.MARCA = T.MARCA AND A.ITEM = T.ITEM
+                      AND A.P = CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END
+),
+/* v115: vitrine dos produtos com mais ruptura (aba "Vitrine de ruptura" na lupa de Motivos Ofensores) —
+   p/ os mesmos produtos do STK_PER: ID Rappi + foto (1 produto por item: o de mais pedidos, com foto) e
+   pedidos ENTREGUES com o produto / entregues com o produto em falta (ruptura sem cancelar o pedido). */
+STK_IMG AS (
+    SELECT GR, P, AGM, MARCA, ITEM, PRODUCT_ID, IMG FROM (
+        SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, COALESCE(C.EAN, 'sem EAN') || ' | ' || COALESCE(C.NOME, 'Produto ' || X.PRODUCT_ID) AS ITEM,
+               X.PRODUCT_ID, MAX(C.IMG) AS IMG, COUNT(DISTINCT X.ORDER_ID) AS N
+        FROM STK_ROW X LEFT JOIN CAT C ON C.PRODUCT_ID = X.PRODUCT_ID CROSS JOIN GR G
+        GROUP BY 1, 2, 3, 4, 5, 6)
+    WHERE (GR, P, AGM, MARCA, ITEM) IN (SELECT GR, P, AGM, MARCA, ITEM FROM STK_PER)
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY GR, P, AGM, MARCA, ITEM ORDER BY IFF(IMG IS NULL, 1, 0), N DESC, PRODUCT_ID) = 1
+),
+STK_ENT AS (
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, COALESCE(C.EAN, 'sem EAN') || ' | ' || COALESCE(C.NOME, 'Produto ' || X.PRODUCT_ID) AS ITEM,
+           COUNT(DISTINCT X.ORDER_ID) AS PED_ENT,
+           COUNT(DISTINCT IFF(X.PRODUCT_FINAL_STATE = 'stockout', X.ORDER_ID, NULL)) AS PED_RUPT_ENT
+    FROM ITENS_ROW X LEFT JOIN CAT C ON C.PRODUCT_ID = X.PRODUCT_ID CROSS JOIN GR G
+    WHERE X.PRODUCT_ID IN (SELECT PRODUCT_ID FROM STK_ROW)
+    GROUP BY 1, 2, 3, 4, 5
+),
+/* v116: detalhe do produto na vitrine — lojas com o item em falta em pedidos ENTREGUES e os pedidos cancelados
+   por stockout (ID + data + loja; só os últimos 6 meses, p/ não pesar o CSV). */
+STK_ENT_LOJA AS (
+    SELECT * FROM (
+        SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, COALESCE(C.EAN, 'sem EAN') || ' | ' || COALESCE(C.NOME, 'Produto ' || X.PRODUCT_ID) AS ITEM, L.PHYS,
+               COUNT(DISTINCT X.ORDER_ID) AS PED_RUPT_ENT
+        FROM ITENS_ROW X JOIN LOJAS L ON L.STORE_ID = X.STORE_ID
+        LEFT JOIN CAT C ON C.PRODUCT_ID = X.PRODUCT_ID CROSS JOIN GR G
+        WHERE X.PRODUCT_FINAL_STATE = 'stockout' AND X.PRODUCT_ID IN (SELECT PRODUCT_ID FROM STK_ROW)
+        GROUP BY 1, 2, 3, 4, 5, 6)
+    WHERE (GR, P, AGM, MARCA, ITEM) IN (SELECT GR, P, AGM, MARCA, ITEM FROM STK_PER)
+),
+STK_ORD AS (
+    SELECT * FROM (
+        SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, COALESCE(C.EAN, 'sem EAN') || ' | ' || COALESCE(C.NOME, 'Produto ' || X.PRODUCT_ID) AS ITEM, X.PHYS, X.ORDER_ID, MIN(X.D) AS D
+        FROM STK_ROW X LEFT JOIN CAT C ON C.PRODUCT_ID = X.PRODUCT_ID CROSS JOIN GR G
+        WHERE X.D >= DATEADD(MONTH, -6, DATE_TRUNC(MONTH, $DT_FIM))
+        GROUP BY 1, 2, 3, 4, 5, 6, 7)
+    WHERE (GR, P, AGM, MARCA, ITEM) IN (SELECT GR, P, AGM, MARCA, ITEM FROM STK_PER)
+),
+STK_RESUMO AS (  -- cobertura: pedidos cancelados por stockout × com item marcado × com itens encontrados
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, C.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, C.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, C.D)
+        WHEN 'semana_td' THEN IFF(C.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, C.D), C.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, C.D), NULL)
+        WHEN 'mes_td' THEN IFF(C.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, C.D), C.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, C.D), NULL)
+        ELSE IFF(C.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, C.D), C.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, C.D), NULL) END::DATE AS P, C.AGM, C.MARCA,
+           COUNT(DISTINCT C.ORDER_ID) AS N_CANC,
+           COUNT(DISTINCT IFF(I.MARK = 1, C.ORDER_ID, NULL)) AS N_MARK,
+           COUNT(DISTINCT I.ORDER_ID) AS N_ITENS
+    FROM STK_CANC C
+    LEFT JOIN (SELECT DISTINCT ORDER_ID, MARK FROM STK_ROW) I ON I.ORDER_ID = C.ORDER_ID
+    CROSS JOIN GR G
+    GROUP BY 1, 2, 3, 4
+),
+STK_LOJA_PER AS (   -- os mesmos produtos (top 100) por loja física: pedidos cancelados
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, X.PHYS,
+           COALESCE(C.EAN, 'sem EAN') || ' | ' || COALESCE(C.NOME, 'Produto ' || X.PRODUCT_ID) AS ITEM,
+           COUNT(DISTINCT X.ORDER_ID) AS PED
+    FROM STK_ROW X LEFT JOIN CAT C ON C.PRODUCT_ID = X.PRODUCT_ID CROSS JOIN GR G
+    GROUP BY 1, 2, 3, 4, 5, 6
+),
+DEF_PER AS (    -- pedidos distintos com defeito, contados direto no período
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA,
+           COALESCE(X.LEVEL_1, 'Sem nivel 1') || ' / ' || COALESCE(X.LEVEL_2, 'Sem nivel 2') AS ITEM,
+           COUNT(DISTINCT X.ORDER_ID) AS N
+    FROM DEF_ROW X CROSS JOIN GR G
+    WHERE X.DEFECT_COUNT > 0
+    GROUP BY 1, 2, 3, 4, 5
+),
+DEF_LOJA_PER AS (  -- principal motivo de cada loja FÍSICA no período
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, X.PHYS,
+           COALESCE(X.LEVEL_1, 'Sem nivel 1') || ' / ' || COALESCE(X.LEVEL_2, 'Sem nivel 2') AS ITEM,
+           COUNT(DISTINCT X.ORDER_ID) AS N
+    FROM DEF_ROW X CROSS JOIN GR G
+    WHERE X.DEFECT_COUNT > 0
+    GROUP BY 1, 2, 3, 4, 5, 6
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY GR, P, AGM, MARCA, PHYS ORDER BY COUNT(DISTINCT X.ORDER_ID) DESC, ITEM) = 1
+),
+MARCAS AS (SELECT DISTINCT AGM, MARCA, BRAND_GROUP_ID FROM LOJAS),
+MARCA_INFO AS (   -- 1 linha por AGM × marca (brand_id e vertical da plataforma)
+    SELECT AGM, MARCA, MIN(BRAND_GROUP_ID) AS BRAND_ID, MODE(VERTICAL) AS VERTICAL FROM LOJAS GROUP BY 1, 2
+),
+ADS_DIA AS (    -- RappiAds comprado pelo parceiro (guarantee = Rappi pagou, fica fora). Data de faturamento.
+    SELECT CH.CHARGE_DATE::DATE AS D, M.AGM, M.MARCA, SUM(CH.CHARGE_AMOUNT) AS V
+    FROM RP_SILVER_DB_PROD.RTL_ADS.TBL_RAPPIADS_NONCASHLESS_CHARGES CH
+    JOIN MARCAS M ON M.BRAND_GROUP_ID = CH.BRAND_GROUP_ID
+    WHERE CH.COUNTRY_CODE = 'BR' AND COALESCE(CH.IS_PAID_BY_RAPPI, FALSE) = FALSE
+      AND CH.CHARGE_DATE::DATE >= $DT_INI AND CH.CHARGE_DATE::DATE < $DT_FIM
+    GROUP BY 1, 2, 3
+),
+BURN_PED AS (   -- cupons / global offers bancados pelo parceiro (NET_SPEND, universo da família invest)
+    SELECT O.D, O.AGM, O.MARCA, O.ORDER_ID, O.GMV, SUM(G.NET_SPEND) AS SPEND
+    FROM RP_SILVER_DB_PROD.GLOBAL_FINANCES.GLOBAL_REAL_SPEND G
+    JOIN PED O ON O.ORDER_ID = G.ORDER_ID AND O.D = G.ORDER_CLOSED_AT::DATE
+    WHERE G.COUNTRY = 'BR' AND G.ASSUMED_BY = 'Ally' AND G.CAMPAIGN_ID IS NOT NULL
+      AND (G.REASON IN ('Global Offer', 'Marketing')
+           OR (G.CHANNEL IN ('COUPONS', 'GLOBAL_OFFERS') AND G.REASON NOT IN ('Compensation', 'Referred Coupon')))
+      AND G.ORDER_CLOSED_AT::DATE >= $DT_INI AND G.ORDER_CLOSED_AT::DATE < $DT_FIM
+    GROUP BY 1, 2, 3, 4, 5
+),
+MKD_PED AS (    -- markdown do parceiro por pedido (faturamento gerado = faturamento dos pedidos com markdown, como nos cupons)
+    SELECT I.D, I.AGM, I.MARCA, I.ORDER_ID, SUM(IFF(I.DB_DELETED = FALSE, I.MKD, 0)) AS SPEND
+    FROM ITENS_DET I GROUP BY 1, 2, 3, 4
+),
+MEC_DIA AS (    -- RappiAds sem faturamento gerado: não há atribuição de venda de ads no Snowflake
+    SELECT D, AGM, MARCA, 'RappiAds' AS ITEM, V AS BUDGET, NULL::FLOAT AS TP_GER, NULL::FLOAT AS INC_GER FROM ADS_DIA
+    UNION ALL
+    SELECT M.D, M.AGM, M.MARCA, 'Markdown', SUM(M.SPEND), SUM(IFF(M.SPEND <> 0, F.TP, 0)), SUM(IFF(M.SPEND <> 0, F.INC, 0))
+    FROM MKD_PED M JOIN FAT_PED F ON F.ORDER_ID = M.ORDER_ID AND F.D = M.D GROUP BY 1, 2, 3
+    UNION ALL
+    SELECT B.D, B.AGM, B.MARCA, 'Cupons e ofertas', SUM(B.SPEND), SUM(IFF(B.SPEND <> 0, F.TP, 0)), SUM(IFF(B.SPEND <> 0, F.INC, 0))
+    FROM BURN_PED B JOIN FAT_PED F ON F.ORDER_ID = B.ORDER_ID AND F.D = B.D GROUP BY 1, 2, 3
+),
+MEC_PER AS (    -- dias_ativos = dias com consumo no período (base do burn rate)
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, X.ITEM, SUM(X.BUDGET) AS BUDGET, SUM(X.TP_GER) AS TP_GER, SUM(X.INC_GER) AS INC_GER,
+           COUNT(DISTINCT IFF(X.BUDGET <> 0, X.D, NULL)) AS DIAS
+    FROM MEC_DIA X CROSS JOIN GR G
+    GROUP BY 1, 2, 3, 4, 5
+),
+BUSCA_DIA AS (
+    SELECT S.DATE::DATE AS D, L.AGM, L.MARCA, LOWER(TRIM(S.KEYWORD_SEARCHED)) AS KW, COUNT(S.SEARCH_OBJECT_ID) AS N
+    FROM RP_GOLD_DB_PROD.SEARCH_AND_PERSONALIZATION.DM_LOCAL_SEARCH S
+    JOIN LOJAS L ON L.STORE_ID = S.STORE_ID
+    WHERE S.COUNTRY_CODE = 'BR' AND S.DATE::DATE >= $DT_INI AND S.DATE::DATE < $DT_FIM
+      AND NULLIF(TRIM(S.KEYWORD_SEARCHED), '') IS NOT NULL
+    GROUP BY 1, 2, 3, 4
+),
+BUSCA_ALL AS (
+    SELECT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, X.KW, SUM(X.N) AS N
+    FROM BUSCA_DIA X CROSS JOIN GR G
+    GROUP BY 1, 2, 3, 4, 5
+),
+BUSCA_TOT AS (  -- total de buscas da marca no período (base do share % de cada termo)
+    SELECT GR, P, AGM, MARCA, SUM(N) AS N FROM BUSCA_ALL GROUP BY 1, 2, 3, 4
+),
+BUSCA_TOP AS (  -- top 20 termos
+    SELECT * FROM BUSCA_ALL WHERE P >= $DT_INI
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY GR, P, AGM, MARCA ORDER BY N DESC, KW) <= 20
+),
+BUSCA_PER AS (
+    SELECT T.*, IFF(CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END >= $DT_INI, COALESCE(A.N, 0), NULL) AS N_ANT
+    FROM BUSCA_TOP T
+    LEFT JOIN BUSCA_ALL A ON A.GR = T.GR AND A.AGM = T.AGM AND A.MARCA = T.MARCA AND A.KW = T.KW
+                      AND A.P = CASE REPLACE(T.GR, '_td', '') WHEN 'semana' THEN DATEADD(WEEK, -1, T.P) WHEN 'mes' THEN DATEADD(MONTH, -1, T.P) ELSE DATEADD(MONTH, -3, T.P) END
+),
+DEMO_U AS (     -- só agregado; célula com menos de 50 usuários não sai
+    SELECT DISTINCT G.GR, CASE G.GR WHEN 'semana' THEN DATE_TRUNC(WEEK, X.D) WHEN 'mes' THEN DATE_TRUNC(MONTH, X.D) WHEN 'trimestre' THEN DATE_TRUNC(QUARTER, X.D)
+        WHEN 'semana_td' THEN IFF(X.D >= DATEADD(WEEK, -2, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(WEEK, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(WEEK, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(WEEK, X.D), NULL)
+        WHEN 'mes_td' THEN IFF(X.D >= DATEADD(MONTH, -2, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(MONTH, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(MONTH, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(MONTH, X.D), NULL)
+        ELSE IFF(X.D >= DATEADD(MONTH, -6, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM))) AND DATEDIFF(DAY, DATE_TRUNC(QUARTER, X.D), X.D) <= DATEDIFF(DAY, DATE_TRUNC(QUARTER, DATEADD(DAY, -1, $DT_FIM)), DATEADD(DAY, -1, $DT_FIM)), DATE_TRUNC(QUARTER, X.D), NULL) END::DATE AS P, X.AGM, X.MARCA, X.U
+    FROM PED X CROSS JOIN GR G
+    WHERE G.GR IN ('mes', 'trimestre', 'mes_td', 'trimestre_td')
+),
+DEMO AS (
+    SELECT U.GR, U.P, U.AGM, U.MARCA,
+           -- faixas da plataforma (dicionário: 18-23, 24-29, 30-35, 36-41, 42-47, 48+)
+           CASE WHEN UD.AGE BETWEEN 18 AND 23 THEN '18-23' WHEN UD.AGE BETWEEN 24 AND 29 THEN '24-29'
+                WHEN UD.AGE BETWEEN 30 AND 35 THEN '30-35' WHEN UD.AGE BETWEEN 36 AND 41 THEN '36-41'
+                WHEN UD.AGE BETWEEN 42 AND 47 THEN '42-47' WHEN UD.AGE BETWEEN 48 AND 100 THEN '48+'
+                ELSE 'nao informado' END AS FAIXA,
+           CASE UD.GENDER WHEN 'F' THEN 'feminino' WHEN 'M' THEN 'masculino' ELSE 'nao informado' END AS GENERO,
+           U.U
+    FROM DEMO_U U
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.USER_DIMENSIONS_BR UD ON UD.APPLICATION_USER_ID = U.U
+),
+DEMO_PER AS (
+    SELECT GR, P, AGM, MARCA, 'faixa_etaria: ' || FAIXA AS ITEM, COUNT(DISTINCT U) AS N FROM DEMO
+    GROUP BY 1, 2, 3, 4, 5 HAVING COUNT(DISTINCT U) >= 50
+    UNION ALL
+    SELECT GR, P, AGM, MARCA, 'genero: ' || GENERO, COUNT(DISTINCT U) FROM DEMO
+    GROUP BY 1, 2, 3, 4, 5 HAVING COUNT(DISTINCT U) >= 50
+),
+/* ---------- v129: DETALHAMENTO POR PEDIDO do Defect Rate (lupa → aba "Detalhamento por pedido") ----------
+   cada pedido com defeito (mesmos filtros do DEF_ROW = o mesmo Defect Rate da plataforma) dos últimos 6 meses:
+   motivo(s), detalhe (LEVEL_3), canal, produtos reclamados e comentário do cliente (OPS_CPGS_NOW — o cliente nem sempre
+   deixa comentário) e o valor do pedido nas 2 réguas. Sai no bloco 'pedido_defeito' (1 linha por campo do pedido). */
+DEF_ORD AS (
+    SELECT R.ORDER_ID, MIN(R.D) AS D, R.AGM, R.MARCA, MIN(R.PHYS) AS PHYS,
+           LISTAGG(DISTINCT TRIM(REGEXP_REPLACE(R.LEVEL_1, '\\s+', ' ')) || ' / ' || TRIM(REGEXP_REPLACE(R.LEVEL_2, '\\s+', ' ')), ' | ') AS MOTIVOS,
+           LISTAGG(DISTINCT NULLIF(NULLIF(TRIM(REGEXP_REPLACE(R.LEVEL_3, '\\s+', ' ')), ''), 'Not Applicable'), ' | ') AS DETALHE,
+           LISTAGG(DISTINCT R.CHANNEL, ', ') AS CANAL
+    FROM DEF_ROW R
+    WHERE R.D >= DATEADD(MONTH, -6, DATE_TRUNC(MONTH, $DT_FIM))
+      AND R.DEFECT_COUNT > 0          -- só o pedido COM defeito (o DEF_ROW também traz a base de pedidos, "Not Applicable")
+    GROUP BY R.ORDER_ID, R.AGM, R.MARCA
+),
+DEF_PROD AS (   -- produtos reclamados + comentário do cliente (por produto)
+    SELECT P.ORDER_ID::VARCHAR AS OID,
+           LISTAGG(DISTINCT NULLIF(TRIM(REGEXP_REPLACE(COALESCE(P.ISSUE_TYPE_NAME || ': ', '') || P.PRODUCT_NAME || COALESCE(' (' || P.UNITS || ' un.)', ''), '\\s+', ' ')), ''), ' | ') AS PRODUTOS,
+           LISTAGG(DISTINCT NULLIF(TRIM(REGEXP_REPLACE(P.USER_COMMENT, '\\s+', ' ')), ''), ' | ') AS COMENT
+    FROM RP_SILVER_DB_PROD.OPS_CPGS_NOW.DEFECT_ORDER_PRODUCTS_RETAIL_PBI_TB P
+    WHERE P.COUNTRY = 'BR' AND P.DATE >= DATEADD(MONTH, -7, DATE_TRUNC(MONTH, $DT_FIM))
+      AND P.ORDER_ID::VARCHAR IN (SELECT ORDER_ID::VARCHAR FROM DEF_ORD)
+    GROUP BY 1
+),
+DEF_CONV AS (   -- comentário registrado na conversa de defeito
+    SELECT C.ORDER_ID::VARCHAR AS OID,
+           LISTAGG(DISTINCT NULLIF(TRIM(REGEXP_REPLACE(C.COMMENT, '\\s+', ' ')), ''), ' | ') AS COMENT,
+           LISTAGG(DISTINCT NULLIF(TRIM(REGEXP_REPLACE(C.PRODUCT_NAME, '\\s+', ' ')), ''), ' | ') AS PRODUTOS
+    FROM RP_SILVER_DB_PROD.OPS_CPGS_NOW.CONVERSATIONS_DEFECT_TB C
+    WHERE C.COUNTRY = 'BR' AND C.ORDER_ID::VARCHAR IN (SELECT ORDER_ID::VARCHAR FROM DEF_ORD)
+    GROUP BY 1
+),
+DEF_TP AS (     -- v131: valor do pedido = soma do TOTAL_PRICE dos produtos (ORDER_PRODUCTS_BR, itens não deletados),
+                -- direto pelo ORDER_ID: não depende do FAT_PED (que só tem pedidos válidos e casa a data de fechamento)
+    SELECT P.ORDER_ID, SUM(P.TOTAL_PRICE) AS TP
+    FROM RP_SILVER_DB_PROD.DES_PROD.ORDER_PRODUCTS_BR P
+    WHERE P.DB_DELETED = FALSE AND P.ORDER_ID IN (SELECT ORDER_ID FROM DEF_ORD)
+    GROUP BY 1
+),
+DEF_BASE AS (
+    SELECT O.ORDER_ID, O.D, O.AGM, O.MARCA, O.PHYS, O.MOTIVOS, O.DETALHE, O.CANAL,
+           COALESCE(DP.PRODUTOS, DC.PRODUTOS) AS PRODUTOS,
+           NULLIF(TRIM(CONCAT_WS(' | ', COALESCE(DP.COMENT, ''), COALESCE(DC.COMENT, '')), ' |'), '') AS COMENT,
+           FP.TP
+    FROM DEF_ORD O
+    LEFT JOIN DEF_PROD DP ON DP.OID = O.ORDER_ID::VARCHAR
+    LEFT JOIN DEF_CONV DC ON DC.OID = O.ORDER_ID::VARCHAR
+    LEFT JOIN DEF_TP FP ON FP.ORDER_ID = O.ORDER_ID
+),
+DEF_OUT AS (
+              SELECT ORDER_ID, D, AGM, MARCA, PHYS, 'motivo' AS METRICA, 1 AS VALOR, LEFT(MOTIVOS, 1500) AS TXT FROM DEF_BASE WHERE MOTIVOS IS NOT NULL
+    UNION ALL SELECT ORDER_ID, D, AGM, MARCA, PHYS, 'detalhe', 1, LEFT(DETALHE, 1500) FROM DEF_BASE WHERE DETALHE IS NOT NULL
+    UNION ALL SELECT ORDER_ID, D, AGM, MARCA, PHYS, 'canal', 1, LEFT(CANAL, 300) FROM DEF_BASE WHERE CANAL IS NOT NULL
+    UNION ALL SELECT ORDER_ID, D, AGM, MARCA, PHYS, 'produtos', 1, LEFT(PRODUTOS, 1500) FROM DEF_BASE WHERE PRODUTOS IS NOT NULL
+    UNION ALL SELECT ORDER_ID, D, AGM, MARCA, PHYS, 'comentario', 1, LEFT(COMENT, 1500) FROM DEF_BASE WHERE COMENT IS NOT NULL
+    UNION ALL SELECT ORDER_ID, D, AGM, MARCA, PHYS, 'valor_tp', TP, NULL FROM DEF_BASE WHERE TP IS NOT NULL
+),
+RANKING AS (
+    SELECT GR, P, AGM, MARCA, 'produto' AS TIPO, COALESCE(EAN, 'sem EAN') || ' | ' || COALESCE(NOME, CHAVE) AS ITEM,
+           'total_price' AS METRICA, GMV AS VALOR, NULL::NUMBER AS PHYS FROM PROD_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto', COALESCE(EAN, 'sem EAN') || ' | ' || COALESCE(NOME, CHAVE), 'unidades', UN, NULL FROM PROD_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto', COALESCE(EAN, 'sem EAN') || ' | ' || COALESCE(NOME, CHAVE), 'pedidos', PED, NULL FROM PROD_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto', COALESCE(EAN, 'sem EAN') || ' | ' || COALESCE(NOME, CHAVE), 'total_price_anterior', GMV_ANT, NULL FROM PROD_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'maker', MAKER, 'total_price', GMV, NULL FROM MAKER_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'maker', MAKER, 'total_price_anterior', GMV_ANT, NULL FROM MAKER_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'motivo_cancelamento', ITEM, 'pedidos', N, NULL FROM CANCEL_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'motivo_cancelamento', ITEM, 'pedidos_anterior', N_ANT, NULL FROM CANCEL_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'motivo_cancelamento', ITEM, 'pedidos', N, PHYS FROM CANCEL_LOJA_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'motivo_cancelamento', ITEM, 'pedidos_anterior', N_ANT, PHYS FROM CANCEL_LOJA_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'pedidos', PED, NULL FROM STK_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'pedidos_falta_confirmada', PED_CONF, NULL FROM STK_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'pedidos_anterior', PED_ANT, NULL FROM STK_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'stockout_resumo', 'pedidos', 'cancelados_stockout', N_CANC, NULL FROM STK_RESUMO
+    UNION ALL SELECT GR, P, AGM, MARCA, 'stockout_resumo', 'pedidos', 'com_item_marcado', N_MARK, NULL FROM STK_RESUMO
+    UNION ALL SELECT GR, P, AGM, MARCA, 'stockout_resumo', 'pedidos', 'com_itens', N_ITENS, NULL FROM STK_RESUMO
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'unidades', UN, NULL FROM STK_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'total_price', ROUND(TP, 2), NULL FROM STK_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'lojas', LJ, NULL FROM STK_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'sku', PRODUCT_ID, NULL FROM STK_IMG   -- v115 (foto vai na coluna "loja")
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'pedidos_entregues_ruptura', PED_RUPT_ENT, PHYS FROM STK_ENT_LOJA   -- v116
+    UNION ALL SELECT GR, P, AGM, MARCA, 'produto_stockout', ITEM, 'pedido_cancelado|' || TO_CHAR(D, 'YYYY-MM-DD'), ORDER_ID, PHYS FROM STK_ORD   -- v116
+    UNION ALL SELECT T.GR, T.P, T.AGM, T.MARCA, 'produto_stockout', T.ITEM, 'pedidos_entregues', COALESCE(E.PED_ENT, 0), NULL
+              FROM STK_PER T LEFT JOIN STK_ENT E ON E.GR = T.GR AND E.P = T.P AND E.AGM = T.AGM AND E.MARCA = T.MARCA AND E.ITEM = T.ITEM
+    UNION ALL SELECT T.GR, T.P, T.AGM, T.MARCA, 'produto_stockout', T.ITEM, 'pedidos_entregues_ruptura', COALESCE(E.PED_RUPT_ENT, 0), NULL
+              FROM STK_PER T LEFT JOIN STK_ENT E ON E.GR = T.GR AND E.P = T.P AND E.AGM = T.AGM AND E.MARCA = T.MARCA AND E.ITEM = T.ITEM
+    UNION ALL SELECT L.GR, L.P, L.AGM, L.MARCA, 'produto_stockout', L.ITEM, 'pedidos', L.PED, L.PHYS FROM STK_LOJA_PER L
+              JOIN STK_PER T ON T.GR = L.GR AND T.P = L.P AND T.AGM = L.AGM AND T.MARCA = L.MARCA AND T.ITEM = L.ITEM
+    UNION ALL SELECT GR, P, AGM, MARCA, 'motivo_defeito', ITEM, 'pedidos', N, NULL FROM DEF_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'motivo_defeito', ITEM, 'pedidos', N, PHYS FROM DEF_LOJA_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'mecanica', ITEM, 'budget_consumido', BUDGET, NULL FROM MEC_PER WHERE BUDGET <> 0
+    UNION ALL SELECT GR, P, AGM, MARCA, 'mecanica', ITEM, 'faturamento_gerado_total_price', TP_GER, NULL FROM MEC_PER WHERE TP_GER <> 0
+    UNION ALL SELECT GR, P, AGM, MARCA, 'mecanica', ITEM, 'faturamento_gerado_income', INC_GER, NULL FROM MEC_PER WHERE INC_GER <> 0
+    UNION ALL SELECT GR, P, AGM, MARCA, 'mecanica', ITEM, 'dias_ativos', DIAS, NULL FROM MEC_PER WHERE BUDGET <> 0
+    UNION ALL SELECT GR, P, AGM, MARCA, 'busca', KW, 'buscas', N, NULL FROM BUSCA_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'busca', KW, 'buscas_anterior', N_ANT, NULL FROM BUSCA_PER
+    UNION ALL SELECT GR, P, AGM, MARCA, 'demografia', ITEM, 'usuarios', N, NULL FROM DEMO_PER
+)
+
+SELECT
+       'lojas_dia'::VARCHAR AS "bloco",
+       TO_CHAR(K.D, 'YYYY-MM-DD')::VARCHAR AS "data",
+       NULL::VARCHAR AS "granularidade",
+       NULL::VARCHAR AS "periodo_inicio",
+       L.MARCA::VARCHAR AS "marca",
+       MI.BRAND_ID::NUMBER(38,0) AS "brand_id",
+       MI.VERTICAL::VARCHAR AS "vertical",
+       K.STORE_ID::NUMBER(38,0) AS "loja_id",
+       L.STORE_NAME::VARCHAR AS "loja",
+       L.STORE_TYPE::VARCHAR AS "store_type",
+       L.PHYS::NUMBER(38,0) AS "physical_id",
+       COALESCE(PL.STORE_NAME, L.STORE_NAME)::VARCHAR AS "physical_nome",
+       ROUND(FT.TP, 2)::NUMBER(38,2) AS "faturamento_total_price",
+       ROUND(FT.INC, 2)::NUMBER(38,2) AS "faturamento_income",
+       ROUND(V.GMV, 2)::NUMBER(38,2) AS "gmv",
+       V.PEDIDOS::NUMBER(38,0) AS "pedidos",
+       CN.TOTAL::NUMBER(38,0) AS "pedidos_total",
+       CN.CANC::NUMBER(38,0) AS "pedidos_cancelados",
+       ROUND(I.GMV_BRUTO, 2)::NUMBER(38,2) AS "gmv_bruto",
+       ROUND(I.MKD_VALOR, 2)::NUMBER(38,2) AS "mkd_valor",
+       I.ITENS_PEDIDOS::NUMBER(38,0) AS "itens_pedidos",
+       I.ITENS_ENTREGUES::NUMBER(38,0) AS "itens_entregues",
+       ROUND(I.RUPTURA, 2)::NUMBER(38,2) AS "gmv_perdido_ruptura",
+       DF.BASE::NUMBER(38,0) AS "defect_base_pedidos",
+       DF.DEF::NUMBER(38,0) AS "pedidos_com_defeito",
+       ROUND(IFF(V.PICK_N > 0, V.PICK_MIN, NULL), 2)::NUMBER(38,2) AS "picking_minutos_total",
+       NULLIF(V.PICK_N, 0)::NUMBER(38,0) AS "pedidos_com_picking",
+       ROUND(IFF(V.RT_N > 0, V.RT_MIN, NULL), 2)::NUMBER(38,2) AS "rt_loja_minutos_total",
+       NULLIF(V.RT_N, 0)::NUMBER(38,0) AS "pedidos_com_rt_loja",
+       FN.SST::NUMBER(38,0) AS "funil_sst",
+       FN.SS::NUMBER(38,0) AS "funil_ss",
+       FN.VPD::NUMBER(38,0) AS "funil_vpd",
+       FN.ATC::NUMBER(38,0) AS "funil_atc",
+       FN.VC::NUMBER(38,0) AS "funil_vc",
+       FN.VSO::NUMBER(38,0) AS "funil_vso",
+       FN.PTC::NUMBER(38,0) AS "funil_ptc",
+       FN.OP::NUMBER(38,0) AS "funil_op",
+       FN.OPC::NUMBER(38,0) AS "funil_opc",
+       NULL::NUMBER(38,0) AS "usuarios_ativos",
+       NULL::NUMBER(38,0) AS "usuarios_pro",
+       NULL::NUMBER(38,0) AS "usuarios_novos",
+       NULL::NUMBER(38,0) AS "usuarios_retidos",
+       NULL::NUMBER(38,2) AS "meta_gmv",
+       NULL::NUMBER(38,0) AS "buscas_total",
+       NULL::VARCHAR AS "tipo",
+       NULL::VARCHAR AS "item",
+       NULL::VARCHAR AS "metrica",
+       NULL::NUMBER(38,2) AS "valor",
+       L.AGM::VARCHAR AS "agm"
+FROM CHAVES K
+JOIN LOJAS L          ON L.STORE_ID = K.STORE_ID
+JOIN MARCA_INFO MI    ON MI.AGM = L.AGM AND MI.MARCA = L.MARCA
+LEFT JOIN VENDAS V   ON V.D = K.D AND V.STORE_ID = K.STORE_ID
+LEFT JOIN FAT FT     ON FT.D = K.D AND FT.STORE_ID = K.STORE_ID
+LEFT JOIN CANCEL CN   ON CN.D = K.D AND CN.STORE_ID = K.STORE_ID
+LEFT JOIN ITENS I     ON I.D = K.D AND I.STORE_ID = K.STORE_ID
+LEFT JOIN DEFEITOS DF ON DF.D = K.D AND DF.STORE_ID = K.STORE_ID
+LEFT JOIN FUNIL FN    ON FN.D = K.D AND FN.STORE_ID = K.STORE_ID
+LEFT JOIN PHYS_LOJA PL ON PL.PHYS = L.PHYS
+
+UNION ALL
+
+SELECT
+       'marca_periodo'::VARCHAR AS "bloco",
+       NULL::VARCHAR AS "data",
+       U.GR::VARCHAR AS "granularidade",
+       TO_CHAR(U.P, 'YYYY-MM-DD')::VARCHAR AS "periodo_inicio",
+       U.MARCA::VARCHAR AS "marca",
+       MI.BRAND_ID::NUMBER(38,0) AS "brand_id",
+       MI.VERTICAL::VARCHAR AS "vertical",
+       NULL::NUMBER(38,0) AS "loja_id",
+       NULL::VARCHAR AS "loja",
+       NULL::VARCHAR AS "store_type",
+       NULL::NUMBER(38,0) AS "physical_id",
+       NULL::VARCHAR AS "physical_nome",
+       NULL::NUMBER(38,2) AS "faturamento_total_price",
+       NULL::NUMBER(38,2) AS "faturamento_income",
+       NULL::NUMBER(38,2) AS "gmv",
+       NULL::NUMBER(38,0) AS "pedidos",
+       NULL::NUMBER(38,0) AS "pedidos_total",
+       NULL::NUMBER(38,0) AS "pedidos_cancelados",
+       NULL::NUMBER(38,2) AS "gmv_bruto",
+       NULL::NUMBER(38,2) AS "mkd_valor",
+       NULL::NUMBER(38,0) AS "itens_pedidos",
+       NULL::NUMBER(38,0) AS "itens_entregues",
+       NULL::NUMBER(38,2) AS "gmv_perdido_ruptura",
+       NULL::NUMBER(38,0) AS "defect_base_pedidos",
+       NULL::NUMBER(38,0) AS "pedidos_com_defeito",
+       NULL::NUMBER(38,2) AS "picking_minutos_total",
+       NULL::NUMBER(38,0) AS "pedidos_com_picking",
+       NULL::NUMBER(38,2) AS "rt_loja_minutos_total",
+       NULL::NUMBER(38,0) AS "pedidos_com_rt_loja",
+       NULL::NUMBER(38,0) AS "funil_sst",
+       NULL::NUMBER(38,0) AS "funil_ss",
+       NULL::NUMBER(38,0) AS "funil_vpd",
+       NULL::NUMBER(38,0) AS "funil_atc",
+       NULL::NUMBER(38,0) AS "funil_vc",
+       NULL::NUMBER(38,0) AS "funil_vso",
+       NULL::NUMBER(38,0) AS "funil_ptc",
+       NULL::NUMBER(38,0) AS "funil_op",
+       NULL::NUMBER(38,0) AS "funil_opc",
+       U.ATIVOS::NUMBER(38,0) AS "usuarios_ativos",
+       U.PRO::NUMBER(38,0) AS "usuarios_pro",
+       U.NOVOS::NUMBER(38,0) AS "usuarios_novos",
+       R.RETIDOS::NUMBER(38,0) AS "usuarios_retidos",
+       ROUND(IFF(U.GR = 'mes', MT.META, NULL), 2)::NUMBER(38,2) AS "meta_gmv",
+       BT.N::NUMBER(38,0) AS "buscas_total",
+       NULL::VARCHAR AS "tipo",
+       NULL::VARCHAR AS "item",
+       NULL::VARCHAR AS "metrica",
+       NULL::NUMBER(38,2) AS "valor",
+       U.AGM::VARCHAR AS "agm"
+FROM USR U
+JOIN MARCA_INFO MI ON MI.AGM = U.AGM AND MI.MARCA = U.MARCA
+LEFT JOIN RET R    ON R.GR = U.GR AND R.P = U.P AND R.AGM = U.AGM AND R.MARCA = U.MARCA
+LEFT JOIN BUSCA_TOT BT ON BT.GR = U.GR AND BT.P = U.P AND BT.AGM = U.AGM AND BT.MARCA = U.MARCA
+LEFT JOIN METAS MT ON MT.P = U.P AND MT.AGM = LOWER(U.AGM) AND MT.BRAND = UPPER(U.MARCA)
+WHERE (ENDSWITH(U.GR, '_td') OR CASE U.GR WHEN 'semana' THEN DATEADD(WEEK, 1, U.P) WHEN 'mes' THEN DATEADD(MONTH, 1, U.P) ELSE DATEADD(MONTH, 3, U.P) END <= $DT_FIM)          -- só períodos FECHADOS (semana/mês/trimestre inteiros)
+
+UNION ALL
+
+SELECT
+       'pedido_defeito'::VARCHAR AS "bloco",
+       TO_CHAR(X.D, 'YYYY-MM-DD')::VARCHAR AS "data",
+       NULL::VARCHAR AS "granularidade",
+       NULL::VARCHAR AS "periodo_inicio",
+       X.MARCA::VARCHAR AS "marca",
+       MI.BRAND_ID::NUMBER(38,0) AS "brand_id",
+       MI.VERTICAL::VARCHAR AS "vertical",
+       NULL::NUMBER(38,0) AS "loja_id",
+       X.TXT::VARCHAR AS "loja",
+       NULL::VARCHAR AS "store_type",
+       X.PHYS::NUMBER(38,0) AS "physical_id",
+       NULL::VARCHAR AS "physical_nome",
+       NULL::NUMBER(38,2) AS "faturamento_total_price",
+       NULL::NUMBER(38,2) AS "faturamento_income",
+       NULL::NUMBER(38,2) AS "gmv",
+       NULL::NUMBER(38,0) AS "pedidos",
+       NULL::NUMBER(38,0) AS "pedidos_total",
+       NULL::NUMBER(38,0) AS "pedidos_cancelados",
+       NULL::NUMBER(38,2) AS "gmv_bruto",
+       NULL::NUMBER(38,2) AS "mkd_valor",
+       NULL::NUMBER(38,0) AS "itens_pedidos",
+       NULL::NUMBER(38,0) AS "itens_entregues",
+       NULL::NUMBER(38,2) AS "gmv_perdido_ruptura",
+       NULL::NUMBER(38,0) AS "defect_base_pedidos",
+       NULL::NUMBER(38,0) AS "pedidos_com_defeito",
+       NULL::NUMBER(38,2) AS "picking_minutos_total",
+       NULL::NUMBER(38,0) AS "pedidos_com_picking",
+       NULL::NUMBER(38,2) AS "rt_loja_minutos_total",
+       NULL::NUMBER(38,0) AS "pedidos_com_rt_loja",
+       NULL::NUMBER(38,0) AS "funil_sst",
+       NULL::NUMBER(38,0) AS "funil_ss",
+       NULL::NUMBER(38,0) AS "funil_vpd",
+       NULL::NUMBER(38,0) AS "funil_atc",
+       NULL::NUMBER(38,0) AS "funil_vc",
+       NULL::NUMBER(38,0) AS "funil_vso",
+       NULL::NUMBER(38,0) AS "funil_ptc",
+       NULL::NUMBER(38,0) AS "funil_op",
+       NULL::NUMBER(38,0) AS "funil_opc",
+       NULL::NUMBER(38,0) AS "usuarios_ativos",
+       NULL::NUMBER(38,0) AS "usuarios_pro",
+       NULL::NUMBER(38,0) AS "usuarios_novos",
+       NULL::NUMBER(38,0) AS "usuarios_retidos",
+       NULL::NUMBER(38,2) AS "meta_gmv",
+       NULL::NUMBER(38,0) AS "buscas_total",
+       'pedido_defeito'::VARCHAR AS "tipo",
+       X.ORDER_ID::VARCHAR AS "item",
+       X.METRICA::VARCHAR AS "metrica",
+       ROUND(X.VALOR, 2)::NUMBER(38,2) AS "valor",
+       X.AGM::VARCHAR AS "agm"
+FROM DEF_OUT X
+JOIN MARCA_INFO MI ON MI.AGM = X.AGM AND MI.MARCA = X.MARCA
+
+UNION ALL
+
+SELECT
+       'ranking'::VARCHAR AS "bloco",
+       NULL::VARCHAR AS "data",
+       R.GR::VARCHAR AS "granularidade",
+       TO_CHAR(R.P, 'YYYY-MM-DD')::VARCHAR AS "periodo_inicio",
+       R.MARCA::VARCHAR AS "marca",
+       MI.BRAND_ID::NUMBER(38,0) AS "brand_id",
+       MI.VERTICAL::VARCHAR AS "vertical",
+       NULL::NUMBER(38,0) AS "loja_id",
+       SI.IMG::VARCHAR AS "loja",          -- v115: foto do produto (só na linha produto_stockout / sku)
+       NULL::VARCHAR AS "store_type",
+       R.PHYS::NUMBER(38,0) AS "physical_id",
+       NULL::VARCHAR AS "physical_nome",
+       NULL::NUMBER(38,2) AS "faturamento_total_price",
+       NULL::NUMBER(38,2) AS "faturamento_income",
+       NULL::NUMBER(38,2) AS "gmv",
+       NULL::NUMBER(38,0) AS "pedidos",
+       NULL::NUMBER(38,0) AS "pedidos_total",
+       NULL::NUMBER(38,0) AS "pedidos_cancelados",
+       NULL::NUMBER(38,2) AS "gmv_bruto",
+       NULL::NUMBER(38,2) AS "mkd_valor",
+       NULL::NUMBER(38,0) AS "itens_pedidos",
+       NULL::NUMBER(38,0) AS "itens_entregues",
+       NULL::NUMBER(38,2) AS "gmv_perdido_ruptura",
+       NULL::NUMBER(38,0) AS "defect_base_pedidos",
+       NULL::NUMBER(38,0) AS "pedidos_com_defeito",
+       NULL::NUMBER(38,2) AS "picking_minutos_total",
+       NULL::NUMBER(38,0) AS "pedidos_com_picking",
+       NULL::NUMBER(38,2) AS "rt_loja_minutos_total",
+       NULL::NUMBER(38,0) AS "pedidos_com_rt_loja",
+       NULL::NUMBER(38,0) AS "funil_sst",
+       NULL::NUMBER(38,0) AS "funil_ss",
+       NULL::NUMBER(38,0) AS "funil_vpd",
+       NULL::NUMBER(38,0) AS "funil_atc",
+       NULL::NUMBER(38,0) AS "funil_vc",
+       NULL::NUMBER(38,0) AS "funil_vso",
+       NULL::NUMBER(38,0) AS "funil_ptc",
+       NULL::NUMBER(38,0) AS "funil_op",
+       NULL::NUMBER(38,0) AS "funil_opc",
+       NULL::NUMBER(38,0) AS "usuarios_ativos",
+       NULL::NUMBER(38,0) AS "usuarios_pro",
+       NULL::NUMBER(38,0) AS "usuarios_novos",
+       NULL::NUMBER(38,0) AS "usuarios_retidos",
+       NULL::NUMBER(38,2) AS "meta_gmv",
+       NULL::NUMBER(38,0) AS "buscas_total",
+       R.TIPO::VARCHAR AS "tipo",
+       REGEXP_REPLACE(TRIM(R.ITEM), '\\s+', ' ')::VARCHAR AS "item",
+       R.METRICA::VARCHAR AS "metrica",
+       ROUND(R.VALOR, 2)::NUMBER(38,2) AS "valor",
+       R.AGM::VARCHAR AS "agm"
+FROM RANKING R
+JOIN MARCA_INFO MI ON MI.AGM = R.AGM AND MI.MARCA = R.MARCA
+LEFT JOIN STK_IMG SI ON R.TIPO = 'produto_stockout' AND R.METRICA = 'sku' AND SI.GR = R.GR AND SI.P = R.P AND SI.AGM = R.AGM AND SI.MARCA = R.MARCA AND SI.ITEM = R.ITEM
+WHERE R.P >= $DT_INI AND R.VALOR IS NOT NULL
+  AND (ENDSWITH(R.GR, '_td') OR CASE R.GR WHEN 'semana' THEN DATEADD(WEEK, 1, R.P) WHEN 'mes' THEN DATEADD(MONTH, 1, R.P) ELSE DATEADD(MONTH, 3, R.P) END <= $DT_FIM)          -- só períodos FECHADOS (semana/mês/trimestre inteiros)
+ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "loja", "tipo", "metrica", "valor" DESC;
+</script>
+
       <div class="setup-card csv-upload-card" id="csv-upload-card">
-        <div class="setup-step-label"><span class="step-num">1</span> Base de dados — subir o CSV do Snowflake (todos os AGMs)</div>
+        <div class="setup-step-label"><span class="step-num">2</span> Base de dados — subir o CSV do Snowflake</div>
         <div class="csv-upload" data-csv-upload>
           <div class="csv-upload-drop" tabindex="0" role="button" aria-label="Escolher o arquivo CSV">
             <div class="csv-upload-icon">📥</div>
@@ -2423,12 +3430,12 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
       </div>
 
       <div class="setup-card" id="vertical-card" style="display:none;">
-        <div class="setup-step-label"><span class="step-num">2</span> Vertical</div>
+        <div class="setup-step-label"><span class="step-num">3</span> Vertical</div>
         <div class="vertical-grid" id="vertical-grid"></div>
       </div>
 
       <div class="setup-card" id="brand-card" style="display:none;">
-        <div class="setup-step-label"><span class="step-num">3</span> Marca / Conta parceira</div>
+        <div class="setup-step-label"><span class="step-num">4</span> Marca / Conta parceira</div>
 
         <!-- Hidden inputs for compatibility -->
         <input type="text" class="brand-search-input" id="brand-search-input" style="display:none;">
@@ -2461,7 +3468,7 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
       </div>
 
       <div class="setup-card" id="meeting-card" style="display:none;">
-        <div class="setup-step-label"><span class="step-num">4</span> Tipo de reunião</div>
+        <div class="setup-step-label"><span class="step-num">5</span> Tipo de reunião</div>
         <div class="meeting-type-grid" id="meeting-type-grid">
           <button class="meeting-card" data-type="weekly">
             <div class="m-icon">📆</div>
@@ -2479,7 +3486,7 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
       </div>
 
       <div class="setup-card" id="period-card" style="display:none;">
-        <div class="setup-step-label"><span class="step-num">5</span> Período de referência</div>
+        <div class="setup-step-label"><span class="step-num">6</span> Período de referência</div>
         <div id="period-input-wrap"></div>
         <div class="period-preview" id="period-preview"></div>
         <div class="revenue-basis" id="revenue-basis">
@@ -5309,9 +6316,10 @@ brandSearchInput.addEventListener('input', () => { populateBrandSelect(); update
 /* ---------------------------------------------------------------------------
    5A-1. WIZARD DE SETUP — navegação passo a passo (um .setup-card por vez)
 --------------------------------------------------------------------------- */
-const setupStepOrder = ['base', 'vertical', 'brand', 'meeting', 'period'];
+const setupStepOrder = ['query', 'base', 'vertical', 'brand', 'meeting', 'period'];
 let setupCurrentStep = 0;
 function setupStepCard(key){
+  if(key === 'query') return document.getElementById('query-card'); // RappiStage 133
   if(key === 'base') return document.getElementById('csv-upload-card');
   if(key === 'vertical') return document.getElementById('vertical-card');
   if(key === 'brand') return brandCard;
@@ -5359,6 +6367,7 @@ function renderRevenueBasis(){
   });
 })();
 function setupStepValid(key){
+  if(key === 'query') return true; // RappiStage 133: quem já tem CSV segue direto
   if(key === 'base') return !csvUploadBusy(); // etapa opcional: só trava enquanto o CSV está sendo processado
   if(key === 'vertical') return !!state.vertical;
   if(key === 'brand') return !!(state.selectedBrands && state.selectedBrands.length > 0);
@@ -5376,7 +6385,7 @@ function renderSetupProgress(){
       const cls = ['setup-progress-dot'];
       if(i === setupCurrentStep) cls.push('active');
       else if(i < setupCurrentStep) cls.push('done');
-      const names = { base:'Base de dados', vertical:'Vertical', brand:'Marca', meeting:'Tipo', period:'Período' };
+      const names = { query:'Gerar CSV', base:'Base de dados', vertical:'Vertical', brand:'Marca', meeting:'Tipo', period:'Período' };
       const stepCls = ['setup-progress-step'];
       if(i === setupCurrentStep) stepCls.push('active');
       else if(i < setupCurrentStep) stepCls.push('done');
@@ -5388,7 +6397,24 @@ function renderSetupProgress(){
   }
 }
 
+/* RappiStage 133: etapa "Gerar o CSV" — a query embutida (#rs-query-src) sai sempre com o e-mail do login. */
+function rsQueryFill(){
+  const src = document.getElementById('rs-query-src'), txt = document.getElementById('rs-query-text'), em = document.getElementById('rs-query-email');
+  const email = state.user && state.user.email;
+  if(!src || !txt || !email) return;
+  txt.value = src.textContent.replace("'seu.email@rappi.com'", "'" + email + "'");
+  if(em) em.textContent = email;
+}
+function rsQueryCopy(){
+  const txt = document.getElementById('rs-query-text'), msg = document.getElementById('rs-query-msg');
+  const ok = () => { msg.textContent = '✓ Query copiada. Cole no Snowflake e rode com Run All.'; };
+  const manual = () => { txt.focus(); txt.select(); let d = false; try { d = document.execCommand('copy'); } catch(e){} if(d) ok(); else msg.textContent = 'O navegador bloqueou a cópia. O texto já está selecionado: use Ctrl+C.'; };
+  rsQueryFill();
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt.value).then(ok, manual); else manual();
+}
+document.getElementById('rs-query-copy').addEventListener('click', rsQueryCopy);
 function goToSetupStep(idx){
+  rsQueryFill();
   renderRevenueBasis();
   setupCurrentStep = Math.max(0, Math.min(idx, setupStepOrder.length - 1));
   setupStepOrder.forEach((key, i) => {
@@ -5421,7 +6447,9 @@ function updateSetupState(){
   continueBtn.disabled = !valid;
   continueBtn.textContent = isLastStep ? 'Iniciar apresentação →' : 'Próximo →';
 
-  if(stepKey === 'base'){
+  if(stepKey === 'query'){
+    setupHint.textContent = 'Gere o CSV no Snowflake e avance para subir o arquivo.';
+  } else if(stepKey === 'base'){
     setupHint.textContent = !valid ? (window.RS_RESTORING ? 'Carregando a base salva… aguarde para avançar.' : 'Processando o CSV… aguarde para avançar.')
       : (window.RS_BASE ? 'Base carregada — avance para escolher a vertical.' : '');
   } else if(stepKey === 'vertical'){
