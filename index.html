@@ -2212,6 +2212,8 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 135: Modelos do AGM (⭐ Modelos na topbar): salvar/aplicar configuração e modelo padrão por tipo de reunião. */
+/* RappiStage 134: Planejamento Quinzenal com datas reais + checkbox em cada aba da lupa. */
 /* RappiStage 133: nova etapa 1 do setup, Gerar o CSV: query embutida com o e-mail do login. */
 /* RappiStage 132: Defect Rate só com culpa da loja (query v132) — textos da lupa ajustados. */
 /* RappiStage 131: checkbox por pedido no Detalhamento por pedido (Defect) + valor sempre em TOTAL PRICE dos produtos. */
@@ -3534,6 +3536,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
           <button class="btn btn-primary btn-sm" id="upload-csv-open-btn" title="Subir o CSV baixado do Snowflake para preencher a apresentação com os dados reais">📥 Subir CSV</button>
           <button class="btn btn-ghost btn-sm" id="reorder-blocks-btn" title="Abrir lista resumida (só os títulos) para ordenar os blocos com mais facilidade">⇅ Ordenar Blocos</button>
           <button class="btn btn-ghost btn-sm" id="my-presentations-btn" title="Ver apresentações salvas na plataforma">📁 Minhas Apresentações</button>
+          <button class="btn btn-ghost btn-sm" id="rs-preset-btn" title="Salvar a configuração da apresentação como modelo ou aplicar um modelo salvo">⭐ Modelos</button>
           <button class="btn btn-ghost btn-sm" id="visual-customize-btn" title="Personalizar imagem de fundo da capa e cores da apresentação">⚙️ Personalizar</button>
           <span class="selection-counter" id="selection-counter">0 / 0 itens selecionados</span>
           <button class="btn btn-ghost btn-sm" id="auth-logout-btn" title="Sair da plataforma" onclick="rsLogout()">⎋ Sair</button>
@@ -3738,6 +3741,25 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
       <button class="btn btn-ghost btn-sm" id="rb-cancel-btn">Cancelar</button>
       <button class="btn btn-primary btn-sm" id="rb-save-btn">Salvar ordem</button>
     </div>
+  </div>
+</div>
+
+<!-- RappiStage 135: Modelos do AGM (configuração pré-setada por tipo de reunião) -->
+<div class="modal-overlay" id="rs-preset-modal">
+  <div class="modal-box" style="max-width:620px;text-align:left;max-height:88vh;overflow:auto;">
+    <h3 style="margin-bottom:6px;">⭐ Meus modelos — <span id="rs-preset-type"></span></h3>
+    <p style="margin:0 0 16px;font-size:13px;line-height:1.5;color:#5E5652;">Um modelo guarda como você monta a apresentação: ordem e liga/desliga dos blocos, sub-blocos e KPIs, abas e colunas das lupas e as cores. Os dados e os textos não entram. O modelo <b>padrão</b> é aplicado sozinho em toda reunião nova deste tipo.</p>
+    <div style="border:1px solid #EFE9E5;border-radius:12px;padding:14px;margin-bottom:16px;background:#FBFAF8;">
+      <div style="font-weight:800;font-size:13px;margin-bottom:8px;">Salvar a configuração atual como modelo</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <input type="text" id="rs-preset-name" maxlength="60" placeholder="Nome do modelo (ex.: Weekly Panvel)" style="flex:1 1 240px;min-width:0;padding:9px 12px;border:1.5px solid #E5E0DC;border-radius:10px;font:inherit;font-size:13px;">
+        <button type="button" class="btn btn-primary btn-sm" id="rs-preset-save">💾 Salvar modelo</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:#5E5652;margin-top:10px;cursor:pointer;"><input type="checkbox" id="rs-preset-default" checked style="accent-color:#E8501B;"> Usar como padrão nas próximas reuniões deste tipo</label>
+    </div>
+    <div id="rs-preset-list"></div>
+    <div style="font-size:11.5px;color:#837A76;margin-top:12px;">Os modelos ficam salvos neste navegador, no seu usuário.</div>
+    <div class="modal-actions" style="justify-content:flex-end;margin-top:14px;"><button type="button" class="btn btn-ghost btn-sm" id="rs-preset-close">Fechar</button></div>
   </div>
 </div>
 
@@ -6986,6 +7008,9 @@ function loadDashboard(){
   state.blocks = deepClone(MOCK_DATA[state.meetingType]);
   applyRealDataOverrides();
   blankManualFields(state.blocks);
+  state.rsPresetName = null; // RappiStage 135: modelo padrão do AGM para este tipo de reunião
+  { const dp = rsPresetList().find(p => p.isDefault); if(dp){ try{ rsPresetApply(dp); setTimeout(() => showToast('⭐ Modelo padrão "' + dp.name + '" aplicado. Troque em ⭐ Modelos.'), 2600); }catch(e){ console.warn('[RappiStage] modelo', e); } } }
+  rsPresetBtnLabel();
   state._brandsForBuilder = isMultiBrand ? state.selectedBrands : (state.brandId ? [{id: state.brandId, name: state.brand}] : []);
 
   const brandDisplayName = isMultiBrand
@@ -8888,6 +8913,7 @@ function renderItemContent(item, block){
     }
 
     case 'biweekly-calendar': {
+      rsBiweekSync(item); // RappiStage 134: datas do calendário real
       wrap.className = 'biweek-wrap';
       ['atual','proxima'].forEach(weekKey => {
         const weekRow = document.createElement('div');
@@ -16129,6 +16155,144 @@ function rsVitrineHTML(){
 }
 /* RappiStage 129: aba "Detalhamento por pedido" da lupa de Defect Rate — cada pedido com defeito do período, com motivo,
    detalhe, produtos reclamados, comentário do cliente (quando ele deixou), valor do pedido e canal do atendimento. */
+/* RappiStage 134: Planejamento Quinzenal acompanha o calendário real — Semana Atual = semana de hoje (seg a dom),
+   Próxima = a seguinte. Quando a semana vira, o que estava na "Próxima" passa para a "Atual" e a nova Próxima começa vazia. */
+function rsBiweekMonday(d){ const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+function rsBiweekSync(item){
+  if(!item || !Array.isArray(item.data)) return;
+  const mon = rsBiweekMonday(new Date()), key = mon.getFullYear() + '-' + (mon.getMonth() + 1) + '-' + mon.getDate();
+  const atual = item.data.filter(d => d.week === 'atual'), prox = item.data.filter(d => d.week === 'proxima');
+  if(item.biweekStart && item.biweekStart !== key){
+    const p = item.biweekStart.split('-').map(Number), old = new Date(p[0], p[1] - 1, p[2]);
+    const diff = Math.round((mon - old) / 864e5);
+    atual.forEach((d, i) => { const src = diff === 7 ? prox[i] : null; d.tags = src ? (src.tags || []).slice() : []; d.note = src ? (src.note || '') : ''; });
+    prox.forEach(d => { d.tags = []; d.note = ''; });
+  }
+  item.biweekStart = key;
+  const DOW = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'], pad = n => String(n).padStart(2, '0');
+  atual.concat(prox).forEach((d, i) => { const x = new Date(mon); x.setDate(mon.getDate() + i); d.dow = DOW[i % 7]; d.date = pad(x.getDate()) + '/' + pad(x.getMonth() + 1); });
+}
+/* RappiStage 134: checkbox em cada aba da lupa (Gráficos, Detalhamento por loja, Step by Step, Conversão a nível loja,
+   por Type, Stockout, Vitrine, por pedido…). Aba desmarcada não vai para a apresentação nem para o PDF completo; com todas
+   desmarcadas a lupa some do card. Estado em state.rsDdTabOff[rótulo da lupa][aba] = true e state.rsDdTabAll[rótulo] = abas existentes. */
+function rsDdLabelKey(l){ return String(l || '').toLowerCase().trim(); }
+function rsDdTabPickMount(label){
+  const tg = document.getElementById('drilldown-tab-toggle'); if(!tg) return;
+  const k = rsDdLabelKey(label);
+  state.rsDdTabOff = state.rsDdTabOff || {}; state.rsDdTabAll = state.rsDdTabAll || {};
+  const off = state.rsDdTabOff[k] || {};
+  const btns = tg.hidden ? [] : Array.from(tg.querySelectorAll('[data-dd-tab]')).filter(b => !b.hidden);
+  if(btns.length) state.rsDdTabAll[k] = btns.map(b => b.getAttribute('data-dd-tab'));
+  tg.querySelectorAll('[data-dd-tab]').forEach(b => {
+    let cb = b.querySelector('.rs-tabpick');
+    if(!cb){ cb = document.createElement('input'); cb.type = 'checkbox'; cb.className = 'rs-tabpick'; cb.title = 'Levar esta aba para a apresentação e o PDF';
+      cb.style.cssText = 'accent-color:#E8501B;margin:0 6px 0 0;vertical-align:-2px;cursor:pointer;';
+      cb.addEventListener('click', e => e.stopPropagation());
+      cb.addEventListener('change', () => { const t = b.getAttribute('data-dd-tab'), kk = rsDdLabelKey(currentDrilldownLabel);
+        state.rsDdTabOff[kk] = state.rsDdTabOff[kk] || {}; if(cb.checked) delete state.rsDdTabOff[kk][t]; else state.rsDdTabOff[kk][t] = true;
+        b.style.opacity = cb.checked ? '' : '0.45'; rsDdTabPickHint(); if(typeof saveState === 'function') try{ saveState(); }catch(e){} });
+      b.insertBefore(cb, b.firstChild); }
+    b.style.whiteSpace = 'nowrap';
+    cb.checked = !off[b.getAttribute('data-dd-tab')];
+    b.style.opacity = cb.checked ? '' : '0.45';
+  });
+  rsDdTabPickHint();
+}
+function rsDdTabPickHint(){
+  const tg = document.getElementById('drilldown-tab-toggle'); if(!tg) return;
+  let h = document.getElementById('rs-tabpick-hint');
+  if(!h){ h = document.createElement('div'); h.id = 'rs-tabpick-hint'; h.style.cssText = 'width:100%;font-size:12px;color:#9A3412;margin-top:4px;'; tg.appendChild(h); }
+  const vis = Array.from(tg.querySelectorAll('.rs-tabpick')).filter(c => !c.closest('[data-dd-tab]').hidden);
+  const on = vis.filter(c => c.checked).length;
+  h.hidden = tg.hidden || !vis.length;
+  h.textContent = !on ? '☐ Nenhuma aba marcada: esta lupa não vai para a apresentação.' : '☑ Desmarque as abas que não devem ir para a apresentação nem para o PDF.';
+}
+function rsDdTabOffExport(){ // só as lupas com alguma aba desmarcada; _all = abas que existem (para saber quando todas saíram)
+  const o = {}, off = state.rsDdTabOff || {}, all = state.rsDdTabAll || {};
+  Object.keys(off).forEach(k => { if(Object.keys(off[k]).length) o[k] = { off: off[k], all: all[k] || [] }; });
+  return o;
+}
+/* RappiStage 135: Modelos do AGM — snapshot só da CONFIGURAÇÃO (ordem/seleção de blocos, sub-blocos e KPIs, tipo de gráfico,
+   abas e colunas das lupas, guia do funil, cores). Por usuário e tipo de reunião, no localStorage. O padrão é aplicado no
+   loadDashboard; blocos/itens novos da plataforma que não existiam no modelo ficam como no padrão da plataforma. */
+const RS_PRESET_KEY = 'rappistage_modelos_v1';
+function rsPresetAll(){ try{ return JSON.parse(localStorage.getItem(RS_PRESET_KEY) || '{}') || {}; }catch(e){ return {}; } }
+function rsPresetList(){ const u = (state.user && state.user.email) || '_'; return (rsPresetAll()[u] || []).filter(p => p.meetingType === state.meetingType); }
+function rsPresetWrite(fn){ const all = rsPresetAll(), u = (state.user && state.user.email) || '_'; all[u] = fn(all[u] || []); try{ localStorage.setItem(RS_PRESET_KEY, JSON.stringify(all)); return true; }catch(e){ return false; } }
+function rsPresetSnapshot(){
+  const vt = state.visualTheme || {}, bg = vt.bgImage ? (VISUAL_BG_PRESETS.find(p => p.dataUrl === vt.bgImage) || {}).id || null : null;
+  return {
+    blocks: state.blocks.map(b => ({ id: b.id, selected: b.selected !== false, order: rsVisibleItems(b).map(it => it.id),
+      items: b.items.map(it => { const o = { id: it.id, selected: it.selected !== false }; if(it.chartType) o.chartType = it.chartType;
+        if(it.kind === 'kpi-grid' && Array.isArray(it.data)) o.kpis = it.data.reduce((m, k) => { m[k.label] = k.selected !== false; return m; }, {}); return o; }) })),
+    colPick: deepClone(state.rsColPick || {}), ddTabOff: deepClone(state.rsDdTabOff || {}), ddTabAll: deepClone(state.rsDdTabAll || {}),
+    funil: state.rsFunilGuide !== false,
+    visual: { colorPrimary: vt.colorPrimary, colorSecondary: vt.colorSecondary, fontSize: vt.fontSize, fontColor: vt.fontColor, showBlockDividers: vt.showBlockDividers, bgId: bg }
+  };
+}
+function rsPresetApply(p){
+  const cfg = p.cfg, pos = {}; cfg.blocks.forEach((b, i) => { pos[b.id] = i; });
+  const byB = {}; cfg.blocks.forEach(b => { byB[b.id] = b; });
+  state.blocks = state.blocks.map((b, i) => ({ b, i })).sort((x, y) => (x.b.id in pos ? pos[x.b.id] : 1000 + x.i) - (y.b.id in pos ? pos[y.b.id] : 1000 + y.i)).map(x => x.b);
+  state.blocks.forEach(b => { const pb = byB[b.id]; if(!pb) return;
+    b.selected = pb.selected;
+    const pi = {}; pb.items.forEach(it => { pi[it.id] = it; });
+    b.items.forEach(it => { const q = pi[it.id]; if(!q) return; it.selected = q.selected; if(q.chartType) it.chartType = q.chartType;
+      if(q.kpis && Array.isArray(it.data)) it.data.forEach(k => { if(k.label in q.kpis) k.selected = q.kpis[k.label]; }); });
+    if(pb.order && pb.order.length) rsApplyVisibleOrder(b, pb.order); });
+  state.rsColPick = deepClone(cfg.colPick || {}); state.rsDdTabOff = deepClone(cfg.ddTabOff || {}); state.rsDdTabAll = deepClone(cfg.ddTabAll || {});
+  state.rsFunilGuide = cfg.funil !== false;
+  const v = cfg.visual || {}; state.visualTheme = state.visualTheme || {};
+  ['colorPrimary', 'colorSecondary', 'fontSize', 'fontColor', 'showBlockDividers'].forEach(k => { if(v[k] !== undefined) state.visualTheme[k] = v[k]; });
+  const bgp = v.bgId ? VISUAL_BG_PRESETS.find(x => x.id === v.bgId) : null; state.visualTheme.bgImage = bgp ? bgp.dataUrl : null;
+  state.rsPresetName = p.name;
+}
+function rsPresetBtnLabel(){ const b = document.getElementById('rs-preset-btn'); if(b) b.textContent = state.rsPresetName ? '⭐ Modelo: ' + state.rsPresetName : '⭐ Modelos'; }
+function rsPresetRender(){
+  document.getElementById('rs-preset-type').textContent = MEETING_LABELS[state.meetingType] || '';
+  const L = rsPresetList(), box = document.getElementById('rs-preset-list');
+  if(!L.length){ box.innerHTML = '<div style="font-size:13px;color:#837A76;padding:10px 2px;">Você ainda não tem modelos para ' + escapeHtml(MEETING_LABELS[state.meetingType] || '') + '. Monte a apresentação do jeito que gosta e salve acima.</div>'; return; }
+  const btn = (act, id, t, cls) => '<button type="button" class="btn ' + (cls || 'btn-ghost') + ' btn-sm" data-act="' + act + '" data-id="' + id + '">' + t + '</button>';
+  box.innerHTML = '<div style="font-weight:800;font-size:13px;margin-bottom:8px;">Modelos salvos</div>' + L.map(p =>
+    '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid ' + (p.isDefault ? '#F5B49B' : '#EFE9E5') + ';background:' + (p.isDefault ? '#FFF6F1' : '#fff') + ';border-radius:12px;padding:10px 12px;margin-bottom:8px;">' +
+      '<div style="flex:1 1 180px;min-width:0;"><div style="font-weight:800;font-size:13.5px;">' + escapeHtml(p.name) + (p.isDefault ? ' <span style="font-size:11px;font-weight:800;color:#B8320F;background:#FFE3D6;border-radius:999px;padding:2px 8px;margin-left:4px;">★ Padrão</span>' : '') + '</div>' +
+      '<div style="font-size:11.5px;color:#837A76;">Salvo em ' + new Date(p.savedAt).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</div></div>' +
+      btn('apply', p.id, 'Aplicar', 'btn-primary') + btn(p.isDefault ? 'undefault' : 'default', p.id, p.isDefault ? 'Tirar padrão' : '★ Tornar padrão') + btn('update', p.id, 'Atualizar com a tela atual') + btn('del', p.id, '🗑') + '</div>').join('');
+}
+function rsPresetOpen(){ document.getElementById('rs-preset-name').value = state.rsPresetName || ''; rsPresetRender(); document.getElementById('rs-preset-modal').classList.add('show'); }
+document.getElementById('rs-preset-btn').addEventListener('click', rsPresetOpen);
+document.getElementById('rs-preset-close').addEventListener('click', () => document.getElementById('rs-preset-modal').classList.remove('show'));
+document.getElementById('rs-preset-modal').addEventListener('click', e => { if(e.target.id === 'rs-preset-modal') e.target.classList.remove('show'); });
+document.getElementById('rs-preset-save').addEventListener('click', () => {
+  const inp = document.getElementById('rs-preset-name'), name = inp.value.trim(), def = document.getElementById('rs-preset-default').checked, mt = state.meetingType;
+  if(!name){ inp.focus(); showToast('Dê um nome ao modelo.'); return; }
+  const ok = rsPresetWrite(list => {
+    const same = list.find(p => p.meetingType === mt && p.name.toLowerCase() === name.toLowerCase());
+    if(def) list.forEach(p => { if(p.meetingType === mt) p.isDefault = false; });
+    const rec = { id: same ? same.id : uid('modelo'), name, meetingType: mt, isDefault: def, savedAt: Date.now(), cfg: rsPresetSnapshot() };
+    if(same) list[list.indexOf(same)] = rec; else list.push(rec);
+    return list;
+  });
+  if(!ok){ showToast('⚠️ Não foi possível salvar o modelo neste navegador.'); return; }
+  state.rsPresetName = name; rsPresetBtnLabel(); rsPresetRender();
+  showToast('⭐ Modelo "' + name + '" salvo' + (def ? ' como padrão do ' + MEETING_LABELS[mt] + '.' : '.'));
+});
+document.getElementById('rs-preset-list').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const id = b.getAttribute('data-id'), act = b.getAttribute('data-act'), p = rsPresetList().find(x => x.id === id); if(!p) return;
+  if(act === 'apply'){ rsPresetApply(p); renderBlocks(); applyThemeColors(state.visualTheme.colorPrimary || '#FF7A4D', state.visualTheme.colorSecondary || '#FF2526'); rsPresetBtnLabel(); if(typeof scheduleAutosave === 'function') scheduleAutosave();
+    document.getElementById('rs-preset-modal').classList.remove('show'); showToast('⭐ Modelo "' + p.name + '" aplicado.'); return; }
+  if(act === 'del' && !confirm('Excluir o modelo "' + p.name + '"?')) return;
+  rsPresetWrite(list => {
+    if(act === 'del') return list.filter(x => x.id !== id);
+    list.forEach(x => { if(x.meetingType === p.meetingType && (act === 'default')) x.isDefault = x.id === id; if(x.id === id && act === 'undefault') x.isDefault = false;
+      if(x.id === id && act === 'update'){ x.cfg = rsPresetSnapshot(); x.savedAt = Date.now(); } });
+    return list;
+  });
+  if(act === 'update') showToast('⭐ Modelo "' + p.name + '" atualizado com a tela atual.');
+  rsPresetRender();
+});
+if(typeof openDrilldown === 'function'){ const _rsOpenDd = openDrilldown; openDrilldown = function(){ const r = _rsOpenDd.apply(this, arguments); try{ rsDdTabPickMount(arguments[0]); }catch(e){ console.warn('[RappiStage] abas da lupa', e); } return r; }; } // RappiStage 134
 function rsDefPedOff(oid){ return !!(state.rsDefPedOff && state.rsDefPedOff[oid]); } // RappiStage 131: pedido desmarcado = não vai para a apresentação
 function rsDefPedPaint(t){ if(!t) return; let n = 0, tot = 0; t.querySelectorAll('tbody tr').forEach(r => { const cb = r.querySelector('.rs-defped-sel'); if(!cb) return; tot++; if(cb.checked) n++; r.style.opacity = cb.checked ? '' : '0.4'; });
   const c = document.getElementById(t.id + '-cnt'); if(c) c.textContent = n + ' de ' + tot + ' pedidos vão para a apresentação'; }
@@ -18393,6 +18557,7 @@ function renderItemStatic(item, block){
     }
 
     case 'biweekly-calendar': {
+      rsBiweekSync(item); // RappiStage 134
       const week = (key, title) => `<div class="p-biweek-row"><div class="p-biweek-label">${title}</div><div class="p-cal-strip">${item.data.filter(d => d.week === key).map(d => `
         <div class="p-cal-day"><div class="p-cal-dow">${d.dow}</div><div class="p-cal-date">${d.date}</div>${(d.tags && d.tags.length) ? `<div class="p-cal-tag">${escapeHtml(d.tags.join(' · '))}</div>` : (d.tag ? `<div class="p-cal-tag">${escapeHtml(d.tag)}</div>` : '')}${d.note ? `<div class="p-cal-evt">${escapeHtml(d.note)}</div>` : ''}</div>`).join('')}</div></div>`;
       return week('atual','Semana Atual') + week('proxima','Próxima Semana');
@@ -20360,6 +20525,17 @@ const DD_DATA = ${JSON.stringify((function(){
   }
   return ddFinal;
 })())};
+const DD_TAB_OFF = ${JSON.stringify(rsDdTabOffExport())}; // RappiStage 134: abas da lupa desmarcadas pelo AGM
+function rsDdHideEmptyLupas(){
+  document.querySelectorAll('[onclick^="openDrilldown("]').forEach(function(el){
+    var a = el.getAttribute('onclick') || '', lab; try{ lab = JSON.parse(a.slice(a.indexOf('(') + 1, a.lastIndexOf(')'))); }catch(e){ return; }
+    var e = DD_TAB_OFF[String(lab).toLowerCase().trim()];
+    if(!e || !e.all.length || !e.all.every(function(t){ return e.off[t]; })) return;
+    el.removeAttribute('onclick'); el.classList.remove('clickable');
+    el.querySelectorAll('.p-kpi-dd-icon').forEach(function(i){ i.remove(); });
+  });
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', rsDdHideEmptyLupas); else rsDdHideEmptyLupas();
 /* Séries candidatas (semanal WoW + mensal MTD) de todos os KPIs numéricos de cada kpi-grid,
    pré-computadas no momento da geração (ver deriveKpiSeries/deriveKpiMonthlySeries, chamadas em
    buildPresentationDocument() no app principal) — alimentam a aba "📊 Gráficos" do drilldown
@@ -21345,7 +21521,14 @@ function openDrilldown(label){
   var showPed = !!(d && d.pedidosHtml); // RappiStage 129
   document.getElementById('ddTabBtnPedidos').hidden = !showPed;
   document.getElementById('ddPedidosBox').innerHTML = showPed ? d.pedidosHtml : '';
-  setDdTab(noChart ? 'lojas' : 'graficos');
+  /* RappiStage 134: abas desmarcadas no editor não aparecem (nem no PDF completo) */
+  var tOff = (DD_TAB_OFF[String(label).toLowerCase().trim()] || {}).off || {};
+  var tTg = document.getElementById('ddTabToggle'), tFirst = null, tCount = 0;
+  var tLoj = tTg.querySelector('[data-dd-tab="lojas"]'); if(tLoj) tLoj.hidden = false; // as demais abas já são recalculadas acima a cada abertura
+  tTg.querySelectorAll('[data-dd-tab]').forEach(function(b){ if(tOff[b.getAttribute('data-dd-tab')]) b.hidden = true; if(!b.hidden){ tCount++; if(!tFirst) tFirst = b.getAttribute('data-dd-tab'); } });
+  if(!tTg.hidden && !tCount){ document.getElementById('ddOverlay').classList.remove('show'); return; }
+  var tDef = noChart ? 'lojas' : 'graficos', tDefBtn = tTg.querySelector('[data-dd-tab="' + tDef + '"]');
+  setDdTab(tTg.hidden || (tDefBtn && !tDefBtn.hidden) ? tDef : tFirst);
   document.getElementById('ddOverlay').classList.add('show');
 }
 document.getElementById('ddOverlay').addEventListener('click', (e) => { if(e.target.id==='ddOverlay') e.target.classList.remove('show'); });
