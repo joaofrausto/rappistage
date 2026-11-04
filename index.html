@@ -2212,6 +2212,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 138: query v138 — tempo na loja pela ORDER_TIMES_BR sem sobreposição (Picking = pedido entra → pronto; RT na loja = espera com o pedido pronto), a régua do Performance Carteira. Antes: PREPARATION_TIME + TIME_IN_STORE, que se sobrepõem. */
 /* RappiStage 137: query v137 embutida (Zee Now como marca própria em todos os blocos; Carrefour não-farma → rubia.beloto) + catálogo Carrefour → Rubia. */
 /* RappiStage 136: Grupo Petz = Petz + Cobasi ("Mundo Pet" na base) + Zee Now (store type ZeeNow das lojas Petz), separados na leitura do CSV. */
 /* RappiStage 135: Modelos do AGM⭐ Modelos na topbar): salvar/aplicar configuração e modelo padrão por tipo de reunião. */
@@ -2508,10 +2509,12 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
      completamente diferente ou incompleto. Entregador, cobrança/reembolso, pedido não chegou etc. ficam de fora.
    - Found rate: estados reais 'initial','added','stockout' (FOUND/NOT_FOUND não existem);
      dedup por (pedido, produto); REPLACED não conta como encontrado.
-   - Tempo na loja em 2 steps (os que a marca aciona), régua dos fechamentos:
-       picking  = PREPARATION_TIME (separação pelo picker)  → picking_minutos_total / pedidos_com_picking
-       RT loja  = TIME_IN_STORE (tempo do RT na loja)       → rt_loja_minutos_total / pedidos_com_rt_loja
-     (PICKING_TIME vem zerado em 64–93% dos pedidos — não usar.)
+   - Tempo na loja em 2 steps (os que a marca aciona) — v138, régua do Performance Carteira (ORDER_TIMES_BR):
+       picking  = pedido entra → pronto (aceite + separação + checkout) → picking_minutos_total / pedidos_com_picking
+       RT loja  = RT esperando na loja com o pedido JÁ pronto, até receber → rt_loja_minutos_total / pedidos_com_rt_loja
+     Os dois não se sobrepõem: picking + RT loja = tempo que depende da loja. Antes (até v137) era
+     PREPARATION_TIME + TIME_IN_STORE, que se sobrepõem (PREPARATION_TIME já contém o TIME_IN_STORE e o
+     deslocamento do RT). Tempos acima de 120 min ficam fora. (PICKING_TIME vem zerado — não usar.)
    - Catálogo sempre com COUNTRY = 'BR'. Novos usuários: ORDER_TYPE_ALL = 'FIRST ORDER'.
    - RappiAds = só o comprado pelo parceiro (IS_PAID_BY_RAPPI = FALSE), por data de faturamento.
    - Cupons e ofertas = burn do parceiro em NET_SPEND (régua da família invest).
@@ -2581,15 +2584,30 @@ PED_EXT AS (
 ),
 PED AS (SELECT * FROM PED_EXT WHERE D >= $DT_INI),
 
+/* v138: tempo da loja em 2 steps SEM sobreposição (ORDER_TIMES_BR, segundos).
+   PREPARATION_TIME = TO_STORE_TIME + TIME_IN_STORE em 100% dos pedidos (medido out/26): mede o RT a caminho
+   + parado na loja, não a loja. E o TIME_IN_STORE repete o trecho em que o RT chegou antes do pronto.
+     PREP_S = pedido entra (BEGINS_AT_ADJUSTED) → pronto (CHECKOUT_ENDS_AT): aceite + separação + checkout
+     RT_S   = MAX(pronto, RT na loja) → entregue em mãos (HANDSHAKE_AT): RT esperando com o pedido pronto
+   PREP_S + RT_S = tempo que depende da loja (o pedido pronto esperando o RT fica de fora). */
+TEMPOS AS (
+    SELECT X.ORDER_ID,
+           DATEDIFF('second', X.BEGINS_AT_ADJUSTED, X.CHECKOUT_ENDS_AT) AS PREP_S,
+           DATEDIFF('second', GREATEST(X.CHECKOUT_ENDS_AT, X.RT_IN_STORE_AT), X.HANDSHAKE_AT) AS RT_S
+    FROM RP_SILVER_DB_PROD.DES_PROD.ORDER_TIMES_BR X
+    WHERE X.COUNTRY = 'BR' AND X.CREATED_AT::DATE >= DATEADD(DAY, -7, $DT_INI)
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY X.ORDER_ID ORDER BY X.CREATED_AT DESC) = 1
+),
 VENDAS AS (
-    SELECT D, STORE_ID, SUM(GMV) AS GMV, COUNT(DISTINCT ORDER_ID) AS PEDIDOS,
-           -- "Picking Time" do fechamento = PREPARATION_TIME (segundos; 0 = sem medição)
-           SUM(IFF(PREPARATION_TIME > 0, PREPARATION_TIME, 0)) / 60 AS PICK_MIN,
-           COUNT_IF(PREPARATION_TIME > 0) AS PICK_N,
-           -- "RT wait in store" do fechamento = TIME_IN_STORE (segundos que o RT ficou na loja)
-           SUM(IFF(TIME_IN_STORE > 0, TIME_IN_STORE, 0)) / 60 AS RT_MIN,
-           COUNT_IF(TIME_IN_STORE > 0) AS RT_N
-    FROM PED GROUP BY 1, 2
+    SELECT P.D, P.STORE_ID, SUM(P.GMV) AS GMV, COUNT(DISTINCT P.ORDER_ID) AS PEDIDOS,
+           -- picking = pedido entra → pronto (fora: sem horário, ≤ 0 ou > 120 min)
+           SUM(IFF(TM.PREP_S > 0 AND TM.PREP_S <= 7200, TM.PREP_S, 0)) / 60 AS PICK_MIN,
+           COUNT_IF(TM.PREP_S > 0 AND TM.PREP_S <= 7200) AS PICK_N,
+           -- RT loja = espera do RT com o pedido já pronto (0 é válido: pegou na hora)
+           SUM(IFF(TM.RT_S >= 0 AND TM.RT_S <= 7200, TM.RT_S, 0)) / 60 AS RT_MIN,
+           COUNT_IF(TM.RT_S >= 0 AND TM.RT_S <= 7200) AS RT_N
+    FROM PED P LEFT JOIN TEMPOS TM ON TM.ORDER_ID = P.ORDER_ID
+    GROUP BY 1, 2
 ),
 
 /* ---------- nome da loja física = STORE_NAME da loja principal (a de mais pedidos na janela) — v87 ----------
@@ -17538,12 +17556,12 @@ function rsDrilldownHTML(type, kpiLabel){
       const tot = m => (m && !rsNull(m.picking) && !rsNull(m.rtLoja)) ? m.picking + m.rtLoja : null;
       const row = (nome, k, n) => '<tr><td>' + nome + '</td><td><b>' + rsMin(k(c)) + '</b></td><td>' + rsColorSpan(rsDMin(k(c), k(p)), (rsNull(k(c)) || rsNull(k(p))) ? null : k(c) <= k(p)) + '</td>' + (l ? '<td>' + rsDMin(k(c), k(l)) + '</td>' : '') + '<td>' + (n === null ? '—' : rsInt(n)) + '</td></tr>';
       return '<table class="dd-table" style="margin-top:6px;"><thead><tr><th>Step</th><th>Tempo médio</th><th>Δ vs período anterior</th>' + (l ? '<th>vs. L4W</th>' : '') + '<th>Pedidos medidos</th></tr></thead><tbody>' +
-        row('1. Picking Time — separação pelo picker', m => m && m.picking, c.pickingN) +
-        row('2. RT na loja — espera do entregador na loja', m => m && m.rtLoja, c.rtLojaN) +
+        row('1. Picking Time — pedido chega → pronto (aceite, separação e checkout)', m => m && m.picking, c.pickingN) +
+        row('2. RT na loja — entregador esperando com o pedido já pronto', m => m && m.rtLoja, c.rtLojaN) +
         '<tr style="font-weight:800;background:#F3EFEC;"><td>Tempo total na loja (1 + 2)</td><td>' + rsMin(tot(c)) + '</td><td>' + rsDMin(tot(c), tot(p)) + '</td>' + (l ? '<td>' + rsDMin(tot(c), tot(l)) + '</td>' : '') + '<td></td></tr></tbody></table>';
     };
     const hasRt = rsBrandList(R).some(b => b.D.hasRtLoja);
-    return '<h3>⏱️ Tempo na loja — Picking Time e RT na loja</h3><div class="dd-sub">Só os steps em que a marca tem acionamento: <b>1. Picking Time</b> (tempo do picker separando o pedido) e <b>2. RT na loja</b> (tempo que o entregador ficou na loja). SLA de picking: 15 min. Menor é melhor.' + (hasRt ? '' : ' O CSV importado ainda não traz o tempo do RT na loja — suba o arquivo da query nova.') + ' Lojas com menos de 20 pedidos com picking ficam sem cor.</div>' +
+    return '<h3>⏱️ Tempo na loja — Picking Time e RT na loja</h3><div class="dd-sub">Só os steps em que a marca tem acionamento: <b>1. Picking Time</b> (do pedido chegar na loja até ficar pronto: aceite, separação e checkout) e <b>2. RT na loja</b> (tempo que o entregador esperou com o pedido já pronto, até receber). Os dois não se sobrepõem: a espera do entregador antes do pronto já está no Picking Time, e o pedido pronto esperando o entregador não conta — a soma é o tempo que depende da loja. SLA de picking: 15 min. Menor é melhor.' + (hasRt ? '' : ' O CSV importado ainda não traz o tempo do RT na loja — suba o arquivo da query nova.') + ' Lojas com menos de 20 pedidos com picking ficam sem cor.</div>' +
       filter() +
       rsSections(R, (D, bi) => steps(D) + '<div class="dd-sub" style="margin-top:14px;font-weight:800;color:#1E1B1A;">Nível loja — variação do Picking Time</div>' +
         rsStoreTable(D, { id:'rs-picking-' + bi, n:3, col:'Picking Time', get: m => m.picking, fmt: rsMin, kind:'min', higher:false, quality:{ sla:{ ref:12, max:15 }, stable:0.1, strong:1 },
