@@ -2212,6 +2212,8 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 140: aviso de query lê VERSAO e novidades do cabeçalho da query (NOVIDADES DA QUERY); _work/embutir_query.py embute a query e gera a próxima versão. */
+/* RappiStage 139: etapa Gerar CSV avisa quando a query embutida mudou desde a última cópia do AGM (carimbo do texto, por e-mail, localStorage) + lista do que mudou (RS_QUERY_NOVIDADES). */
 /* RappiStage 138: query v138 — tempo na loja pela ORDER_TIMES_BR sem sobreposição (Picking = pedido entra → pronto; RT na loja = espera com o pedido pronto), a régua do Performance Carteira. Antes: PREPARATION_TIME + TIME_IN_STORE, que se sobrepõem. */
 /* RappiStage 137: query v137 embutida (Zee Now como marca própria em todos os blocos; Carrefour não-farma → rubia.beloto) + catálogo Carrefour → Rubia. */
 /* RappiStage 136: Grupo Petz = Petz + Cobasi ("Mundo Pet" na base) + Zee Now (store type ZeeNow das lojas Petz), separados na leitura do CSV. */
@@ -2413,6 +2415,7 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
 
       <div class="setup-card" id="query-card">
         <div class="setup-step-label"><span class="step-num">1</span> Gerar o CSV no Snowflake</div>
+        <div id="rs-query-aviso" role="status" style="display:none;margin:0 0 14px;padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5;"></div>
         <ol style="margin:0 0 14px;padding-left:20px;font-size:14px;line-height:1.7;color:#5E5652;">
           <li>Clique em <b>Copiar query</b>. Ela já vai com o seu e-mail de login.</li>
           <li>No Snowflake, abra uma planilha nova do Snowsight, cole a query e clique em <b>Run All</b> (Ctrl + Shift + Enter). Leva cerca de 10 minutos.</li>
@@ -2424,9 +2427,18 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
         </div>
         <div id="rs-query-msg" role="status" style="font-size:13px;font-weight:600;color:#B8320F;min-height:20px;margin-bottom:8px;"></div>
         <textarea id="rs-query-text" readonly spellcheck="false" aria-label="Query do RappiStage" style="width:100%;height:170px;resize:vertical;box-sizing:border-box;font:12px/1.5 ui-monospace,Consolas,monospace;color:#1E1B1A;background:#FAF8F6;border:1px solid #E5E0DC;border-radius:8px;padding:10px;white-space:pre;overflow:auto;"></textarea>
-        <div style="font-size:12px;color:#837A76;margin-top:6px;">Versão da query: 04/11/2026. Já tem um CSV recente? Clique em <b>Próximo</b>.</div>
+        <div style="font-size:12px;color:#837A76;margin-top:6px;">Versão da query: <span id="rs-query-versao"></span>. Já tem um CSV recente? Clique em <b>Próximo</b>.</div>
       </div>
-      <script type="text/plain" id="rs-query-src">/* =====================================================================================
+      <script type="text/plain" id="rs-query-src">/* NOVIDADES DA QUERY — aparecem no aviso da etapa "Gerar CSV" da plataforma.
+   A CADA MUDANÇA NA QUERY: troque a VERSAO (data de hoje) e reescreva a lista abaixo
+   (o que mudou, em linguagem de AGM, 1 item por linha começando com "- ").
+   Depois rode: python _work/embutir_query.py   (gera a próxima RappiStage_NNN.html + index.html)
+   VERSAO: 04/11/2026
+   - Tempo na loja: Picking Time e RT na loja agora são calculados sem sobreposição (mesma régua do Performance Carteira).
+   - Zee Now separada da Petz em todos os blocos.
+   - Carrefour (fora da farmácia) passou para a Rubia.
+*/
+/* =====================================================================================
    RappiStage — QUERY ÚNICA (1 arquivo para subir na plataforma)
 
    COMO USAR (Snowsight):
@@ -6453,15 +6465,63 @@ function rsQueryFill(){
   if(!src || !txt || !email) return;
   txt.value = src.textContent.replace("'seu.email@rappi.com'", "'" + email + "'");
   if(em) em.textContent = email;
+  rsQueryAviso();
 }
 function rsQueryCopy(){
   const txt = document.getElementById('rs-query-text'), msg = document.getElementById('rs-query-msg');
-  const ok = () => { msg.textContent = '✓ Query copiada. Cole no Snowflake e rode com Run All.'; };
+  const ok = () => { msg.textContent = '✓ Query copiada. Cole no Snowflake e rode com Run All.'; rsQueryMarcaCopiada(); };
   const manual = () => { txt.focus(); txt.select(); let d = false; try { d = document.execCommand('copy'); } catch(e){} if(d) ok(); else msg.textContent = 'O navegador bloqueou a cópia. O texto já está selecionado: use Ctrl+C.'; };
   rsQueryFill();
   if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt.value).then(ok, manual); else manual();
 }
 document.getElementById('rs-query-copy').addEventListener('click', rsQueryCopy);
+/* RappiStage 139: aviso de query nova. O carimbo é calculado do próprio texto da query embutida, então
+   QUALQUER alteração na query acende o aviso, sem precisar lembrar de mudar nada. Ao mudar a query,
+   atualize só RS_QUERY_VERSAO e RS_QUERY_NOVIDADES (o que o AGM vai ler no aviso). */
+/* RappiStage 140: versão e "O que mudou" vêm do cabeçalho NOVIDADES DA QUERY da própria query embutida
+   (VERSAO: dd/mm/aaaa + linhas "- "), então mudar a query — pelo VS ou pelo Claude — já traz o aviso certo. */
+function rsQueryMeta(){
+  var src = document.getElementById('rs-query-src'), t = src ? src.textContent : '';
+  var m = t.match(/NOVIDADES DA QUERY[\s\S]*?\*\//), blk = m ? m[0] : '';
+  var v = blk.match(/VERSAO:\s*([0-9]{2}\/[0-9]{2}\/[0-9]{4})/);
+  var itens = blk.split(/\r?\n/).map(function(l){ return l.trim(); }).filter(function(l){ return l.indexOf('- ') === 0; }).map(function(l){ return l.slice(2).trim(); });
+  return { versao: v ? v[1] : '', itens: itens };
+}
+var RS_QUERY_KEY = 'rappistage_query_copiada_v1';
+function rsQueryHash(){
+  var src = document.getElementById('rs-query-src'); if(!src) return '';
+  var t = src.textContent, h = 5381;
+  for(var i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36) + '-' + t.length;
+}
+function rsQueryLida(){
+  var em = state.user && state.user.email; if(!em) return null;
+  try { var m = JSON.parse(localStorage.getItem(RS_QUERY_KEY) || '{}'); return m[em.toLowerCase()] || null; } catch(e){ return null; }
+}
+function rsQueryMarcaCopiada(){
+  var em = state.user && state.user.email; if(!em) return;
+  try { var m = JSON.parse(localStorage.getItem(RS_QUERY_KEY) || '{}'); m[em.toLowerCase()] = rsQueryHash(); localStorage.setItem(RS_QUERY_KEY, JSON.stringify(m)); } catch(e){}
+  rsQueryAviso();
+}
+function rsQueryAviso(){
+  var box = document.getElementById('rs-query-aviso'), v = document.getElementById('rs-query-versao');
+  var meta = rsQueryMeta(), ver = meta.versao;
+  if(v) v.textContent = ver || '—';
+  if(!box || !(state.user && state.user.email)) return;
+  var lida = rsQueryLida(), atual = rsQueryHash();
+  box.style.display = '';
+  if(lida === atual){
+    box.style.background = '#EAF6EE'; box.style.border = '1px solid #9FD3B0'; box.style.color = '#1F6B3A';
+    box.innerHTML = '✓ Você já copiou a versão mais recente da query' + (ver ? ' (' + ver + ')' : '') + '.';
+    return;
+  }
+  box.style.background = '#FFF1EC'; box.style.border = '1px solid #FF9B7A'; box.style.color = '#7A2408';
+  var esc = function(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+  var lis = meta.itens.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('');
+  box.innerHTML = '<b>🔔 Query atualizada' + (ver ? ' em ' + ver : '') + '.</b> Houve modificações e melhorias: copie esta query e use ela no Snowflake. A query antiga não traz as novidades.' +
+    (lis ? '<div style="margin-top:6px;font-weight:600;">O que mudou:</div><ul style="margin:4px 0 0;padding-left:20px;">' + lis + '</ul>' : '');
+}
+document.getElementById('rs-query-text').addEventListener('copy', function(){ setTimeout(rsQueryMarcaCopiada, 0); });
 function goToSetupStep(idx){
   rsQueryFill();
   renderRevenueBasis();
