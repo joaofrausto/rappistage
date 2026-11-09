@@ -293,6 +293,11 @@ input,textarea,select{font-family:inherit;}
 /* Estado "armado" do botão "💬 Adicionar comentário" — próximo clique no gráfico vira comentário
    em vez de abrir em tela cheia (item F.7). */
 .chart-comment-btn.active{background:var(--rappi-orange-1); color:#fff;}
+/* RappiStage 143: com "Adicionar comentário" armado, o mouse vira um alvo sobre o gráfico */
+.rs-comment-armed .chart-canvas-wrap, .rs-comment-armed .chart-canvas-wrap canvas, .rs-comment-armed .chart-mini-canvas-wrap, .rs-comment-armed .chart-mini-canvas-wrap canvas{
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%23FF441F' stroke-width='2'/%3E%3Cpath d='M16 1v8M16 23v8M1 16h8M23 16h8' stroke='%23fff' stroke-width='4'/%3E%3Cpath d='M16 1v8M16 23v8M1 16h8M23 16h8' stroke='%23FF441F' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%23FF441F'/%3E%3C/svg%3E") 16 16, crosshair !important;
+}
+.rs-comment-armed .chart-canvas-wrap, .rs-comment-armed .chart-mini-canvas-wrap{ outline:2px dashed var(--rappi-orange-1); outline-offset:4px; border-radius:8px; }
 
 /* Toggle switch (checkbox custom) */
 .toggle{
@@ -2212,6 +2217,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 143: balões de comentário dos gráficos da lupa vão para a apresentação (DD_CHART_CFG.callouts, só leitura) + cursor de alvo com o comentário armado. */
 /* RappiStage 142: modal Incluir blocos sem a linha de origem ("Do Quarterly"). */
 /* RappiStage 141: botão ➕ Incluir blocos — leva blocos manuais de outro tipo de reunião (Próximos Passos, Projeção, Conquistas…) para a reunião atual; modelos guardam esses blocos. */
 /* RappiStage 140: aviso de query lê VERSAO e novidades do cabeçalho da query (NOVIDADES DA QUERY); _work/embutir_query.py embute a query e gera a próxima versão. */
@@ -9855,8 +9861,11 @@ function renderInteractiveChartInto(wrap, item, opts){
         function updateCommentBtnUI(){
           if(!commentBtn) return;
           commentBtn.classList.toggle('active', !!item._commentArmed);
-          commentBtn.textContent = item._commentArmed ? '💬 Clique no gráfico para comentar…' : '💬 Adicionar comentário';
+          commentBtn.textContent = item._commentArmed ? '🎯 Clique no ponto do gráfico (Esc cancela)' : '💬 Adicionar comentário';
+          wrap.classList.toggle('rs-comment-armed', !!item._commentArmed); // RappiStage 143
         }
+        if(commentBtn && !wrap.dataset.rsEscBound){ wrap.dataset.rsEscBound = '1';
+          document.addEventListener('keydown', e => { if(e.key === 'Escape' && item._commentArmed && document.body.contains(wrap)){ item._commentArmed = false; updateCommentBtnUI(); } }); }
         if(commentBtn) commentBtn.addEventListener('click', () => {
           item._commentArmed = !item._commentArmed;
           updateCommentBtnUI();
@@ -10013,9 +10022,13 @@ function renderInteractiveChartInto(wrap, item, opts){
             item._commentArmed = false;
             const commentBtn = wrap.querySelector('.chart-comment-btn');
             if(commentBtn){ commentBtn.classList.remove('active'); commentBtn.textContent = '💬 Adicionar comentário'; }
+            wrap.classList.remove('rs-comment-armed'); // RappiStage 143
           }
           if(text && text.trim()){
-            item.chartCallouts.push({ id: uid('callout'), xPct, yPct, text: text.trim(), chartKey: key });
+            const co = { id: uid('callout'), xPct, yPct, text: text.trim(), chartKey: key };
+            try{ const ch = (typeof Chart !== 'undefined' && canvas) ? Chart.getChart(canvas) : null, ar = ch && ch.chartArea, cr = canvas.getBoundingClientRect();
+              if(ar && ar.right > ar.left && ar.bottom > ar.top){ co.ax = (e.clientX - cr.left - ar.left) / (ar.right - ar.left); co.ay = (e.clientY - cr.top - ar.top) / (ar.bottom - ar.top); } }catch(err){} // RappiStage 143
+            item.chartCallouts.push(co);
             renderCalloutsLayer(wrapEl.querySelector('[data-callouts]'), key);
           }
         });
@@ -13860,6 +13873,7 @@ function exportDrilldownChartConfig(kpiLabel){
       type: item.chartType || 'line',
       seriesChartType: Object.assign({}, item.seriesChartType || {}),
       hideDelta: Object.assign({}, item.seriesHideDelta || {}), // RappiStage 105
+      callouts: (item.chartCallouts || []).map(c => ({ id: c.id, xPct: c.xPct, yPct: c.yPct, ax: c.ax, ay: c.ay, text: c.text, chartKey: c.chartKey || 'combined' })), // RappiStage 143
     };
   } finally {
     state.autoDrilldownCharts = realCache;
@@ -21958,7 +21972,7 @@ function mountChartPanel(container, panelKey, label, opts){
       currentSeparateCfgs.forEach((miniCfg) => {
         renderExportChart(miniCfg);
         bindExpandClick(document.getElementById(miniCfg.canvasId), miniCfg);
-        if(enableCallouts) buildChartCallouts(miniCfg);
+        if(enableCallouts) buildChartCallouts(miniCfg); else if((miniCfg.callouts || []).length) buildChartCallouts(Object.assign({}, miniCfg, { readOnly: true })); // RappiStage 143
       });
     } else {
       currentSeparateCfgs = null;
@@ -21967,7 +21981,7 @@ function mountChartPanel(container, panelKey, label, opts){
       singleWrap.classList.remove('hidden');
       renderExportChart(currentCfg);
       bindExpandClick(document.getElementById(canvasId), currentCfg);
-      if(enableCallouts) buildChartCallouts(currentCfg);
+      if(enableCallouts) buildChartCallouts(currentCfg); else if((currentCfg.callouts || []).length) buildChartCallouts(Object.assign({}, currentCfg, { readOnly: true })); // RappiStage 143
     }
     return currentCfg;
   }
@@ -22091,6 +22105,7 @@ function renderDdChartsTab(label){
   mountChartPanel(chartBox, 'ddChart-' + stateKey + (ddCfg ? '::' + label : ''), label, {
     showHeading:true, enableCallouts:false, expandStyle:'actionsRow',
     restrict: ddCfg,
+    initialCallouts: ddCfg && ddCfg.callouts ? ddCfg.callouts : undefined, // RappiStage 143
     initialLayoutMode: ddCfg ? ddCfg.layoutMode : undefined,
     initialType: ddCfg ? ddCfg.type : (isInvestParceiro || isQoqCombo || isOpCombo || isUsuariosCombo) ? 'bar' : undefined,
     initialHideDelta: ddCfg ? ddCfg.hideDelta : undefined, // RappiStage 105
@@ -22547,11 +22562,21 @@ function pEscapeHtml(str){
   return String(str == null ? '' : str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 const __calloutState__ = {};
+function rsCalloutPos(cfg, layer, c){ /* RappiStage 143: balão ancorado na área do gráfico (mesmo ponto da plataforma) */
+  if(c.ax == null || c.ay == null || typeof Chart === 'undefined') return 'left:' + c.xPct + '%; top:' + c.yPct + '%;';
+  try{
+    const cv = document.getElementById(cfg.canvasId), ch = cv && Chart.getChart(cv), ar = ch && ch.chartArea;
+    const cr = cv.getBoundingClientRect(), lr = layer.getBoundingClientRect();
+    if(!ar || !lr.width || !cr.width) return 'left:' + c.xPct + '%; top:' + c.yPct + '%;';
+    const x = cr.left - lr.left + ar.left + c.ax * (ar.right - ar.left), y = cr.top - lr.top + ar.top + c.ay * (ar.bottom - ar.top);
+    return 'left:' + (x / lr.width * 100) + '%; top:' + (y / lr.height * 100) + '%;';
+  }catch(e){ return 'left:' + c.xPct + '%; top:' + c.yPct + '%;'; }
+}
 function renderChartCallouts(cfg, layer){
   const list = __calloutState__[cfg.canvasId] || [];
   layer.innerHTML = list.map(function(c){
-    return '<div class="p-chart-callout" style="left:' + c.xPct + '%; top:' + c.yPct + '%;" data-callout-id="' + c.id + '">' +
-      '<button type="button" class="p-chart-callout-remove" title="Remover balão">×</button>' +
+    return '<div class="p-chart-callout" style="' + rsCalloutPos(cfg, layer, c) + '" data-callout-id="' + c.id + '">' +
+      (cfg.readOnly ? '' : '<button type="button" class="p-chart-callout-remove" title="Remover balão">×</button>') +
       '<div class="p-chart-callout-text">' + pEscapeHtml(c.text) + '</div></div>';
   }).join('');
   layer.querySelectorAll('.p-chart-callout-remove').forEach(function(btn){
@@ -22566,7 +22591,7 @@ function renderChartCallouts(cfg, layer){
 function buildChartCallouts(cfg){
   const holder = document.querySelector('[data-chart-holder="' + cfg.canvasId + '"]');
   if(!holder) return;
-  if(!__calloutState__[cfg.canvasId]) __calloutState__[cfg.canvasId] = (cfg.callouts || []).slice();
+  if(!__calloutState__[cfg.canvasId] || cfg.readOnly) __calloutState__[cfg.canvasId] = (cfg.callouts || []).slice();
   let layer = holder.querySelector('.p-chart-callouts-layer');
   if(!layer){
     layer = document.createElement('div');
@@ -22574,6 +22599,7 @@ function buildChartCallouts(cfg){
     holder.appendChild(layer);
   }
   renderChartCallouts(cfg, layer);
+  if(cfg.readOnly) return; // RappiStage 143: lupa da apresentação só mostra os balões feitos na plataforma
   if(holder.dataset.calloutBound) return;
   holder.dataset.calloutBound = '1';
   holder.addEventListener('click', function(e){
