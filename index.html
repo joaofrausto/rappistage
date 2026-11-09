@@ -1296,6 +1296,10 @@ input,textarea,select{font-family:inherit;}
 .plans-card.sortable-ghost{opacity:.25;}
 .plans-card.sortable-drag, .plans-card.sortable-fallback{box-shadow:var(--shadow-lift) !important;}
 .plans-field-label{font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.02em; color:var(--ink-400); margin-bottom:-4px;}
+.plans-owner-chips{display:flex; flex-wrap:wrap; gap:6px;} /* RappiStage 145 */
+.plans-owner-chip{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:#5E5652; background:#fff; border:1.5px solid #E5E0DC; border-radius:999px; padding:5px 11px; cursor:pointer; user-select:none;}
+.plans-owner-chip.on{border-color:var(--rappi-orange-1); background:#FFF1EC; color:#B8320F;}
+.plans-owner-chip input{accent-color:var(--rappi-orange-1); margin:0;}
 .plans-owner-select{
   border:1.5px solid var(--ink-100); border-radius:8px; padding:7px 8px; font-size:12.5px;
   font-family:inherit; color:var(--ink-900); background:#fff;
@@ -2217,7 +2221,9 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
-/* RappiStage 144: "Comunicações Realizadas - Peças" (galeria) no Growth do Monthly e novo bloco Growth no Quarterly. */
+/* RappiStage 146: Responsáveis dos cards voltam a ser lista suspensa (Rappi / marca / Rappi + marca). */
+/* RappiStage 145: Conquistas e Desafios em cards no modelo de Próximos Passos (O que foi feito / Como-Por que / Impacto / Responsáveis); responsáveis múltiplos (Rappi + marca) nos cards; botão 📄 Baixar HTML da apresentação pronta. */
+/* RappiStage 144:ções Realizadas - Peças" (galeria) no Growth do Monthly e novo bloco Growth no Quarterly. */
 /* RappiStage 143: balões de comentário dos gráficos da lupa vão para a apresentação (DD_CHART_CFG.callouts, só leitura) + cursor de alvo com o comentário armado. */
 /* RappiStage 142: modal Incluir blocos sem a linha de origem ("Do Quarterly"). */
 /* RappiStage 141: botão ➕ Incluir blocos — leva blocos manuais de outro tipo de reunião (Próximos Passos, Projeção, Conquistas…) para a reunião atual; modelos guardam esses blocos. */
@@ -3612,6 +3618,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
         <button class="btn btn-ghost" id="import-csv-btn" role="menuitem">📥 Importar dados (CSV)</button>
         <input type="file" id="import-csv-input" accept=".csv,.txt,text/csv" hidden>
         <button class="btn btn-ghost" id="save-draft-btn" role="menuitem">💾 Salvar cópia do rascunho</button>
+        <button class="btn btn-ghost" id="rs-dl-html-btn2" role="menuitem" title="Baixar a apresentação pronta (.html) para abrir em qualquer navegador e guardar uma cópia">📄 Baixar apresentação pronta (HTML)</button>
         <button class="btn btn-ghost" id="download-draft-btn" role="menuitem" title="Baixar um arquivo desta apresentação para importar e continuar editando depois, inclusive em outro computador">⬇️ Baixar apresentação (arquivo)</button>
           </div>
         </div>
@@ -3660,6 +3667,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
       <div class="review-list" id="review-list"><!-- renderizado via JS --></div>
       <div class="review-footer">
         <button class="btn btn-ghost" id="review-back-btn">← Voltar e editar</button>
+        <button class="btn btn-ghost" id="rs-dl-html-btn" title="Baixar a apresentação pronta (.html) para guardar uma cópia e abrir em qualquer navegador">📄 Baixar HTML</button>
         <button class="btn btn-primary" id="review-confirm-btn">✨ Confirmar e gerar apresentação</button>
       </div>
     </div>
@@ -4520,19 +4528,22 @@ const MOCK_DATA = {
       /* Item (rodada de ajustes): desc removido a pedido do AGM. */
       noInsights:true, twoColItems:true,
       items:[
-        { id:'q-v-txt', kind:'field-cards', label:'Conquista', selected:true,
-          cardFieldLabel:'Conquista', cardDefaultIcon:'🏆', cardPlaceholder:'Descreva a conquista...', cardAddLabel:'+ Adicionar conquista',
+        /* RappiStage 145: mesmo modelo de card de "Próximos Passos" (action-plan-cards), com rótulos próprios. */
+        { id:'q-v-txt', kind:'action-plan-cards', label:'Conquistas', selected:true, defaultIcon:'🏆', addLabel:'+ Adicionar conquista', emptyHint:'Conquistas ainda não preenchidas.',
+          fieldLabels:{ what:'O que foi feito', how:'Como / Por que foi feito', purpose:'Impacto', owner:'Responsáveis' },
+          placeholders:{ what:'O que foi feito...', how:'Como e por que foi feito...', purpose:'Qual foi o impacto...' },
           data:[
-            { id:'q-v-1', icon:'🏆', text:'Expansão para 12 novas lojas na região Nordeste.' },
-            { id:'q-v-2', icon:'🏆', text:'Novo recorde trimestral de Faturamento.' },
-            { id:'q-v-3', icon:'🏆', text:'Parceria de mídia com marca própria lançada com sucesso.' },
+            { id:'q-v-1', icon:'🏆', owner:'', what:'', how:'', purpose:'' },
+            { id:'q-v-2', icon:'🏆', owner:'', what:'', how:'', purpose:'' },
+            { id:'q-v-3', icon:'🏆', owner:'', what:'', how:'', purpose:'' },
           ]},
-        { id:'q-g-txt', kind:'field-cards', label:'Desafios', selected:true,
-          cardFieldLabel:'Desafio', cardDefaultIcon:'⚠️', cardPlaceholder:'Descreva o desafio...', cardAddLabel:'+ Adicionar desafio',
+        { id:'q-g-txt', kind:'action-plan-cards', label:'Desafios', selected:true, defaultIcon:'⚠️', addLabel:'+ Adicionar desafio', emptyHint:'Desafios ainda não preenchidos.',
+          fieldLabels:{ what:'Qual é o desafio', how:'Como / Por que acontece', purpose:'Impacto', owner:'Responsáveis' },
+          placeholders:{ what:'Qual é o desafio...', how:'Como e por que acontece...', purpose:'Qual o impacto...' },
           data:[
-            { id:'q-g-1', icon:'⚠️', text:'' },
-            { id:'q-g-2', icon:'⚠️', text:'' },
-            { id:'q-g-3', icon:'⚠️', text:'' },
+            { id:'q-g-1', icon:'⚠️', owner:'', what:'', how:'', purpose:'' },
+            { id:'q-g-2', icon:'⚠️', owner:'', what:'', how:'', purpose:'' },
+            { id:'q-g-3', icon:'⚠️', owner:'', what:'', how:'', purpose:'' },
           ]},
       ]
     },
@@ -8479,21 +8490,22 @@ function renderItemContent(item, block){
 
         const whatLabel = document.createElement('div');
         whatLabel.className = 'plans-field-label';
-        whatLabel.textContent = 'O quê';
+        const FL = item.fieldLabels || {}, PH = item.placeholders || {}; // RappiStage 145
+        whatLabel.textContent = FL.what || 'O quê';
         const whatArea = document.createElement('textarea');
         whatArea.className = 'plans-desc-input plans-what-input';
         whatArea.rows = 2;
-        whatArea.placeholder = 'O que vamos fazer...';
+        whatArea.placeholder = PH.what || 'O que vamos fazer...';
         whatArea.value = p.what || '';
         whatArea.addEventListener('input', (e) => { p.what = e.target.value; autoGrowRmc(whatArea); });
 
         const howLabel = document.createElement('div');
         howLabel.className = 'plans-field-label';
-        howLabel.textContent = 'Como';
+        howLabel.textContent = FL.how || 'Como';
         const howArea = document.createElement('textarea');
         howArea.className = 'plans-desc-input plans-how-input';
         howArea.rows = 2;
-        howArea.placeholder = 'Como vamos fazer...';
+        howArea.placeholder = PH.how || 'Como vamos fazer...';
         howArea.value = p.how || '';
         howArea.addEventListener('input', (e) => { p.how = e.target.value; autoGrowRmc(howArea); });
 
@@ -8503,21 +8515,32 @@ function renderItemContent(item, block){
            Como → Impacto → Responsável. */
         const purposeLabel = document.createElement('div');
         purposeLabel.className = 'plans-field-label';
-        purposeLabel.textContent = 'Impacto';
+        purposeLabel.textContent = FL.purpose || 'Impacto';
         const purposeArea = document.createElement('textarea');
         purposeArea.className = 'plans-desc-input plans-purpose-input';
         purposeArea.rows = 2;
-        purposeArea.placeholder = 'Qual o impacto esperado deste passo...';
+        purposeArea.placeholder = PH.purpose || 'Qual o impacto esperado deste passo...';
         purposeArea.value = p.purpose || '';
         purposeArea.addEventListener('input', (e) => { p.purpose = e.target.value; autoGrowRmc(purposeArea); });
 
         const ownerLabel = document.createElement('div');
         ownerLabel.className = 'plans-field-label';
-        ownerLabel.textContent = 'Responsável';
+        ownerLabel.textContent = FL.owner || 'Responsáveis';
+        /* RappiStage 145: responsáveis = 1 ou mais (ex.: Rappi + Panvel). Guardado em p.owner como
+           texto "Rappi + Panvel" (compatível com o que já estava salvo com 1 responsável só). */
+        /* RappiStage 146: lista suspensa — parceiro (cada marca com o seu nome), Rappi ou os dois
+           ("Rappi + Panvel"). Guardado em p.owner como texto (compatível com o que já estava salvo). */
         const ownerSelect = document.createElement('select');
         ownerSelect.className = 'plans-owner-select';
+        const brandOpts = ownerOptions.filter(o => o !== 'Rappi');
+        const ownOpts = ['Rappi'].concat(brandOpts, brandOpts.map(b => 'Rappi + ' + b));
+        if(p.owner && ownOpts.indexOf(p.owner) === -1){
+          const alt = String(p.owner).split(' + ').map(x => x.trim()).filter(Boolean);
+          const norm = alt.length === 2 && alt.indexOf('Rappi') !== -1 ? 'Rappi + ' + alt.filter(x => x !== 'Rappi')[0] : null; // "Panvel + Rappi" (v145) vira "Rappi + Panvel"
+          if(norm && ownOpts.indexOf(norm) !== -1) p.owner = norm; else ownOpts.push(p.owner);
+        }
         ownerSelect.innerHTML = '<option value="">Selecionar...</option>' +
-          ownerOptions.map(o => `<option value="${o.replace(/"/g,'&quot;')}" ${p.owner === o ? 'selected' : ''}>${o}</option>`).join('');
+          ownOpts.map(o => '<option value="' + o.replace(/"/g,'&quot;') + '"' + (p.owner === o ? ' selected' : '') + '>' + escapeHtml(o) + '</option>').join('');
         ownerSelect.addEventListener('change', (e) => { p.owner = e.target.value; });
 
         card.appendChild(headerRow);
@@ -8552,9 +8575,9 @@ function renderItemContent(item, block){
       addStepBtn.type = 'button';
       addStepBtn.className = 'btn btn-chip';
       addStepBtn.style.marginTop = '12px';
-      addStepBtn.textContent = '+ Adicionar próximo passo';
+      addStepBtn.textContent = item.addLabel || '+ Adicionar próximo passo';
       addStepBtn.addEventListener('click', () => {
-        const newP = { id: uid('rmc'), icon:'🗂️', owner:'', what:'', how:'', purpose:'' };
+        const newP = { id: uid('rmc'), icon: item.defaultIcon || '🗂️', owner:'', what:'', how:'', purpose:'' };
         item.data.push(newP);
         const cardEl = renderStepCard(newP);
         grid.appendChild(cardEl);
@@ -18378,6 +18401,24 @@ document.getElementById('review-back-btn').addEventListener('click', () => {
   goToScreen('screen-dashboard');
 });
 
+/* RappiStage 145: baixar o HTML da apresentação pronta (o mesmo documento que abre em nova aba),
+   para o AGM guardar uma cópia e não perder a montagem. Para continuar EDITANDO depois, o caminho
+   segue sendo "⬇️ Baixar apresentação (arquivo)" (.json) + "Importar apresentação". */
+function rsDownloadPresentationHtml(){
+  renderBlocks();
+  let html;
+  try{ html = buildPresentationDocument(); }
+  catch(err){ console.error('Falha ao montar a apresentação:', err); showToast('❌ Não foi possível gerar o HTML — veja o console para detalhes.'); return; }
+  const slug = v => String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const per = state.period && state.period.label ? '-' + slug(state.period.label).slice(0, 40) : '';
+  const name = 'apresentacao-' + (slug(state.brand) || 'rappi') + '-' + (state.meetingType || 'weekly') + per + '-' + new Date().toISOString().slice(0, 10) + '.html';
+  const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  showToast('📄 Apresentação baixada (' + name + '). Abra o arquivo em qualquer navegador.');
+}
+document.getElementById('rs-dl-html-btn').addEventListener('click', rsDownloadPresentationHtml);
+document.getElementById('rs-dl-html-btn2').addEventListener('click', rsDownloadPresentationHtml);
 document.getElementById('review-confirm-btn').addEventListener('click', () => {
   renderBlocks();
   openInteractivePresentation();
@@ -18674,17 +18715,19 @@ function renderItemStatic(item, block){
        O quê/Como do antigo Plano de Ação. Cards totalmente vazios (sem "o quê" nem "como") não
        entram na apresentação final. */
     case 'action-plan-cards': {
-      const steps = (item.data || []).filter(p => (p.what||'').trim() || (p.how||'').trim());
-      if(!steps.length) return '<div class="p-empty-hint">Próximos passos ainda não preenchidos.</div>';
+      const steps = (item.data || []).filter(p => (p.what||'').trim() || (p.how||'').trim() || (p.purpose||'').trim());
+      if(!steps.length) return '<div class="p-empty-hint">' + escapeHtml(item.emptyHint || 'Próximos passos ainda não preenchidos.') + '</div>';
+      const FL = item.fieldLabels || {}; // RappiStage 145
+      const ownersHtml = o => String(o || '').split(' + ').map(x => x.trim()).filter(Boolean).map(x => '<span class="p-action-plan-owner">' + escapeHtml(x) + '</span>').join(' ') || '—';
       /* Item (rodada de ajustes): ordem dos campos O quê → Como → Impacto → Responsável — campo
          renomeado de "Para" para "Impacto" (rótulo só; segue guardado em p.purpose). */
       return `<div class="p-plans-grid">${steps.map(p => `
         <div class="p-plans-card">
-          <div class="p-plans-card-icon">${escapeHtml(p.icon || '🗂️')}</div>
-          <div class="p-plans-card-field"><span class="p-plans-card-field-label">O quê</span><div class="p-plans-card-desc">${escapeHtml(p.what || '').replace(/\n/g,'<br>')}</div></div>
-          <div class="p-plans-card-field"><span class="p-plans-card-field-label">Como</span><div class="p-plans-card-desc">${escapeHtml(p.how || '').replace(/\n/g,'<br>')}</div></div>
-          <div class="p-plans-card-field"><span class="p-plans-card-field-label">Impacto</span><div class="p-plans-card-desc">${escapeHtml(p.purpose || '').replace(/\n/g,'<br>')}</div></div>
-          <div class="p-plans-card-field"><span class="p-plans-card-field-label">Responsável</span>${p.owner ? `<span class="p-action-plan-owner">${escapeHtml(p.owner)}</span>` : '—'}</div>
+          <div class="p-plans-card-icon">${escapeHtml(p.icon || item.defaultIcon || '🗂️')}</div>
+          <div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.what || 'O quê')}</span><div class="p-plans-card-desc">${escapeHtml(p.what || '').replace(/\n/g,'<br>')}</div></div>
+          <div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.how || 'Como')}</span><div class="p-plans-card-desc">${escapeHtml(p.how || '').replace(/\n/g,'<br>')}</div></div>
+          <div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.purpose || 'Impacto')}</span><div class="p-plans-card-desc">${escapeHtml(p.purpose || '').replace(/\n/g,'<br>')}</div></div>
+          <div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.owner || 'Responsáveis')}</span><div>${ownersHtml(p.owner)}</div></div>
         </div>`).join('')}</div>`;
     }
 
