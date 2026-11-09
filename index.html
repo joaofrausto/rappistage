@@ -2217,6 +2217,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 144: "Comunicações Realizadas - Peças" (galeria) no Growth do Monthly e novo bloco Growth no Quarterly. */
 /* RappiStage 143: balões de comentário dos gráficos da lupa vão para a apresentação (DD_CHART_CFG.callouts, só leitura) + cursor de alvo com o comentário armado. */
 /* RappiStage 142: modal Incluir blocos sem a linha de origem ("Do Quarterly"). */
 /* RappiStage 141: botão ➕ Incluir blocos — leva blocos manuais de outro tipo de reunião (Próximos Passos, Projeção, Conquistas…) para a reunião atual; modelos guardam esses blocos. */
@@ -4328,6 +4329,7 @@ const MOCK_DATA = {
       desc:'Desempenho de investimentos e planejamento do próximo mês',
       insight:'ROI consistente acima de 4x no mês; budget consumido em ritmo saudável (80%), com espaço para reforço no próximo mês.',
       items:[
+        { id:'m-g-gallery', kind:'gallery', label:'Comunicações Realizadas - Peças', selected:true, data:[] }, // RappiStage 144
         { id:'m-g-comms', kind:'list', label:'Comunicações Realizadas e Impactos', selected:true,
           data:['Campanha de Payday gerou +14% de pedidos nos 3 dias de ativação.','Push de reativação recuperou 3.100 usuários inativos.']},
         { id:'m-g-search', kind:'ranking', label:'Search (Busca)', selected:true,
@@ -4581,6 +4583,13 @@ const MOCK_DATA = {
        (padrão em todo item-row), textarea de sugestão (item.note), checkboxes "Indicadores no
        documento final", tabela com Retorno Estimado calculado, chips de campanha pré-definida,
        banner de saúde do ROI e totais. */
+    { /* RappiStage 144: Growth no Quarterly, com "Comunicações Realizadas - Peças" (igual Weekly/Monthly) */
+      id:'q-growth', title:'Growth', icon:'📣', theme:'purple',
+      noInsights:true,
+      items:[
+        { id:'q-g-gallery', kind:'gallery', label:'Comunicações Realizadas - Peças', selected:true, data:[] },
+      ]
+    },
     {
       id:'q-invest-proposal', title:'Proposta de Investimento', icon:'💰', theme:'orange',
       /* Item (rodada de ajustes): desc removido a pedido do AGM — sem afetar o desc dos blocos
