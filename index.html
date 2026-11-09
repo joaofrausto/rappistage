@@ -2212,6 +2212,8 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 142: modal Incluir blocos sem a linha de origem ("Do Quarterly"). */
+/* RappiStage 141: botão ➕ Incluir blocos — leva blocos manuais de outro tipo de reunião (Próximos Passos, Projeção, Conquistas…) para a reunião atual; modelos guardam esses blocos. */
 /* RappiStage 140: aviso de query lê VERSAO e novidades do cabeçalho da query (NOVIDADES DA QUERY); _work/embutir_query.py embute a query e gera a próxima versão. */
 /* RappiStage 139: etapa Gerar CSV avisa quando a query embutida mudou desde a última cópia do AGM (carimbo do texto, por e-mail, localStorage) + lista do que mudou (RS_QUERY_NOVIDADES). */
 /* RappiStage 138: query v138 — tempo na loja pela ORDER_TIMES_BR sem sobreposição (Picking = pedido entra → pronto; RT na loja = espera com o pedido pronto), a régua do Performance Carteira. Antes: PREPARATION_TIME + TIME_IN_STORE, que se sobrepõem. */
@@ -3574,6 +3576,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
           <button class="btn btn-primary btn-sm" id="upload-csv-open-btn" title="Subir o CSV baixado do Snowflake para preencher a apresentação com os dados reais">📥 Subir CSV</button>
           <button class="btn btn-ghost btn-sm" id="reorder-blocks-btn" title="Abrir lista resumida (só os títulos) para ordenar os blocos com mais facilidade">⇅ Ordenar Blocos</button>
           <button class="btn btn-ghost btn-sm" id="my-presentations-btn" title="Ver apresentações salvas na plataforma">📁 Minhas Apresentações</button>
+          <button class="btn btn-ghost btn-sm" id="rs-extra-btn" title="Trazer blocos de outros tipos de reunião (ex.: Próximos Passos no Weekly)">➕ Incluir blocos</button>
           <button class="btn btn-ghost btn-sm" id="rs-preset-btn" title="Salvar a configuração da apresentação como modelo ou aplicar um modelo salvo">⭐ Modelos</button>
           <button class="btn btn-ghost btn-sm" id="visual-customize-btn" title="Personalizar imagem de fundo da capa e cores da apresentação">⚙️ Personalizar</button>
           <span class="selection-counter" id="selection-counter">0 / 0 itens selecionados</span>
@@ -3589,6 +3592,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
       <div id="blocks-container"><!-- blocos renderizados via JS --></div>
 
       <div style="text-align:center; margin-top:22px;">
+        <button class="btn btn-ghost btn-sm add-block-btn" id="rs-extra-btn2">➕ Incluir blocos adicionais</button>
         <button class="btn btn-ghost btn-sm add-block-btn" id="reset-order-btn">↺ Restaurar ordem padrão</button>
       </div>
 
@@ -3783,6 +3787,14 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
 </div>
 
 <!-- RappiStage 135: Modelos do AGM (configuração pré-setada por tipo de reunião) -->
+<div class="modal-overlay" id="rs-extra-modal">
+  <div class="modal-box" style="max-width:620px;text-align:left;max-height:88vh;overflow:auto;">
+    <h3 style="margin-bottom:6px;">➕ Incluir blocos adicionais — <span id="rs-extra-type"></span></h3>
+    <p style="margin:0 0 14px;font-size:13px;line-height:1.5;color:#5E5652;">Blocos de outros tipos de reunião que você pode levar para esta apresentação. Eles entram no fim da lista; depois é só arrastar para a posição que quiser. Para tirar um bloco adicional, use o ✕ no cabeçalho dele.</p>
+    <div id="rs-extra-list"></div>
+    <div style="text-align:right;margin-top:14px;"><button type="button" class="btn btn-ghost btn-sm" id="rs-extra-close">Fechar</button></div>
+  </div>
+</div>
 <div class="modal-overlay" id="rs-preset-modal">
   <div class="modal-box" style="max-width:620px;text-align:left;max-height:88vh;overflow:auto;">
     <h3 style="margin-bottom:6px;">⭐ Meus modelos — <span id="rs-preset-type"></span></h3>
@@ -7521,8 +7533,9 @@ function renderBlockCard(block, visibleIdx){
       <div class="block-icon" style="background:${theme.bg}; color:${theme.text};">${block.icon}</div>
       <div class="block-title">
         <h2>${block.title}</h2>
-        <div class="block-desc">${block.items.some(i => i.kind === 'kpi-grid') ? '' : (block.desc || '')}</div>
+        <div class="block-desc">${block.items.some(i => i.kind === 'kpi-grid') ? '' : (block.desc || '')}${block._rsExtra ? '<span class="rs-extra-tag" style="display:inline-block;margin-left:6px;font-size:11px;font-weight:800;color:#5B3FA8;background:#EFE9FF;border-radius:999px;padding:2px 8px;">➕ Bloco adicional</span>' : ''}</div>
       </div>
+      ${block._rsExtra ? '<button type="button" class="block-collapse-btn rs-extra-del" title="Tirar este bloco adicional da apresentação">✕</button>' : ''}
       <label class="toggle" title="Incluir/excluir bloco inteiro da apresentação">
         <input type="checkbox" class="block-toggle" ${block.selected === false ? '' : 'checked'}>
         <span class="track"></span><span class="thumb"></span>
@@ -7602,7 +7615,8 @@ function renderBlockCard(block, visibleIdx){
 
   // Collapse/expand — recolhe/expande tanto a lista de itens quanto o painel de Insights juntos,
   // e guarda o estado em block._uiCollapsed pra persistir entre re-renders do card.
-  const collapseBtn = card.querySelector('.block-collapse-btn');
+  const collapseBtn = card.querySelector('.block-collapse-btn:not(.rs-extra-del)');
+  { const del = card.querySelector('.rs-extra-del'); if(del) del.addEventListener('click', e => { e.stopPropagation(); rsExtraRemove(block.id); }); }
   const insightsPanelEl = card.querySelector('[data-insights-panel]');
   /* Melhoria de UX: clicar em qualquer ponto do cabeçalho do bloco (fora do toggle, da alça e
      de outros controles) também expande/recolhe — antes só a setinha de 30px funcionava. */
@@ -16315,9 +16329,69 @@ const RS_PRESET_KEY = 'rappistage_modelos_v1';
 function rsPresetAll(){ try{ return JSON.parse(localStorage.getItem(RS_PRESET_KEY) || '{}') || {}; }catch(e){ return {}; } }
 function rsPresetList(){ const u = (state.user && state.user.email) || '_'; return (rsPresetAll()[u] || []).filter(p => p.meetingType === state.meetingType); }
 function rsPresetWrite(fn){ const all = rsPresetAll(), u = (state.user && state.user.email) || '_'; all[u] = fn(all[u] || []); try{ localStorage.setItem(RS_PRESET_KEY, JSON.stringify(all)); return true; }catch(e){ return false; } }
+/* RappiStage 141: "➕ Incluir blocos" — traz para a reunião atual blocos de preenchimento manual que
+   só existem em outro tipo de reunião (ex.: Próximos Passos/Projeção do Quarterly num Weekly).
+   Só entram blocos cujos itens são todos manuais (sem dado do CSV preso ao período daquele tipo) e
+   cujo título ainda não está na apresentação. O bloco vem de MOCK_DATA[origem], com os campos
+   manuais zerados (blankManualFields), e fica marcado com _rsExtra / _rsFrom. */
+var RS_EXTRA_KINDS = ['textarea', 'field-cards', 'action-plan-cards', 'waterfall-chart', 'todo', 'commercial-calendar', 'invest-calc'];
+function rsExtraCatalog(){
+  var cur = state.meetingType, have = {}, out = [], seen = {};
+  state.blocks.forEach(function(b){ have[String(b.title).toLowerCase()] = 1; have['#' + b.id] = 1; });
+  ['quarterly', 'monthly', 'weekly'].forEach(function(mt){
+    if(mt === cur || !MOCK_DATA[mt]) return;
+    MOCK_DATA[mt].forEach(function(b){
+      var t = String(b.title).toLowerCase();
+      if(isChartOnlyBlock(b) || seen[t] || !(b.items || []).length) return;
+      if(!b.items.every(function(i){ return RS_EXTRA_KINDS.indexOf(i.kind) !== -1; })) return;
+      seen[t] = 1;
+      out.push({ id: b.id, from: mt, title: b.title, icon: b.icon, theme: b.theme, added: !!(have[t] || have['#' + b.id]) });
+    });
+  });
+  return out;
+}
+function rsExtraAdd(id, from, silent){
+  if(state.blocks.some(function(b){ return b.id === id; })) return false;
+  var src = (MOCK_DATA[from] || []).find(function(b){ return b.id === id; }); if(!src) return false;
+  var b = deepClone(src); blankManualFields([b]);
+  b._rsExtra = true; b._rsFrom = from; b.selected = true; b._uiCollapsed = false;
+  (b.items || []).forEach(function(it){ if(it.kind === 'waterfall-chart' && /Quarter Anterior/i.test(it.baseLabel || '') && state.meetingType !== 'quarterly')
+    it.baseLabel = state.meetingType === 'monthly' ? 'Vendas Mês Anterior' : 'Vendas Semana Anterior'; });
+  state.blocks.push(b);
+  if(!silent){ renderBlocks(); showToast('➕ "' + b.title + '" incluído no fim da apresentação. Arraste para mudar a posição.');
+    setTimeout(function(){ var c = blocksContainer.querySelector('[data-block-id="' + id + '"]'); if(c){ c.scrollIntoView({ behavior: 'smooth', block: 'center' }); c.classList.add('block-just-moved'); setTimeout(function(){ c.classList.remove('block-just-moved'); }, 900); } }, 50); }
+  return true;
+}
+function rsExtraRemove(id){
+  var b = state.blocks.find(function(x){ return x.id === id && x._rsExtra; }); if(!b) return;
+  if(!confirm('Tirar o bloco "' + b.title + '" desta apresentação? O que foi preenchido nele será perdido.')) return;
+  state.blocks = state.blocks.filter(function(x){ return x !== b; });
+  renderBlocks(); showToast('Bloco "' + b.title + '" retirado.');
+  if(document.getElementById('rs-extra-modal').classList.contains('show')) rsExtraRender();
+}
+function rsExtraRender(){
+  document.getElementById('rs-extra-type').textContent = MEETING_LABELS[state.meetingType] || '';
+  var L = rsExtraCatalog(), box = document.getElementById('rs-extra-list');
+  if(!L.length){ box.innerHTML = '<div style="font-size:13px;color:#837A76;padding:8px 2px;">Não há blocos adicionais disponíveis para esta reunião.</div>'; return; }
+  box.innerHTML = L.map(function(x){
+    var th = THEME_COLORS[x.theme] || THEME_COLORS.peach;
+    return '<div style="display:flex;align-items:center;gap:12px;border:1px solid ' + (x.added ? '#D9EFE0' : '#EFE9E5') + ';background:' + (x.added ? '#F4FBF6' : '#fff') + ';border-radius:12px;padding:10px 12px;margin-bottom:8px;">' +
+      '<div style="width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 auto;background:' + th.bg + ';color:' + th.text + ';">' + x.icon + '</div>' +
+      '<div style="flex:1 1 auto;min-width:0;"><div style="font-weight:800;font-size:14px;">' + escapeHtml(x.title) + '</div></div>' +
+      (x.added ? '<span style="font-size:12px;font-weight:700;color:#1F6B3A;white-space:nowrap;">✓ Já está na apresentação</span>'
+               : '<button type="button" class="btn btn-primary btn-sm" data-add="' + x.id + '" data-from="' + x.from + '">➕ Incluir</button>') + '</div>';
+  }).join('');
+  box.querySelectorAll('[data-add]').forEach(function(bt){ bt.addEventListener('click', function(){ rsExtraAdd(bt.dataset.add, bt.dataset.from); rsExtraRender(); }); });
+}
+function rsExtraOpen(){ rsExtraRender(); document.getElementById('rs-extra-modal').classList.add('show'); }
+document.getElementById('rs-extra-btn').addEventListener('click', rsExtraOpen);
+document.getElementById('rs-extra-btn2').addEventListener('click', rsExtraOpen);
+document.getElementById('rs-extra-close').addEventListener('click', function(){ document.getElementById('rs-extra-modal').classList.remove('show'); });
+document.getElementById('rs-extra-modal').addEventListener('click', function(e){ if(e.target.id === 'rs-extra-modal') e.target.classList.remove('show'); });
 function rsPresetSnapshot(){
   const vt = state.visualTheme || {}, bg = vt.bgImage ? (VISUAL_BG_PRESETS.find(p => p.dataUrl === vt.bgImage) || {}).id || null : null;
   return {
+    extras: state.blocks.filter(b => b._rsExtra).map(b => ({ id: b.id, from: b._rsFrom })), // RappiStage 141
     blocks: state.blocks.map(b => ({ id: b.id, selected: b.selected !== false, order: rsVisibleItems(b).map(it => it.id),
       items: b.items.map(it => { const o = { id: it.id, selected: it.selected !== false }; if(it.chartType) o.chartType = it.chartType;
         if(it.kind === 'kpi-grid' && Array.isArray(it.data)) o.kpis = it.data.reduce((m, k) => { m[k.label] = k.selected !== false; return m; }, {}); return o; }) })),
@@ -16328,6 +16402,8 @@ function rsPresetSnapshot(){
 }
 function rsPresetApply(p){
   const cfg = p.cfg, pos = {}; cfg.blocks.forEach((b, i) => { pos[b.id] = i; });
+  { const ex = cfg.extras || [], keep = {}; ex.forEach(x => { keep[x.id] = 1; rsExtraAdd(x.id, x.from, true); }); // RappiStage 141
+    state.blocks = state.blocks.filter(b => !b._rsExtra || keep[b.id]); }
   const byB = {}; cfg.blocks.forEach(b => { byB[b.id] = b; });
   state.blocks = state.blocks.map((b, i) => ({ b, i })).sort((x, y) => (x.b.id in pos ? pos[x.b.id] : 1000 + x.i) - (y.b.id in pos ? pos[y.b.id] : 1000 + y.i)).map(x => x.b);
   state.blocks.forEach(b => { const pb = byB[b.id]; if(!pb) return;
