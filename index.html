@@ -1671,6 +1671,57 @@ input,textarea,select{font-family:inherit;}
 .chart-fullscreen-canvas-wrap canvas{ width:100% !important; height:100% !important; }
 
 /* Calendário Comercial Rappi — upload + preview (imagem ou PDF) */
+
+
+.rsyp{display:flex; flex-direction:column; gap:10px;} /* RappiStage 155 */
+.rsyp-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.rsyp-lab{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#5E5652; min-width:118px;}
+.rsyp-btn{border:1.5px solid #E5E0DC; background:#fff; border-radius:999px; padding:5px 12px; font:inherit; font-size:12.5px; font-weight:700; color:#5E5652; cursor:pointer;}
+.rsyp-btn.on{border-color:#FF441F; background:#FFF1EC; color:#B8320F;}
+.rsyp-sel{border:1.5px solid #E5E0DC; border-radius:8px; padding:4px 8px; font:inherit; font-size:12.5px; font-weight:700; background:#fff;}
+.rsyp-sel-sm{font-size:11.5px; padding:2px 4px; margin-left:4px;}
+.rsyp-chip{display:inline-flex; align-items:center; gap:5px; border:1.5px solid #E5E0DC; background:#fff; border-radius:999px; padding:4px 6px 4px 10px; font-size:12.5px; font-weight:700; color:#5E5652; cursor:pointer;}
+.rsyp-chip.on{border-color:#FF441F; background:#FFF1EC; color:#B8320F;}
+.rsyp-chip input{accent-color:#FF441F; margin:0;}
+.rsyp-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:12px;}
+.rsyp-grid.one{grid-template-columns:1fr;}
+.rsyp-card{background:#FBFAF8; border:1px solid #EFE9E5; border-radius:12px; padding:12px;}
+.rsyp-card-title{font-size:13px; font-weight:800; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+.rsyp-ytd{display:inline-block; font-size:12px; font-weight:700; border-radius:999px; padding:4px 11px; background:#1E1B1A; color:#fff; white-space:nowrap;} /* RappiStage 157 */
+.rsyp-ytd b{font-weight:900;} .rsyp-ytd.up b{color:#7CE0A3;} .rsyp-ytd.down b{color:#FF9B8A;}
+.rsyp-badges{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-bottom:8px;}
+.rsyp-pills{display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px;} /* RappiStage 158 */
+.rsyp-proj{display:inline-block; font-size:12px; font-weight:700; border-radius:999px; padding:3px 10px; background:#FFF4EE; color:#1E1B1A; border:1.5px dashed #FF5A1F; white-space:nowrap;}
+.rsyp-proj b{font-weight:900;} .rsyp-proj .up{color:#1E7A44;} .rsyp-proj .down{color:#CC1008;}
+.rsyp-chk{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; cursor:pointer;}
+.rsyp-badge-lab{font-size:12px; font-weight:800; color:#5E5652;}
+.rsyp-chart{position:relative; height:300px;} .rsyp-chart-lg{height:400px;}
+.rsyp-note{font-size:11.5px; color:#9C9490; line-height:1.45;}
+.rs-ytd-table td.rs-tend{font-style:italic; color:#837A76;}
+.rs-ytd-table tr.rs-tot td{font-weight:800; background:#FBFAF8;}
+.rs-yoy-wrap{display:flex; flex-direction:column; gap:12px;} /* RappiStage 151 */
+.rs-yoy-head{font-size:12.5px; font-weight:700; color:#837A76;}
+.rs-yoy-tiles{display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:10px;}
+.rs-yoy-tile{background:#FBFAF8; border:1px solid #EFE9E5; border-radius:12px; padding:12px 14px;}
+.rs-yoy-proj{background:#FFF6F1; border-color:#F5C9B5;}
+.rs-yoy-lab{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#837A76;}
+.rs-yoy-val{font-size:20px; font-weight:900; color:#1E1B1A; margin-top:4px;}
+.rs-yoy-sub{font-size:12px; color:#5E5652; margin-top:3px;}
+.rs-yoy-d{font-weight:800;} .rs-yoy-d.up{color:#1F8A4C;} .rs-yoy-d.down{color:#CC1008;}
+.rs-yoy-chips{display:flex; gap:6px; flex-wrap:wrap;}
+.rs-yoy-chip{border:1.5px solid #E5E0DC; background:#fff; border-radius:999px; padding:5px 12px; font:inherit; font-size:12.5px; font-weight:700; color:#5E5652; cursor:pointer;}
+.rs-yoy-chip.on{border-color:#FF441F; background:#FFF1EC; color:#B8320F;}
+.rs-yoy-chart{position:relative; height:300px;}
+.rs-yoy-note{font-size:11.5px; color:#9C9490; line-height:1.45;}
+.rs-cal-stage{position:relative; outline:none;} /* RappiStage 150 */
+.rs-cal-stage:focus-visible{box-shadow:0 0 0 3px rgba(255,68,31,.35); border-radius:12px;}
+.rs-cal-nav{position:absolute; top:50%; transform:translateY(-50%); width:42px; height:42px; border-radius:50%; border:1.5px solid #E5E0DC; background:rgba(255,255,255,.95); font-size:26px; line-height:1; cursor:pointer; color:#1E1B1A; box-shadow:0 4px 14px rgba(0,0,0,.12); z-index:2;}
+.rs-cal-nav:hover{border-color:var(--rappi-orange-1); color:var(--rappi-orange-2);}
+.rs-cal-prev{left:10px;} .rs-cal-next{right:10px;}
+.rs-cal-count{position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:rgba(30,27,26,.75); color:#fff; font-size:12px; font-weight:800; border-radius:999px; padding:3px 10px; z-index:2;}
+.rs-cal-thumbs{display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:4px;}
+.rs-cal-thumb{height:56px; width:auto; border-radius:6px; border:2px solid transparent; cursor:pointer; opacity:.7; flex:0 0 auto; background:#fff;}
+.rs-cal-thumb.on{border-color:var(--rappi-orange-1); opacity:1;}
 .commercial-cal-preview-wrap{ position:relative; display:inline-block; max-width:100%; }
 .commercial-cal-preview-img{
   display:block; max-width:100%; width:100%; height:auto; border-radius:14px; cursor:zoom-in;
@@ -2231,6 +2282,18 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 160: a linha de Projeção percorre o ano todo (meses fechados = realizado do ano atual; meses que faltam = projeção). */
+/* RappiStage 159: a linha tracejada dos gráficos YTD passa a ser "Projeção <ano>" (mesma conta do balão de projeção); tabela marca os meses como "(projeção)". */
+/* RappiStage 158: balão da projeção de fechamento ao lado do balão YTD + checkbox "Mostrar projeção" (liga/desliga balão e linha tracejada; vale para a apresentação). */
+/* RappiStage 157: balão com o YTD geral (acumulado do ano x ano anterior) no topo de cada gráfico YTD. */
+/* RappiStage 156: balão com valor + % vs mesmo mês do ano anterior em cada mês do ano atual nos gráficos YTD. */
+/* RappiStage 155: "Resultados YTD" (Faturamento/Pedidos/Ticket num card) com lupa = painel de gráficos YTD (modo/tipo/KPIs) + tabela mês a mês; HTML antigo (sem montagem) importado vira modelo da apresentação nova. */
+/* RappiStage 154: YoY vira KPIs YTD nos grids (Mês vs Mês: Faturamento/Pedidos/Ticket YTD; Operações: % Cancelamento (Partner) YTD; Conversão: Conversão SST→OPC/Tráfego YTD), lupa com gráfico mês a mês; tendência = últimos 3 meses; sai o sub-bloco separado. */
+/* RappiStage 153: YoY com Conversão SST→OPC e Tráfego (SST) mês a mês (funil_* no bloco marca_mes). */
+/* RappiStage 152: Gerar CSV com 2 opções (query completa com YoY / rápida sem YoY — SET YOY); YoY com % cancelamento by partner. */
+/* RappiStage 151: sub-bloco YoY (YTD + gráfico mês a mês com tendência de fechamento) no Monthly (KPIs Performance) e Quarterly (Resumo de Resultados); bloco marca_mes do CSV. */
+/* RappiStage 150: Peças em cards uniformes + tela cheia com ‹ › e setas; Calendário/Budget com vários arquivos (imagens e PDF → páginas) e navegação ‹ ›. */
+/* RappiStage 149: apresentações salvas (rascunho, .json ou .html gerado) abrem com as melhorias da versão atual (rsMigrateBlocks); o HTML gerado leva a montagem (#rs-draft-record) e pode ser importado. */
 /* RappiStage 148: Calendário Comercial Rappi também no Growth do Monthly e do Quarterly. */
 /* RappiStage 147: Search (Busca) em colunas com título — Nº de buscas / Share das buscas / Var. vs período anterior. */
 /* RappiStage 146:áveis dos cards voltam a ser lista suspensa (Rappi / marca / Rappi + marca). */
@@ -2444,12 +2507,13 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
         <div class="setup-step-label"><span class="step-num">1</span> Gerar o CSV no Snowflake</div>
         <div id="rs-query-aviso" role="status" style="display:none;margin:0 0 14px;padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5;"></div>
         <ol style="margin:0 0 14px;padding-left:20px;font-size:14px;line-height:1.7;color:#5E5652;">
-          <li>Clique em <b>Copiar query</b>. Ela já vai com o seu e-mail de login.</li>
+          <li>Clique em <b>Copiar query completa (com YoY)</b> — traz também os meses do ano anterior para o sub-bloco YoY e demora mais — ou em <b>Copiar query rápida (sem YoY)</b>. As duas já vão com o seu e-mail de login.</li>
           <li>No Snowflake, abra uma planilha nova do Snowsight, cole a query e clique em <b>Run All</b> (Ctrl + Shift + Enter). Leva cerca de 10 minutos.</li>
           <li>Quando terminar, baixe o resultado como <b>CSV</b> e clique em <b>Próximo</b> para subir o arquivo.</li>
         </ol>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-          <button type="button" class="btn btn-primary btn-sm" id="rs-query-copy">📋 Copiar query</button>
+          <button type="button" class="btn btn-primary btn-sm" id="rs-query-copy" title="Traz também os meses do ano anterior (YoY). Mais demorada.">📋 Copiar query completa (com YoY)</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="rs-query-copy-fast" title="Sem os meses do ano anterior: o sub-bloco YoY fica indisponível.">⚡ Copiar query rápida (sem YoY)</button>
           <span style="font-size:13px;color:#5E5652;">E-mail na query: <b id="rs-query-email"></b></span>
         </div>
         <div id="rs-query-msg" role="status" style="font-size:13px;font-weight:600;color:#B8320F;min-height:20px;margin-bottom:8px;"></div>
@@ -2460,10 +2524,11 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
    A CADA MUDANÇA NA QUERY: troque a VERSAO (data de hoje) e reescreva a lista abaixo
    (o que mudou, em linguagem de AGM, 1 item por linha começando com "- ").
    Depois rode: python _work/embutir_query.py   (gera a próxima RappiStage_NNN.html + index.html)
-   VERSAO: 04/11/2026
-   - Tempo na loja: Picking Time e RT na loja agora são calculados sem sobreposição (mesma régua do Performance Carteira).
-   - Zee Now separada da Petz em todos os blocos.
-   - Carrefour (fora da farmácia) passou para a Rubia.
+   VERSAO: 10/11/2026
+   - YoY: novo bloco com os números fechados mês a mês desde janeiro do ano passado (faturamento, pedidos, ticket, cancelamento by partner e conversão).
+   - Top Sellers e ruptura: produtos sem EAN (NO-EAN) agora aparecem separados pelo nome — antes eram somados numa linha só.
+   - Duas opções: query completa (com YoY, mais demorada) ou rápida (sem YoY) — escolha no botão de copiar.
+   - Tempo na loja sem sobreposição; Zee Now separada da Petz; Carrefour (fora da farmácia) com a Rubia.
 */
 /* =====================================================================================
    RappiStage — QUERY ÚNICA (1 arquivo para subir na plataforma)
@@ -2475,6 +2540,10 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
 
    SAÍDA: 1 linha por registro, coluna `bloco` diz o tipo da linha:
      lojas_dia      1 loja × 1 dia — colunas data … funil_opc  (= antigo 1_lojas_dia.csv)
+     marca_mes      1 marca × 1 mês FECHADO (sem loja/pedido), de janeiro do ANO ANTERIOR até hoje (v151, YoY):
+                    faturamento_total_price, faturamento_income, gmv, pedidos, pedidos_total, pedidos_cancelados (by partner),
+                    funil_sst … funil_opc (conversão).
+                    Com SET YOY = 0 (query rápida) só vêm os meses da janela de 15 meses.
      marca_periodo  1 marca × 1 período — granularidade, periodo_inicio, usuarios_* , meta_gmv
                     (= antigo 2_marca_periodo.csv)
      ranking        marca × período × tipo × item × métrica — tipo, item, metrica, valor, loja_id
@@ -2570,6 +2639,8 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
 SET AGM    = 'seu.email@rappi.com';                                     -- e-mail do AGM; '%' = todos
 SET DT_INI = DATEADD(MONTH, -15, DATE_TRUNC(MONTH, CURRENT_DATE))::DATE;   -- 1º dia do mês, 15 meses atrás
 SET DT_FIM = CURRENT_DATE;                                                 -- exclusivo → dados até D-1
+SET YOY    = 1;   -- 1 = query COMPLETA (com YoY: meses do ano anterior, mais demorada) | 0 = query RÁPIDA (sem YoY)
+ALTER SESSION SET STATEMENT_TIMEOUT_IN_SECONDS = 3600;   -- até 1 h: carteiras grandes não são cortadas no limite padrão de 15 min
 
 WITH
 /* ---------- carteira: 1 linha por loja (Retail; TBL_DIM_STORES é a base da VW_CARTEIRA_BR) ---------- */
@@ -2838,7 +2909,9 @@ PROD_ID AS (
     FROM ITENS_DET WHERE DB_DELETED = FALSE GROUP BY 1, 2, 3, 4
 ),
 CAT AS (   -- catálogo SEMPRE com COUNTRY = 'BR'; 1 linha por produto
-    SELECT X.PRODUCT_ID, COALESCE(RP.EAN, PG.EAN, CP.EAN) AS EAN, COALESCE(RP.NAME, PG.NAME, CP.NAME) AS NOME,
+    -- v153: "NO-EAN"/vazio = SEM EAN (NULL). Antes o texto NO-EAN virava um EAN e juntava produtos diferentes numa linha só
+    -- (Top Sellers, stockout e foto). Sem EAN, o produto é agrupado pelo NOME.
+    SELECT X.PRODUCT_ID, COALESCE(IFF(COALESCE(UPPER(REGEXP_REPLACE(RP.EAN, '[^A-Za-z0-9]', '')), '') IN ('', 'NOEAN'), NULL, RP.EAN), IFF(COALESCE(UPPER(REGEXP_REPLACE(PG.EAN, '[^A-Za-z0-9]', '')), '') IN ('', 'NOEAN'), NULL, PG.EAN), IFF(COALESCE(UPPER(REGEXP_REPLACE(CP.EAN, '[^A-Za-z0-9]', '')), '') IN ('', 'NOEAN'), NULL, CP.EAN)) AS EAN, COALESCE(RP.NAME, PG.NAME, CP.NAME) AS NOME,
            CP.MAKER,
            -- v115/v116: foto do catálogo (vitrine de ruptura): PHOTO_URL do CPGS; senão a imagem do PRODUCTS_GRABILITY;
            -- senão a foto de outro produto com o mesmo EAN. v116: parte do catálogo já guarda a URL completa (napp, vtex…)
@@ -2855,8 +2928,9 @@ CAT AS (   -- catálogo SEMPRE com COUNTRY = 'BR'; 1 linha por produto
     LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.PRODUCTS_GRABILITY_BR PG
            ON PG.PRODUCT_ID = X.PRODUCT_ID AND X.PRODUCT_ID <> 0
     LEFT JOIN (SELECT EAN, MAX(PHOTO_URL) AS FOTO FROM RP_SILVER_DB_PROD.CPGS_LOCAL_ANALYTICS.TBL_RETAILER_PRODUCT_CP
-               WHERE COUNTRY = 'BR' AND PHOTO_URL IS NOT NULL AND EAN IS NOT NULL GROUP BY 1) FE
-           ON FE.EAN = COALESCE(RP.EAN, PG.EAN, CP.EAN)
+               WHERE COUNTRY = 'BR' AND PHOTO_URL IS NOT NULL AND EAN IS NOT NULL
+                 AND UPPER(REGEXP_REPLACE(EAN, '[^A-Za-z0-9]', '')) NOT IN ('', 'NOEAN') GROUP BY 1) FE
+           ON FE.EAN = COALESCE(IFF(COALESCE(UPPER(REGEXP_REPLACE(RP.EAN, '[^A-Za-z0-9]', '')), '') IN ('', 'NOEAN'), NULL, RP.EAN), IFF(COALESCE(UPPER(REGEXP_REPLACE(PG.EAN, '[^A-Za-z0-9]', '')), '') IN ('', 'NOEAN'), NULL, PG.EAN), IFF(COALESCE(UPPER(REGEXP_REPLACE(CP.EAN, '[^A-Za-z0-9]', '')), '') IN ('', 'NOEAN'), NULL, CP.EAN))
     QUALIFY ROW_NUMBER() OVER (PARTITION BY X.PRODUCT_ID ORDER BY CP.MAKER NULLS LAST, RP.EAN NULLS LAST, CP.PHOTO_URL NULLS LAST) = 1
 ),
 PROD_ALL AS (   -- todos os produtos por período (base do top e do "anterior")
@@ -3046,6 +3120,70 @@ DEF_LOJA_PER AS (  -- principal motivo de cada loja FÍSICA no período
     WHERE X.DEFECT_COUNT > 0
     GROUP BY 1, 2, 3, 4, 5, 6
     QUALIFY ROW_NUMBER() OVER (PARTITION BY GR, P, AGM, MARCA, PHYS ORDER BY COUNT(DISTINCT X.ORDER_ID) DESC, ITEM) = 1
+),
+/* ---------- v151 YoY: dados FECHADOS por marca × mês desde janeiro do ano anterior (bloco marca_mes) ----------
+   Sem loja e sem pedido — só o total do mês: faturamento (3 réguas), pedidos e cancelamento by partner.
+   - meses a partir de $DT_INI: os mesmos números do lojas_dia (PED + TP_PED + CANCEL), só somados por mês;
+   - meses ANTES de $DT_INI (só com SET YOY = 1): faturamento/pedidos da base agregada do relatório
+     (SPA_BR.TBL_PBI_SUMMARY, dia × loja — leve) e cancelamento by partner com a mesma regra do CANCEL, agregado por mês. */
+YOY_PBI AS (
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, P.CALENDAR_DATE) AS P,
+           SUM(P.PRECO_TOTAL_PRODUTOS) AS TP, SUM(P.FATURAMENTO) AS INC, SUM(P.GMV) AS GMV, SUM(P.ORDERS) AS PEDIDOS   -- conferido ago–out/25: = TP/income/GMV/pedidos do lojas_dia
+    FROM RP_GOLD_DB_PROD.SPA_BR.TBL_PBI_SUMMARY P
+    JOIN LOJAS L ON L.STORE_ID = P.STORE_ID
+    WHERE $YOY = 1
+      AND P.CALENDAR_DATE >= DATEADD(YEAR, -1, DATE_TRUNC(YEAR, DATEADD(DAY, -1, $DT_FIM)))
+      AND P.CALENDAR_DATE < $DT_INI
+    GROUP BY 1, 2, 3
+),
+YOY_CANC AS (
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE) AS P,
+           COUNT(O.ORDER_ID) AS TOTAL,
+           SUM(CASE WHEN C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Partner' THEN 1 ELSE 0 END) AS CANC
+    FROM RP_SILVER_DB_PROD.DES_PROD.ORDERS_BR O
+    JOIN LOJAS L ON L.STORE_ID = O.STORE_ID
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.CANCELLATIONS_BR C ON C.ORDER_ID = O.ORDER_ID
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.OPS_ORDERS_BR OPS ON OPS.ORDER_ID = O.ORDER_ID
+    WHERE $YOY = 1
+      AND OPS.IS_OPS = TRUE AND OPS.VALID_CARGO != 'non_valid_cargo' AND O.SYNTHETIC = FALSE
+      AND COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE >= DATEADD(YEAR, -1, DATE_TRUNC(YEAR, DATEADD(DAY, -1, $DT_FIM)))
+      AND COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE < $DT_INI
+    GROUP BY 1, 2, 3
+),
+MES_JAN AS (   -- meses da janela: soma dos números diários (= lojas_dia)
+    SELECT O.AGM, O.MARCA, DATE_TRUNC(MONTH, O.D) AS P,
+           SUM(COALESCE(T.TP, 0)) AS TP, SUM(COALESCE(T.INC, 0)) AS INC, SUM(O.GMV) AS GMV, COUNT(DISTINCT O.ORDER_ID) AS PEDIDOS
+    FROM PED O LEFT JOIN TP_PED T ON T.ORDER_ID = O.ORDER_ID AND T.D = O.D
+    GROUP BY 1, 2, 3
+),
+MES_CANC AS (
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, C.D) AS P, SUM(C.TOTAL) AS TOTAL, SUM(C.CANC) AS CANC
+    FROM CANCEL C JOIN LOJAS L ON L.STORE_ID = C.STORE_ID
+    GROUP BY 1, 2, 3
+),
+YOY_FUN AS (   -- v152: funil de conversão por mês ANTES de $DT_INI (mesma fonte e filtro do FUNIL)
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, F.SNAPSHOT::DATE) AS P, SUM(F.SST) AS SST, SUM(F.SS) AS SS, SUM(F.VPD) AS VPD, SUM(F.ATC) AS ATC, SUM(F.VC) AS VC, SUM(F.VSO) AS VSO, SUM(F.PTC) AS PTC, SUM(F.OP) AS OP, SUM(F.OPC) AS OPC
+    FROM RP_SILVER_DB_PROD.GLOBAL_CONVERSIONS.GLOBAL_CONVERSIONS F
+    JOIN LOJAS L ON L.STORE_ID = F.STORE_ID
+    WHERE $YOY = 1 AND F.COUNTRY = 'BR' AND F.STORE_FLAG = TRUE
+      AND F.SNAPSHOT::DATE >= DATEADD(YEAR, -1, DATE_TRUNC(YEAR, DATEADD(DAY, -1, $DT_FIM)))
+      AND F.SNAPSHOT::DATE < $DT_INI
+    GROUP BY 1, 2, 3
+),
+MES_FUN AS (   -- meses da janela: soma do FUNIL diário (= lojas_dia)
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, F.D) AS P, SUM(F.SST) AS SST, SUM(F.SS) AS SS, SUM(F.VPD) AS VPD, SUM(F.ATC) AS ATC, SUM(F.VC) AS VC, SUM(F.VSO) AS VSO, SUM(F.PTC) AS PTC, SUM(F.OP) AS OP, SUM(F.OPC) AS OPC
+    FROM FUNIL F JOIN LOJAS L ON L.STORE_ID = F.STORE_ID
+    GROUP BY 1, 2, 3
+),
+MARCA_MES AS (
+    SELECT COALESCE(F.AGM, C.AGM, U.AGM) AS AGM, COALESCE(F.MARCA, C.MARCA, U.MARCA) AS MARCA, COALESCE(F.P, C.P, U.P) AS P,
+           F.TP, F.INC, F.GMV, F.PEDIDOS, C.TOTAL, C.CANC,
+           U.SST, U.SS, U.VPD, U.ATC, U.VC, U.VSO, U.PTC, U.OP, U.OPC
+    FROM (SELECT * FROM MES_JAN UNION ALL SELECT * FROM YOY_PBI) F
+    FULL OUTER JOIN (SELECT * FROM MES_CANC UNION ALL SELECT * FROM YOY_CANC) C
+      ON C.AGM = F.AGM AND C.MARCA = F.MARCA AND C.P = F.P
+    FULL OUTER JOIN (SELECT * FROM MES_FUN UNION ALL SELECT * FROM YOY_FUN) U
+      ON U.AGM = COALESCE(F.AGM, C.AGM) AND U.MARCA = COALESCE(F.MARCA, C.MARCA) AND U.P = COALESCE(F.P, C.P)
 ),
 MARCAS AS (SELECT DISTINCT AGM, MARCA, BRAND_GROUP_ID FROM LOJAS WHERE MARCA = MARCA_GRUPO),   -- v137: marca "separada" (Zee Now) fica fora: o RappiAds é do grupo inteiro e vai para a marca do grupo (Petz)
 MARCA_INFO AS (   -- 1 linha por AGM × marca (brand_id e vertical da plataforma)
@@ -3476,6 +3614,61 @@ JOIN MARCA_INFO MI ON MI.AGM = R.AGM AND MI.MARCA = R.MARCA
 LEFT JOIN STK_IMG SI ON R.TIPO = 'produto_stockout' AND R.METRICA = 'sku' AND SI.GR = R.GR AND SI.P = R.P AND SI.AGM = R.AGM AND SI.MARCA = R.MARCA AND SI.ITEM = R.ITEM
 WHERE R.P >= $DT_INI AND R.VALOR IS NOT NULL
   AND (ENDSWITH(R.GR, '_td') OR CASE R.GR WHEN 'semana' THEN DATEADD(WEEK, 1, R.P) WHEN 'mes' THEN DATEADD(MONTH, 1, R.P) ELSE DATEADD(MONTH, 3, R.P) END <= $DT_FIM)          -- só períodos FECHADOS (semana/mês/trimestre inteiros)
+
+UNION ALL
+
+SELECT     -- v151: YoY (1 linha por marca × mês, desde janeiro do ano anterior)
+       'marca_mes'::VARCHAR AS "bloco",
+       NULL::VARCHAR AS "data",
+       'mes'::VARCHAR AS "granularidade",
+       TO_CHAR(M.P, 'YYYY-MM-DD')::VARCHAR AS "periodo_inicio",
+       M.MARCA::VARCHAR AS "marca",
+       MI.BRAND_ID::NUMBER(38,0) AS "brand_id",
+       MI.VERTICAL::VARCHAR AS "vertical",
+       NULL::NUMBER(38,0) AS "loja_id",
+       NULL::VARCHAR AS "loja",
+       NULL::VARCHAR AS "store_type",
+       NULL::NUMBER(38,0) AS "physical_id",
+       NULL::VARCHAR AS "physical_nome",
+       ROUND(M.TP, 2)::NUMBER(38,2) AS "faturamento_total_price",
+       ROUND(M.INC, 2)::NUMBER(38,2) AS "faturamento_income",
+       ROUND(M.GMV, 2)::NUMBER(38,2) AS "gmv",
+       M.PEDIDOS::NUMBER(38,0) AS "pedidos",
+       M.TOTAL::NUMBER(38,0) AS "pedidos_total",
+       M.CANC::NUMBER(38,0) AS "pedidos_cancelados",
+       NULL::NUMBER(38,2) AS "gmv_bruto",
+       NULL::NUMBER(38,2) AS "mkd_valor",
+       NULL::NUMBER(38,0) AS "itens_pedidos",
+       NULL::NUMBER(38,0) AS "itens_entregues",
+       NULL::NUMBER(38,2) AS "gmv_perdido_ruptura",
+       NULL::NUMBER(38,0) AS "defect_base_pedidos",
+       NULL::NUMBER(38,0) AS "pedidos_com_defeito",
+       NULL::NUMBER(38,2) AS "picking_minutos_total",
+       NULL::NUMBER(38,0) AS "pedidos_com_picking",
+       NULL::NUMBER(38,2) AS "rt_loja_minutos_total",
+       NULL::NUMBER(38,0) AS "pedidos_com_rt_loja",
+       M.SST::NUMBER(38,0) AS "funil_sst",
+       M.SS::NUMBER(38,0) AS "funil_ss",
+       M.VPD::NUMBER(38,0) AS "funil_vpd",
+       M.ATC::NUMBER(38,0) AS "funil_atc",
+       M.VC::NUMBER(38,0) AS "funil_vc",
+       M.VSO::NUMBER(38,0) AS "funil_vso",
+       M.PTC::NUMBER(38,0) AS "funil_ptc",
+       M.OP::NUMBER(38,0) AS "funil_op",
+       M.OPC::NUMBER(38,0) AS "funil_opc",
+       NULL::NUMBER(38,0) AS "usuarios_ativos",
+       NULL::NUMBER(38,0) AS "usuarios_pro",
+       NULL::NUMBER(38,0) AS "usuarios_novos",
+       NULL::NUMBER(38,0) AS "usuarios_retidos",
+       NULL::NUMBER(38,2) AS "meta_gmv",
+       NULL::NUMBER(38,0) AS "buscas_total",
+       NULL::VARCHAR AS "tipo",
+       NULL::VARCHAR AS "item",
+       NULL::VARCHAR AS "metrica",
+       NULL::NUMBER(38,2) AS "valor",
+       M.AGM::VARCHAR AS "agm"
+FROM MARCA_MES M
+JOIN MARCA_INFO MI ON MI.AGM = M.AGM AND MI.MARCA = M.MARCA
 ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "loja", "tipo", "metrica", "valor" DESC;
 </script>
 
@@ -3715,7 +3908,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
           <div class="mp-import-title">📤 Importar apresentação salva</div>
           <p class="mp-import-desc">Importe um arquivo baixado com o botão "⬇️ Baixar apresentação (arquivo)" (no dashboard) para continuar editando — inclusive uma apresentação salva em outro computador ou enviada por outra pessoa.</p>
           <button type="button" class="btn btn-chip" id="mp-import-btn">📤 Importar apresentação (arquivo)</button>
-          <input type="file" id="mp-import-input" accept="application/json,.json" style="display:none">
+          <input type="file" id="mp-import-input" accept="application/json,.json,text/html,.html,.htm" style="display:none">
         </div>
       </div>
     </div>
@@ -4268,6 +4461,7 @@ const MOCK_DATA = {
             kpi('Faturamento','R$ 2,04M','+11,2%','up'),
             kpi('Pedidos','51.800','+7,8%','up'),
             kpi('Ticket Médio','R$ 39,40','+3,1%','up'),
+            kpi('Resultados YTD','—','—','flat'), // RappiStage 155: Faturamento/Pedidos/Ticket YTD num card só (lupa com gráficos e tabela)
             kpi('Top Sellers','🔍 Ver Top 20 produtos','—','flat'),
             kpi('MKD','14,53%','-0,16 p.p.','down'), // RappiStage 99: MKD em %
             kpi('🏆 10 Melhores Lojas e Lojas Ofensoras','🔍 Ver ranking de lojas','—','flat'),
@@ -4295,6 +4489,7 @@ const MOCK_DATA = {
         { id:'m-o-kpi', kind:'kpi-grid', label:'Mês vs Mês', selected:true,
           data:[
             kpi('% Cancelamento','4,6%','-0,3 p.p.','down'),
+            kpi('% Cancelamento (Partner) YTD','—','—','flat'), // RappiStage 154
             kpi('Motivos Ofensores Cancelamento','Stockout — 30,2%','+1,4 p.p. vs mês ant.','down'),
             kpi('Found Rate','81,9%','+0,6 p.p.','up'),
             kpi('Defect Rate','5,3%','-0,4 p.p.','down'),
@@ -4313,6 +4508,7 @@ const MOCK_DATA = {
           data:[
             kpi('Conversão SST→OPC','22,1%','+0,9 p.p.','up'),
             kpi('Tráfego (SST)','98.400','+3,6%','up'),
+            kpi('Conversão SST→OPC YTD','—','—','flat'), kpi('Tráfego (SST) YTD','—','—','flat'), // RappiStage 154
             kpi('Step Positivador','Busca → PDP','+1,6 p.p.','up'),
             kpi('Step Detrator','PTC → OP','+0,2 p.p.','up'),
           ],
@@ -4471,6 +4667,7 @@ const MOCK_DATA = {
             gkpi('Resultados','QoY','+24,3%','vs mesmo trimestre ano passado','up'),
             gkpi('Resultados','QTD Parcial','R$ 4.150.000','+2,4% vs mesmo corte trimestre ant.','up'),
             gkpi('Resultados','Ticket Médio','R$ 40,10','+2,4%','up'),
+            gkpi('Resultados','Resultados YTD','—','—','flat'), // RappiStage 155
             gkpi('Resultados','MKD','14,20%','-0,10 p.p.','down'), // RappiStage 99: MKD em %
             /* Item (rodada de ajustes): "Faturamento x Investimento" volta a ser um
                KPI comum do grid (mesmo padrão de "Top Sellers"/"5 Melhores Lojas" — valor vira um
@@ -4497,6 +4694,7 @@ const MOCK_DATA = {
                lupa de qualquer um dos 3 mostra o quadro operacional completo do trimestre. Ver
                getOrBuildDrilldownChartItem (editor) e exportKpiGridChartData (export). */
             Object.assign(gkpi('Operação','% Cancelamento','4,4%','-0,5 p.p.','down','Principal ofensor: Defect Rate residual em 2 lojas da região Sul, em tendência de queda.'), { opCombo:true }),
+            gkpi('Operação','% Cancelamento (Partner) YTD','—','—','flat'), // RappiStage 154
             Object.assign(gkpi('Operação','Defect Rate','5,4%','-0,7 p.p.','down'), { opCombo:true }),
             Object.assign(gkpi('Operação','Picking Time','14,2 min','-0,3 min','down'), { opCombo:true }),
             // --- Grupo "Growth" ---
@@ -4508,6 +4706,7 @@ const MOCK_DATA = {
                ver convFunnel em getOrBuildDrilldownChartItem — em vez de cair no seletor genérico
                de KPIs do grid q-r-kpi (QoQ/Ticket Médio/MKD). */
             Object.assign(gkpi('Growth','Conversão','30,4%','+2,2 p.p. QoQ','up','Funil SST→OPC completo (ver detalhamento) — step com maior impacto no trimestre: Carrinho → Checkout (VC → PTC), favorecido pela recorrência de frete grátis.'), { convFunnel:true }),
+            gkpi('Growth','Conversão SST→OPC YTD','—','—','flat'), gkpi('Growth','Tráfego (SST) YTD','—','—','flat'), // RappiStage 154
             /* Item (Round 12): usuariosCombo marca esse KPI pra usar o combo "sob medida" de 3
                séries (SST/Frequência/Retenção) na aba "📊 Gráficos" — ver usuariosCombo em
                getOrBuildDrilldownChartItem — em vez do seletor genérico de KPIs do grid q-r-kpi
@@ -6515,18 +6714,19 @@ function rsQueryFill(){
   const src = document.getElementById('rs-query-src'), txt = document.getElementById('rs-query-text'), em = document.getElementById('rs-query-email');
   const email = state.user && state.user.email;
   if(!src || !txt || !email) return;
-  txt.value = src.textContent.replace("'seu.email@rappi.com'", "'" + email + "'");
+  txt.value = src.textContent.replace("'seu.email@rappi.com'", "'" + email + "'").replace(/SET YOY\s*=\s*1;/, 'SET YOY    = ' + (state.rsQueryYoy === false ? 0 : 1) + ';'); // RappiStage 152
   if(em) em.textContent = email;
   rsQueryAviso();
 }
 function rsQueryCopy(){
   const txt = document.getElementById('rs-query-text'), msg = document.getElementById('rs-query-msg');
-  const ok = () => { msg.textContent = '✓ Query copiada. Cole no Snowflake e rode com Run All.'; rsQueryMarcaCopiada(); };
+  const ok = () => { msg.textContent = '✓ Query ' + (state.rsQueryYoy === false ? 'RÁPIDA (sem YoY)' : 'COMPLETA (com YoY)') + ' copiada. Cole no Snowflake e rode com Run All.'; rsQueryMarcaCopiada(); };
   const manual = () => { txt.focus(); txt.select(); let d = false; try { d = document.execCommand('copy'); } catch(e){} if(d) ok(); else msg.textContent = 'O navegador bloqueou a cópia. O texto já está selecionado: use Ctrl+C.'; };
   rsQueryFill();
   if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt.value).then(ok, manual); else manual();
 }
-document.getElementById('rs-query-copy').addEventListener('click', rsQueryCopy);
+document.getElementById('rs-query-copy').addEventListener('click', () => { state.rsQueryYoy = true; rsQueryCopy(); }); // RappiStage 152
+document.getElementById('rs-query-copy-fast').addEventListener('click', () => { state.rsQueryYoy = false; rsQueryCopy(); });
 /* RappiStage 139: aviso de query nova. O carimbo é calculado do próprio texto da query embutida, então
    QUALQUER alteração na query acende o aviso, sem precisar lembrar de mudar nada. Ao mudar a query,
    atualize só RS_QUERY_VERSAO e RS_QUERY_NOVIDADES (o que o AGM vai ler no aviso). */
@@ -7071,7 +7271,7 @@ function isEmptyManualItem(item){
     case 'field-cards': return !(item.data || []).some(c => t(c.text));
     case 'action-plan-cards': return !(item.data || []).some(c => t(c.what) || t(c.how) || t(c.purpose) || t(c.owner));
     case 'invest-calc': return !(item.campaigns || []).length;
-    case 'commercial-calendar': return !!item.budgetPrint && !(item.calendarFileData || item.calendarImageUrl); // RappiStage 94: budget sem print não vira card vazio
+    case 'commercial-calendar': return !!item.budgetPrint && !rsCalFiles(item).length; // RappiStage 94/150: budget sem print não vira card vazio
     default: return false;
   }
 }
@@ -7150,6 +7350,10 @@ function loadDashboard(){
   state.rsPresetName = null; // RappiStage 135: modelo padrão do AGM para este tipo de reunião
   { const dp = rsPresetList().find(p => p.isDefault); if(dp){ try{ rsPresetApply(dp); setTimeout(() => showToast('⭐ Modelo padrão "' + dp.name + '" aplicado. Troque em ⭐ Modelos.'), 2600); }catch(e){ console.warn('[RappiStage] modelo', e); } } }
   rsPresetBtnLabel();
+  if(state.rsPendingModel && state.rsPendingModel.mt === state.meetingType){ // RappiStage 155: montagem de um HTML antigo
+    try{ rsApplyModel(state.rsPendingModel); setTimeout(() => showToast('📥 Montagem da apresentação anterior aplicada com os dados atuais. Highlights/Lowlights não foram copiados.'), 3000); }catch(e){ console.warn('[RappiStage] modelo', e); }
+    state.rsPendingModel = null;
+  }
   state._brandsForBuilder = isMultiBrand ? state.selectedBrands : (state.brandId ? [{id: state.brandId, name: state.brand}] : []);
 
   const brandDisplayName = isMultiBrand
@@ -8964,101 +9168,90 @@ function renderItemContent(item, block){
     }
 
     case 'commercial-calendar': {
+      /* RappiStage 150: vários arquivos (imagens e PDFs — cada página do PDF vira uma imagem), com
+         ‹ › / setas do teclado para passar de um para o outro. Os arquivos ficam em item.calendarFiles
+         [{id, data, aspect, name, callouts}]; os campos antigos (calendarFileData/ImageUrl/callouts)
+         espelham o 1º arquivo, para compatibilidade. */
       wrap.className = 'commercial-calendar-wrap';
-      if(!item.callouts) item.callouts = [];
-      /* Compat com dados antigos: calendarImageUrl era o único campo (só imagem). Agora o
-         arquivo enviado (imagem OU PDF) vive em calendarFileData + calendarFileType — se só o
-         campo antigo existir, migra pra cá sem perder o que já estava carregado. */
-      if(item.calendarImageUrl && !item.calendarFileData){
-        item.calendarFileData = item.calendarImageUrl;
-        item.calendarFileType = 'image';
-      }
+      rsCalNormalize(item);
+      const files = item.calendarFiles;
+      if(item._calIdx == null || item._calIdx >= files.length) item._calIdx = 0;
+      const isBudget = !!item.budgetPrint;
 
-      function handleUpload(e){
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const dataUrl = ev.target.result;
-          const imgEl = new Image();
-          imgEl.onload = () => {
-            item.calendarFileData = dataUrl;
-            item.calendarFileType = 'image';
-            item.calendarImageUrl = dataUrl; // mantido por compatibilidade com leituras antigas do campo
-            item.calendarImageAspect = `${imgEl.naturalWidth} / ${imgEl.naturalHeight}`;
-            item.callouts = [];
-            renderBody();
-          };
-          imgEl.src = dataUrl;
-        };
-        reader.readAsDataURL(file);
+      async function handleFiles(fileList, replaceIdx){
+        const arr = [...(fileList || [])]; if(!arr.length) return;
+        const novos = [];
+        for(const f of arr){
+          try{
+            if(/pdf$/i.test(f.type) || /\.pdf$/i.test(f.name)) (await rsPdfToImages(f)).forEach(x => novos.push(x));
+            else if(/^image\//.test(f.type)) novos.push(await rsImgFile(f));
+          }catch(err){ console.error(err); showToast('⚠️ Não foi possível ler ' + f.name + '.'); }
+        }
+        if(!novos.length) return;
+        if(replaceIdx != null){ files.splice(replaceIdx, 1, ...novos); item._calIdx = replaceIdx; }
+        else { item._calIdx = files.length; novos.forEach(x => files.push(x)); }
+        rsCalSync(item); renderBody();
+        if(novos.length > 1 || arr.length > 1) showToast('📎 ' + novos.length + ' página(s)/imagem(ns) adicionada(s).');
       }
+      function fileInput(multiple, cb){ const i = document.createElement('input'); i.type = 'file'; i.className = 'hidden-file-input'; i.accept = 'image/*,application/pdf,.pdf'; if(multiple) i.multiple = true; i.addEventListener('change', e => cb(e.target.files)); return i; }
 
       function renderBody(){
+        rsCalSync(item);
         wrap.innerHTML = '';
-        /* Upload agora só aceita imagem (o calendário entra grande/incorporado direto no slide
-           gerado — ver renderItemStatic). Dado legado que ainda tenha um PDF salvo (de uma versão
-           anterior) não trava a tela: mostramos um aviso amigável pedindo reenvio como imagem,
-           em vez de tentar renderizar algo que não é mais suportado. */
-        if(item.calendarFileType === 'pdf' && item.calendarFileData){
-          const warn = document.createElement('div');
-          warn.className = 'period-hint-text';
-          warn.style.cssText = 'color:#8A5300; font-weight:700;';
-          warn.textContent = '⚠️ Este calendário foi enviado como PDF numa versão anterior, que não é mais suportada — reenvie o arquivo como imagem abaixo.';
-          wrap.appendChild(warn);
-          item.calendarFileData = null;
-          item.calendarFileType = null;
-        }
-        if(!item.calendarFileData){
-          const dropzone = document.createElement('label');
-          dropzone.className = 'btn btn-chip calendar-upload-btn';
-          dropzone.innerHTML = `${item.budgetPrint ? '📤 Upload do print do Acompanhamento de Budget (imagem)' : '📤 Upload do Calendário do Mês (imagem)'}<input type="file" accept="image/*" class="hidden-file-input">`;
-          dropzone.querySelector('input').addEventListener('change', handleUpload);
-          wrap.appendChild(dropzone);
+        if(!files.length){
+          const dz = document.createElement('label');
+          dz.className = 'btn btn-chip calendar-upload-btn';
+          dz.textContent = isBudget ? '📤 Upload do print do Acompanhamento de Budget (imagens ou PDF)' : '📤 Upload do Calendário (imagens ou PDF — pode escolher vários)';
+          dz.appendChild(fileInput(true, fl => handleFiles(fl)));
+          wrap.appendChild(dz);
           const hint = document.createElement('div');
-          hint.className = 'period-hint-text';
-          hint.style.marginTop = '8px';
-          hint.textContent = item.budgetPrint ? 'Envie o print do acompanhamento de budget (PNG/JPG — pode colar um print salvo). Na apresentação ele aparece grande no slide; clique para tela cheia e use o zoom (+ / − ou a roda do mouse).'
-            : 'Envie a imagem do calendário comercial do mês (ex.: print do CRONOGRAMA oficial). Na apresentação gerada ela já aparece grande, incorporada direto no slide.';
+          hint.className = 'period-hint-text'; hint.style.marginTop = '8px';
+          hint.textContent = 'Pode enviar vários arquivos (PNG/JPG ou PDF; cada página do PDF vira uma imagem). Na apresentação eles aparecem um por vez, grandes no slide, com setas ‹ › para avançar — e em tela cheia dá para usar as setas do teclado.';
           wrap.appendChild(hint);
           return;
         }
-
+        const idx = item._calIdx, cur = files[idx];
         const previewWrap = document.createElement('div');
-        previewWrap.className = 'commercial-cal-preview-wrap';
+        previewWrap.className = 'commercial-cal-preview-wrap rs-cal-stage';
+        previewWrap.tabIndex = 0;
         const img = document.createElement('img');
         img.className = 'commercial-cal-preview-img';
-        img.src = item.calendarFileData;
-        if(item.calendarImageAspect) img.style.aspectRatio = item.calendarImageAspect;
+        img.src = cur.data;
+        if(cur.aspect) img.style.aspectRatio = cur.aspect;
         img.title = 'Clique para abrir em tela cheia e adicionar comentários';
-        img.addEventListener('click', () => openImageLightbox(item.calendarFileData, item, renderBody, 'image'));
+        img.addEventListener('click', () => openImageLightbox(cur.data, cur, renderBody, 'image'));
         previewWrap.appendChild(img);
-        if(item.callouts.length){
+        if((cur.callouts || []).length){
           const badge = document.createElement('div');
           badge.className = 'commercial-cal-callout-badge';
-          badge.textContent = `💬 ${item.callouts.length} comentário${item.callouts.length > 1 ? 's' : ''}`;
+          badge.textContent = '💬 ' + cur.callouts.length + ' comentário' + (cur.callouts.length > 1 ? 's' : '');
           previewWrap.appendChild(badge);
         }
+        const go = d => { item._calIdx = (item._calIdx + d + files.length) % files.length; renderBody(); const st = wrap.querySelector('.rs-cal-stage'); if(st) st.focus({ preventScroll: true }); };
+        if(files.length > 1){
+          ['prev', 'next'].forEach(dir => { const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'rs-cal-nav rs-cal-' + dir; bt.textContent = dir === 'prev' ? '‹' : '›'; bt.title = dir === 'prev' ? 'Anterior (←)' : 'Próximo (→)';
+            bt.addEventListener('click', e => { e.stopPropagation(); go(dir === 'prev' ? -1 : 1); }); previewWrap.appendChild(bt); });
+          const cnt = document.createElement('div'); cnt.className = 'rs-cal-count'; cnt.textContent = (idx + 1) + ' / ' + files.length; previewWrap.appendChild(cnt);
+          previewWrap.addEventListener('keydown', e => { if(e.key === 'ArrowRight'){ e.preventDefault(); go(1); } else if(e.key === 'ArrowLeft'){ e.preventDefault(); go(-1); } });
+        }
         wrap.appendChild(previewWrap);
-
+        if(files.length > 1){
+          const strip = document.createElement('div'); strip.className = 'rs-cal-thumbs';
+          files.forEach((f, i) => { const t = document.createElement('img'); t.src = f.data; t.className = 'rs-cal-thumb' + (i === idx ? ' on' : ''); t.title = (f.name || ('Arquivo ' + (i + 1)));
+            t.addEventListener('click', () => { item._calIdx = i; renderBody(); }); strip.appendChild(t); });
+          wrap.appendChild(strip);
+        }
         const toolRow = document.createElement('div');
-        toolRow.className = 'gallery-tools';
-        toolRow.style.marginTop = '10px';
-        toolRow.innerHTML = `
-          <button type="button" class="btn btn-chip commercial-cal-fullscreen-btn">🔍 Abrir em tamanho real</button>
-          <label class="btn btn-chip gallery-upload-btn">🔄 Trocar arquivo<input type="file" accept="image/*" class="hidden-file-input"></label>
-          <button type="button" class="btn btn-chip commercial-cal-remove-btn">🗑️ Remover arquivo</button>
-        `;
-        toolRow.querySelector('.commercial-cal-fullscreen-btn').addEventListener('click', () => openImageLightbox(item.calendarFileData, item, renderBody, 'image'));
-        toolRow.querySelector('.hidden-file-input').addEventListener('change', handleUpload);
-        toolRow.querySelector('.commercial-cal-remove-btn').addEventListener('click', () => {
-          item.calendarFileData = null;
-          item.calendarFileType = null;
-          item.calendarImageUrl = null;
-          item.calendarImageAspect = null;
-          item.callouts = [];
-          renderBody();
-        });
+        toolRow.className = 'gallery-tools'; toolRow.style.marginTop = '10px';
+        const mk = (html, cls) => { const el = document.createElement(cls === 'label' ? 'label' : 'button'); if(cls !== 'label') el.type = 'button'; el.className = 'btn btn-chip' + (cls === 'label' ? ' gallery-upload-btn' : ''); el.innerHTML = html; toolRow.appendChild(el); return el; };
+        mk('🔍 Abrir em tamanho real').addEventListener('click', () => openImageLightbox(cur.data, cur, renderBody, 'image'));
+        mk('➕ Adicionar arquivos', 'label').appendChild(fileInput(true, fl => handleFiles(fl)));
+        mk('🔄 Trocar este', 'label').appendChild(fileInput(false, fl => handleFiles(fl, idx)));
+        if(files.length > 1){
+          mk('◀ Mover').addEventListener('click', () => { if(idx > 0){ files.splice(idx - 1, 0, files.splice(idx, 1)[0]); item._calIdx = idx - 1; renderBody(); } });
+          mk('Mover ▶').addEventListener('click', () => { if(idx < files.length - 1){ files.splice(idx + 1, 0, files.splice(idx, 1)[0]); item._calIdx = idx + 1; renderBody(); } });
+        }
+        mk(files.length > 1 ? '🗑️ Remover este' : '🗑️ Remover arquivo').addEventListener('click', () => { files.splice(idx, 1); item._calIdx = Math.max(0, idx - 1); renderBody(); });
         wrap.appendChild(toolRow);
       }
       renderBody();
@@ -9215,6 +9408,17 @@ function renderItemContent(item, block){
         }
       }
       renderProgressRows();
+      break;
+    }
+
+    case 'yoy-ytd': { // RappiStage 151
+      wrap.innerHTML = rsYoyHtml(item, false);
+      const w = wrap.querySelector('.rs-yoy-wrap'), R = activeRealData();
+      if(w && R && R.yoy && R.yoy.ok){
+        w.__rsYoy = R.yoy; w.__rsYoyItem = item;
+        w.querySelectorAll('[data-yoy-metric]').forEach(b => b.addEventListener('click', () => rsYoyMetric(b, b.getAttribute('data-yoy-metric'))));
+        requestAnimationFrame(() => rsYoyDraw(w.querySelector('canvas'), R.yoy, item.metric || 'fat'));
+      }
       break;
     }
 
@@ -11390,6 +11594,7 @@ function chartDatalabelsConfig(type){
 --------------------------------------------------------------------------- */
 function getDrilldown(kpiLabel){
   const l = kpiLabel.toLowerCase();
+  if(/ ytd$/.test(l.trim())) return 'ytd'; // RappiStage 154
   /* Item (rodada de ajustes): precisam vir ANTES dos catches genéricos de "faturamento"/"mkd"
      (linhas abaixo), já que os rótulos desses dois KPIs novos (Resumo de Resultados, Quarterly)
      contêm essas palavras. */
@@ -11442,6 +11647,7 @@ function getDrilldown(kpiLabel){
    KPIs realmente quebra por loja, mas alguns (Top Sellers, Conversão, Usuários) só têm visão de
    Marca, então o rótulo passa a refletir isso em vez de prometer um recorte que não existe. */
 function ddTabLabelFor(type){
+  if(type === 'ytd') return '📋 Mês a mês (tabela)'; // RappiStage 155
   if(type === 'sellers') return '📋 Detalhamento';
   if(type === 'conversao') return '📋 Detalhamento Step by Step';
   if(type === 'buscas') return '📋 Top 10 termos';
@@ -11624,7 +11830,7 @@ const OPERACAO_COMBO_GROUP_DEFS = [
    Item 5 (Round 4): Motivos Ofensores Cancelamento entra na lista também — seu valor (ex.:
    "Stockout — 31,5%") tem um número embutido no texto que o parseSortValue capturaria sem essa
    exclusão explícita, então precisava ser bloqueado por nome pra sumir dos gráficos de Operações. */
-const NON_CHARTABLE_KPI_REGEX = /top\s*sellers|motivos\s*ofensores|palavras\s*mais\s*buscadas/i;
+const NON_CHARTABLE_KPI_REGEX = /top\s*sellers|motivos\s*ofensores|palavras\s*mais\s*buscadas|\bytd$/i; // RappiStage 154: YTD tem lupa própria
 /* Item (rodada de ajustes): base do KPI "Palavras mais buscadas" (Weekly › KPIs Performance) —
    Top 10 termos buscados no app da marca na semana: [termo, nº de buscas, % conversão da busca
    (buscas que viraram pedido com item do termo)]. Mock plausível de farmácia; a variação vs.
@@ -14268,6 +14474,13 @@ function getOrBuildDrilldownChartItem(kpiLabel){
 
 function renderDrilldownChartsTab(kpiLabel){
   cleanupOrphanChartInstances();
+  if(/ ytd$/i.test(String(kpiLabel || '').trim())){ // RappiStage 155: painel YTD
+    const R = activeRealData(), y = R && R.yoy;
+    if(!y || !y.ok){ drilldownChartContent.innerHTML = '<div class="dd-empty-state">📅 YoY indisponível: suba o CSV da query completa (com YoY).</div>'; return; }
+    state.rsYtdCfg = state.rsYtdCfg || {}; const key = String(kpiLabel).toLowerCase();
+    rsYtdPanel(drilldownChartContent, y, state.rsYtdCfg[key], kpiLabel, c => { state.rsYtdCfg[key] = c; });
+    return;
+  }
   const chartItem = getOrBuildDrilldownChartItem(kpiLabel);
   drilldownChartContent.innerHTML = '';
   if(!chartItem){
@@ -14350,7 +14563,7 @@ const DD_TYPES_NO_CHART = ['top5lojas', 'top10lojas', 'motivos', 'sellers', 'mak
 /* RappiStage 126: tabela das etapas do funil no FIM da lupa de Conversão, opcional (checkbox). A escolha do editor
    vale para a apresentação. Função pura (vai para a apresentação via toString). */
 function rsFunilFoot(label, on){
-  if(!/convers|tr[aá]fego|step (positivador|detrator)/i.test(String(label || ''))) return '';
+  if(!/convers|tr[aá]fego|step (positivador|detrator)/i.test(String(label || '')) || /ytd$/i.test(String(label || '').trim())) return '';
     var rows = [
       ['SST', 'Select Store Type', 'Sessões que entraram na vertical / tipo de loja (ex.: Farmácia) — topo do funil'],
       ['SS', 'Select Store', 'Sessões que entraram na loja da marca'],
@@ -14405,6 +14618,7 @@ function openDrilldown(kpiLabel, initialTab){
   initDrilldownInteractions(drilldownLojasContent);
   rsColPickMount(drilldownLojasContent); // RappiStage 114
   rsMountDonuts(drilldownLojasContent);
+  rsYoyMountAll(drilldownLojasContent); // RappiStage 154
   drilldownLojasContent.querySelectorAll('canvas[data-rs-mchart]').forEach(c => rsMountMotivoChart(c));
   drilldownTabToggle.hidden = !dd || noChart;
   const lojasTabBtn = drilldownTabToggle.querySelector('[data-dd-tab="lojas"]');
@@ -15150,8 +15364,27 @@ mpImportInput.addEventListener('change', () => {
   const reader = new FileReader();
   reader.onload = () => {
     let draft;
-    try { draft = JSON.parse(reader.result); }
-    catch(e){ showToast('⚠️ Arquivo inválido — não foi possível ler esta apresentação.'); return; }
+    const txt = String(reader.result || '');
+    if(/^\s*</.test(txt)){ /* RappiStage 149: .html gerado pela plataforma traz a montagem em #rs-draft-record */
+      try{ const doc = new DOMParser().parseFromString(txt, 'text/html'), el = doc.getElementById('rs-draft-record'); draft = el ? JSON.parse(el.textContent) : null; }catch(e){ draft = null; }
+      if(!draft){ // RappiStage 155: HTML antigo → modelo
+        let model = null; try{ model = rsParseOldHtmlModel(txt); }catch(e){ console.warn('[RappiStage] modelo HTML', e); }
+        if(!model){ showToast('⚠️ Não foi possível ler a montagem deste HTML.'); return; }
+        state.rsPendingModel = model;
+        const nm = model.brandName ? ' de ' + model.brandName : '';
+        if(state.meetingType === model.mt && (state.blocks || []).length){
+          rsApplyModel(model); state.rsPendingModel = null; renderBlocks(); goToScreen('screen-dashboard');
+          showToast('📥 Montagem da apresentação' + nm + ' (' + (MEETING_LABELS[model.mt] || '') + ') aplicada com os dados atuais. Highlights/Lowlights não foram copiados.');
+        } else {
+          goToScreen('screen-setup');
+          showToast('📥 Montagem da apresentação' + nm + ' carregada. Escolha a marca, a reunião ' + (MEETING_LABELS[model.mt] || '') + ' e o período: ela já abre montada com os dados atuais.');
+        }
+        return;
+      }
+    } else {
+      try { draft = JSON.parse(txt); }
+      catch(e){ showToast('⚠️ Arquivo inválido — não foi possível ler esta apresentação.'); return; }
+    }
     if(!draft || !Array.isArray(draft.blocks)){ showToast('⚠️ Este arquivo não é uma apresentação válida da plataforma.'); return; }
     const list = loadSavedDrafts();
     if(list !== null){
@@ -15277,6 +15510,159 @@ function deleteDraftById(id){
    para ser reaproveitada também pela importação de um rascunho a partir de um arquivo (ver
    mp-import-input mais abaixo), já que os dois casos reconstroem o dashboard da mesma forma —
    só muda de onde vem o `draft` (localStorage vs. arquivo importado). */
+/* RappiStage 149: apresentação salva numa versão anterior ganha as melhorias da versão atual ao ser
+   aberta (rascunho, arquivo .json ou o próprio .html gerado). Regras:
+   - blocos/itens que a versão atual tem e a salva não tem entram vazios, na posição do modelo;
+   - itens que mudaram de formato são convertidos (ex.: Conquistas/Desafios de 1 campo → card de Próximos Passos);
+   - configurações novas do modelo (rótulos, títulos, campos) são copiadas; o conteúdo do AGM fica intacto;
+   - blocos adicionais (➕ Incluir blocos) são migrados contra o bloco de origem. */
+var RS_CONTENT_KEYS = { data:1, value:1, selected:1, insight:1, insights:1, highlights:1, lowlights:1, rappi:1, parceiro:1, retroEntregue:1, retroPendente:1,
+  note:1, campaigns:1, calendarImageUrl:1, calendarImageAspect:1, calendarFileData:1, calendarFiles:1, callouts:1, images:1, attachments:1, chartCallouts:1, dayComments:1,
+  rows:1, baseValue:1, seriesSelected:1, seriesChartType:1, chartType:1, layoutMode:1, viewMode:1, weeksSelected:1, labels:1, datasets:1, baseLabels:1, baseDatasets:1,
+  kpiValue:1, kpiDelta:1, kpiDir:1, vals:1, cols:1, _uiCollapsed:1,
+  hiddenData:1, metaValue:1, faturamentoReal:1, columnsVisible:1, baseLabel:1, subtotalLabel:1, metric:1 };
+function rsMigrateItem(it, tp){
+  if(it.kind === 'kpi-grid' && tp.kind === 'kpi-grid'){ // RappiStage 154: KPIs novos do modelo entram no grid (ex.: YTD)
+    const have = {}; (it.data || []).concat(it.hiddenData || []).forEach(k => { have[String(k.label).replace(/ \(Partner\)$/, '').toLowerCase()] = 1; have[String(k.label).toLowerCase()] = 1; });
+    let add = 0;
+    { const tl = {}; (tp.data || []).forEach(k => { tl[String(k.label).toLowerCase()] = 1; }); // RappiStage 155: sai card YTD que o modelo não tem mais
+      it.data = (it.data || []).filter(k => !/ ytd$/i.test(String(k.label)) || tl[String(k.label).toLowerCase()]); }
+    (tp.data || []).forEach((k, i) => { const key = String(k.label).toLowerCase(); if(have[key]) return;
+      const prevLab = i > 0 ? String(tp.data[i - 1].label).toLowerCase() : null;
+      let pos = prevLab ? it.data.findIndex(x => { const xl = String(x.label).toLowerCase(); return xl === prevLab || xl.replace(/ \(partner\)$/, '') === prevLab; }) : -1;
+      const nk = deepClone(k); nk.note = ''; it.data.splice(pos === -1 ? it.data.length : pos + 1, 0, nk); have[key] = 1; add++; });
+    if(add) it.__rsAdded = add;
+  }
+  if(it.kind !== tp.kind){
+    if(it.kind === 'field-cards' && tp.kind === 'action-plan-cards'){
+      const n = deepClone(tp); n.selected = it.selected !== false;
+      n.data = (it.data || []).map(c => ({ id: c.id || uid('rmc'), icon: c.icon || tp.defaultIcon || '🗂️', owner: '', what: c.text || '', how: '', purpose: '' }));
+      return { item: n, changed: true };
+    }
+    const n = deepClone(tp); blankManualFields([{ items: [n] }]); n.selected = it.selected !== false; return { item: n, changed: true };
+  }
+  let changed = false;
+  Object.keys(tp).forEach(k => { if(RS_CONTENT_KEYS[k] || k === 'id' || k === 'kind') return;
+    if(JSON.stringify(it[k]) !== JSON.stringify(tp[k])){ it[k] = deepClone(tp[k]); changed = true; } });
+  return { item: it, changed };
+}
+function rsMigrateBlockItems(b, tb, allIds, stats){
+  b.items = (b.items || []).filter(it => it.kind !== 'yoy-ytd'); // RappiStage 154: o YoY virou KPIs dos grids
+  b.items = b.items.map(it => { const tp = tb.items.find(x => x.id === it.id); if(!tp) return it; const r = rsMigrateItem(it, tp); if(r.changed) stats.conv++; if(r.item.__rsAdded){ stats.items += r.item.__rsAdded; delete r.item.__rsAdded; } return r.item; });
+  tb.items.forEach((tp, ti) => {
+    if(allIds[tp.id]) return;
+    const n = deepClone(tp); blankManualFields([{ items: [n] }]);
+    let pos = 0; for(let j = ti - 1; j >= 0; j--){ const k = b.items.findIndex(x => x.id === tb.items[j].id); if(k !== -1){ pos = k + 1; break; } }
+    b.items.splice(pos, 0, n); allIds[tp.id] = 1; stats.items++;
+  });
+  ['title', 'icon', 'theme', 'desc', 'noInsights', 'twoColItems'].forEach(k => { if(tb[k] !== undefined && b[k] !== tb[k]){ b[k] = tb[k]; } });
+}
+function rsMigrateBlocks(blocks, mt){
+  const stats = { blocks: 0, items: 0, conv: 0 };
+  if(!Array.isArray(blocks) || !MOCK_DATA[mt]) return { blocks: blocks, stats: stats };
+  const tmpl = deepClone(MOCK_DATA[mt]);
+  const allIds = {}; blocks.forEach(b => (b.items || []).forEach(it => { allIds[it.id] = 1; }));
+  blocks.forEach(b => {
+    const tb = b._rsExtra ? deepClone((MOCK_DATA[b._rsFrom] || []).find(x => x.id === b.id) || null) : tmpl.find(x => x.id === b.id);
+    if(tb) rsMigrateBlockItems(b, tb, allIds, stats);
+  });
+  tmpl.forEach((tb, ti) => {
+    if(blocks.some(b => b.id === tb.id)) return;
+    const n = deepClone(tb); blankManualFields([n]);
+    n.items = n.items.filter(it => !allIds[it.id]); n.items.forEach(it => { allIds[it.id] = 1; });
+    let pos = 0; for(let j = ti - 1; j >= 0; j--){ const k = blocks.findIndex(x => x.id === tmpl[j].id); if(k !== -1){ pos = k + 1; break; } }
+    blocks.splice(pos, 0, n); stats.blocks++;
+  });
+  return { blocks: blocks, stats: stats };
+}
+/* RappiStage 155: HTML de apresentação gerado ANTES da v149 (sem #rs-draft-record) vira um MODELO:
+   lê na apresentação a ordem dos blocos, o que estava incluído (KPIs marcados, sub-blocos) e o conteúdo
+   escrito pelo AGM (textos, peças, calendário, cards, To-Do) e aplica na apresentação nova — com os dados do
+   CSV atual e o período escolhido agora. Highlights/Lowlights não são copiados (números do período antigo). */
+const RS_MANUAL_KINDS = ['textarea', 'list', 'gallery', 'commercial-calendar', 'action-plan-cards', 'field-cards', 'todo', 'biweekly-calendar', 'invest-calc', 'waterfall-chart', 'ai-insight'];
+function rsOldItemPayload(kind, el){
+  const txtOf = e => e ? e.textContent.replace(/\s+/g, ' ').trim() : '';
+  const multi = e => { if(!e) return ''; const c = e.cloneNode(true); c.querySelectorAll('br').forEach(b => b.replaceWith('\n')); return c.textContent.replace(/[ \t]+\n/g, '\n').trim(); };
+  switch(kind){
+    case 'kpi-grid': return { kpis: [...el.querySelectorAll('.p-kpi-label')].map(l => { const c = l.cloneNode(true); c.querySelectorAll('.p-kpi-dd-icon').forEach(x => x.remove()); return txtOf(c); }) };
+    case 'textarea': return { value: multi(el.querySelector('.p-textblock')) };
+    case 'list': return { data: [...el.querySelectorAll('.p-list li')].map(txtOf).filter(Boolean) };
+    case 'gallery': {
+      const items = [...el.querySelectorAll('.p-gallery-item, .rsg-card')].map(c => {
+        const im = c.querySelector('img'), tile = c.querySelector('.p-gallery-tile, .rsg-media'), asp = ((tile && tile.getAttribute('style')) || '').match(/aspect-ratio:\s*([^;]+)/);
+        return { emoji: '🖼️', name: (im && im.getAttribute('alt')) || txtOf(c.querySelector('.rsg-name')) || '', color: '#FF7A4D', commType: txtOf(c.querySelector('.p-gallery-commtype')), selected: true,
+          photoUrl: im ? im.getAttribute('src') : null, photoAspect: asp ? asp[1].trim() : null, result: multi(c.querySelector('.p-gallery-result, .rsg-result')) };
+      });
+      return { items };
+    }
+    case 'commercial-calendar': {
+      const files = [...el.querySelectorAll('img.p-commercial-cal-img')].map(im => {
+        const w = im.closest('.p-commercial-cal-wrap'), asp = (im.getAttribute('style') || '').match(/aspect-ratio:\s*([^;]+)/);
+        const callouts = w ? [...w.querySelectorAll('.p-chart-callout')].map(c => { const st = c.getAttribute('style') || ''; const l = st.match(/left:\s*([\d.]+)%/), t = st.match(/top:\s*([\d.]+)%/);
+          return { id: uid('callout'), xPct: l ? +l[1] : 50, yPct: t ? +t[1] : 50, text: txtOf(c) }; }) : [];
+        return { id: uid('calf'), data: im.getAttribute('src'), aspect: asp ? asp[1].trim() : null, name: '', callouts };
+      });
+      return { files };
+    }
+    case 'action-plan-cards': case 'field-cards': return { cards: [...el.querySelectorAll('.p-plans-card')].map(c => {
+      const ds = [...c.querySelectorAll('.p-plans-card-desc')].map(multi);
+      return { id: uid('rmc'), icon: txtOf(c.querySelector('.p-plans-card-icon')) || '🗂️', what: ds[0] || '', how: ds[1] || '', purpose: ds[2] || '', owner: [...c.querySelectorAll('.p-action-plan-owner')].map(txtOf).join(' + '), text: ds[0] || '' }; }) };
+    case 'todo': {
+      const sc = [...el.querySelectorAll('script')].map(x => x.textContent).join('\n'), m = sc.match(/__TODOS__\[[^\]]+\]\s*=\s*(\{[\s\S]*\})\s*;/);
+      let o = {}; try{ o = m ? JSON.parse(m[1]) : {}; }catch(e){}
+      const rows = [...el.querySelectorAll('.p-todo-retro-row')].map(r => { const c = r.cloneNode(true); const bb = c.querySelector('b'); const k = bb ? bb.textContent : ''; if(bb) bb.remove(); return [k, multi(c)]; });
+      return { rappi: o.rappi || [], parceiro: o.parceiro || [], retroEntregue: (rows.find(r => /entregue/i.test(r[0])) || [])[1] || '', retroPendente: (rows.find(r => /pendente/i.test(r[0])) || [])[1] || '' };
+    }
+    default: return {};
+  }
+}
+function rsParseOldHtmlModel(txt){
+  let meta = {}; { const mm = txt.match(/EXPORT_PRESENTATION_META = (\{[^\n]*?\});/); try{ meta = mm ? JSON.parse(mm[1]) : {}; }catch(e){} }
+  const mt = meta.meetingType || (txt.match(/EXPORT_MEETING_TYPE = "(\w+)"/) || [])[1];
+  if(!mt || !MOCK_DATA[mt]) return null;
+  const doc = new DOMParser().parseFromString(txt, 'text/html');
+  const els = [...doc.querySelectorAll('.slide-item[data-item-id]')]; if(!els.length) return null;
+  const findTpl = id => { for(const t of [mt, 'weekly', 'monthly', 'quarterly']){ const b = (MOCK_DATA[t] || []).find(x => (x.items || []).some(i => i.id === id)); if(b) return { t, b, it: b.items.find(i => i.id === id) }; } return null; };
+  const blocks = [];
+  els.forEach(el => { const id = el.getAttribute('data-item-id'), f = findTpl(id); if(!f) return;
+    let B = blocks.find(x => x.id === f.b.id); if(!B){ B = { id: f.b.id, from: f.t, items: {} }; blocks.push(B); }
+    try{ B.items[id] = rsOldItemPayload(f.it.kind, el); }catch(e){ B.items[id] = {}; } });
+  const o1 = (txt.match(/--o1:\s*(#[0-9A-Fa-f]{6})/) || [])[1], o2 = (txt.match(/--o2:\s*(#[0-9A-Fa-f]{6})/) || [])[1];
+  return { mt, brandName: meta.brandName || '', periodLabel: meta.period || '', blocks, theme: { o1, o2 } };
+}
+function rsApplyModel(model){
+  const byId = {}; state.blocks.forEach(b => { byId[b.id] = b; });
+  const out = [], norm = x => String(x || '').toLowerCase().replace(/ \(partner\)/, '').replace(/\s+/g, ' ').trim();
+  model.blocks.forEach(mb => {
+    let b = byId[mb.id];
+    if(!b){ if(mb.from === state.meetingType) return; const src = (MOCK_DATA[mb.from] || []).find(x => x.id === mb.id); if(!src) return;
+      b = deepClone(src); blankManualFields([b]); b._rsExtra = true; b._rsFrom = mb.from; }
+    else delete byId[mb.id];
+    b.selected = true;
+    (b.items || []).forEach(it => {
+      const p = mb.items[it.id], manual = RS_MANUAL_KINDS.indexOf(it.kind) !== -1;
+      if(p === undefined){ if(!manual && !it.attachTo && it.kind !== 'chart') it.selected = false; return; }
+      it.selected = true;
+      switch(it.kind){
+        case 'kpi-grid': { const set = new Set((p.kpis || []).map(norm)); if(set.size) (it.data || []).forEach(k => { if(/ ytd$/i.test(k.label)) return; k.selected = set.has(norm(k.label)); }); break; }
+        case 'textarea': it.value = p.value || ''; break;
+        case 'list': it.data = p.data || []; break;
+        case 'gallery': it.data = p.items || []; break;
+        case 'commercial-calendar': it.calendarFiles = p.files || []; rsCalSync(it); break;
+        case 'action-plan-cards': if((p.cards || []).length) it.data = p.cards.map(c => ({ id: c.id, icon: c.icon, owner: c.owner, what: c.what, how: c.how, purpose: c.purpose })); break;
+        case 'field-cards': if((p.cards || []).length) it.data = p.cards.map(c => ({ id: c.id, icon: c.icon, text: c.text })); break;
+        case 'todo': it.rappi = p.rappi || []; it.parceiro = p.parceiro || []; it.retroEntregue = p.retroEntregue || ''; it.retroPendente = p.retroPendente || ''; break;
+      }
+    });
+    out.push(b);
+  });
+  state.blocks.forEach(b => { if(!byId[b.id]) return; // bloco que não estava na apresentação antiga
+    const hasData = (b.items || []).some(i => RS_MANUAL_KINDS.indexOf(i.kind) === -1 && i.kind !== 'chart' && !i.attachTo);
+    if(hasData && !isChartOnlyBlock(b)) b.selected = false; out.push(b); });
+  state.blocks = out;
+  if(model.theme && model.theme.o1){ state.visualTheme = state.visualTheme || {}; state.visualTheme.colorPrimary = model.theme.o1; if(model.theme.o2) state.visualTheme.colorSecondary = model.theme.o2;
+    try{ applyThemeColors(state.visualTheme.colorPrimary, state.visualTheme.colorSecondary || '#FF2526'); }catch(e){} }
+}
 function restoreDraftFromRecord(draft){
   state.brand = draft.brandName || null;
   state.brandId = draft.brandId || null;
@@ -15289,6 +15675,10 @@ function restoreDraftFromRecord(draft){
   state.blocks = deepClone(draft.blocks || []);
   state.autoDrilldownCharts = draft.autoDrilldownCharts ? deepClone(draft.autoDrilldownCharts) : {};
   state.importedData = draft.importedData ? deepClone(draft.importedData) : null;
+  /* RappiStage 149: traz as melhorias da versão atual + refaz os números com a base carregada */
+  { let st = null; try{ const r = rsMigrateBlocks(state.blocks, state.meetingType); state.blocks = r.blocks; st = r.stats; }catch(e){ console.warn('[RappiStage] migração', e); }
+    try{ applyRealDataOverrides(); }catch(e){ console.warn('[RappiStage] dados', e); }
+    if(st && (st.blocks || st.items || st.conv)) setTimeout(() => showToast('✨ Apresentação atualizada para a versão atual: ' + [st.blocks ? st.blocks + ' bloco(s) novo(s)' : '', st.items ? st.items + ' sub-bloco(s) novo(s)' : '', st.conv ? st.conv + ' sub-bloco(s) no formato novo' : ''].filter(Boolean).join(', ') + '. O que você preencheu foi mantido.'), 1800); }
   setTimeout(() => { if(typeof updateImportedStatus === 'function') updateImportedStatus(); }, 0);
   state._autosaveDraftId = draft.id || null;
 
@@ -15844,6 +16234,13 @@ function rsParserStart(fileName){
       if(!gr || !pi) return;
       const o = {}; RS_PERIOD_FIELDS.forEach(f => { o[f] = num(cell(row, f)); });
       (B.periodo[own(gr)] || (B.periodo[own(gr)] = {}))[own(pi)] = o;
+    } else if(bloco === 'marca_mes'){ // RappiStage 151: YoY (marca × mês desde janeiro do ano anterior)
+      const pi = cell(row, 'periodo_inicio'); if(!pi) return;
+      const M0 = B.mes || (B.mes = {}); const o = M0[pi] || (M0[own(pi)] = { tp:0, inc:0, gmv:0, ped:0, tot:0, canc:0 });
+      o.tp += num(cell(row, 'faturamento_total_price')) || 0; o.inc += num(cell(row, 'faturamento_income')) || 0; o.gmv += num(cell(row, 'gmv')) || 0; o.ped += num(cell(row, 'pedidos')) || 0;
+      o.tot += num(cell(row, 'pedidos_total')) || 0; o.canc += num(cell(row, 'pedidos_cancelados')) || 0; // RappiStage 152
+      o.sst = (o.sst || 0) + (num(cell(row, 'funil_sst')) || 0); o.opc = (o.opc || 0) + (num(cell(row, 'funil_opc')) || 0); // RappiStage 153: conversão
+      base.hasMarcaMes = true; { const dn = rsDayNum(pi); if(!(base.mesMin <= dn)) base.mesMin = dn; } // CSV da query completa = tem mês anterior a TODO o lojas_dia (ver finish)
     } else if(bloco === 'pedido_defeito'){ // RappiStage 129: detalhamento por pedido do Defect Rate
       const oid = cell(row, 'item'), me = cell(row, 'metrica'); if(!oid || !me) return;
       const P0 = B.defPed || (B.defPed = {});
@@ -15867,6 +16264,8 @@ function rsParserStart(fileName){
   base.hasIncome = !!H && rsColIndex(idx, 'faturamento_income') !== undefined;
   if(!H || H.indexOf('bloco') === -1) throw new Error('Cabeçalho sem a coluna "bloco".');
   if(!isFinite(base.dadosAte)) throw new Error('O arquivo não tem linhas do bloco lojas_dia com data válida.');
+  { let gmin = Infinity; Object.keys(base.marcas).forEach(n => { const mb = base.marcas[n]; if(isFinite(mb.minDay) && mb.minDay < gmin) gmin = mb.minDay; });
+    base.yoyFullCsv = isFinite(base.mesMin) && base.mesMin < gmin; } // RappiStage 153: query completa (YoY) x rápida
   /* Total da marca por dia (soma das lojas físicas) — base de todas as séries e KPIs de marca. */
   Object.keys(base.marcas).forEach(nome => {
     const B = base.marcas[nome];
@@ -16819,6 +17218,63 @@ function rsToDate(B, base, kind){
 }
 
 /* ---------- dataset da apresentação (1 marca) ---------- */
+/* RappiStage 151: YoY YTD. Mês de referência = mês da reunião (Monthly) ou último mês do trimestre (Quarterly),
+   limitado ao último dia da base. Meses do ano anterior vêm do bloco marca_mes (query 10/11/2026); sem ele,
+   do lojas_dia quando o mês inteiro está na base. Mês de referência em aberto (ex.: dados até 03/11) compara
+   com o MESMO nº de dias do ano anterior. Tendência: cada mês que falta = mesmo mês do ano anterior × (1 + crescimento YTD). */
+function rsYoyRaw(B, type, curFull, dadosAte, base){
+  const refDay = Math.min(curFull.end - 1, dadosAte), iso = rsIso(refDay), Y = +iso.slice(0, 4), ref = +iso.slice(5, 7), dd = +iso.slice(8, 10);
+  const first = (y, m) => rsDayNum(y + '-' + String(m).padStart(2, '0') + '-01');
+  const next = (y, m) => m === 12 ? first(y + 1, 1) : first(y, m + 1);
+  const fk = RS_FAT_FIELD === 'faturamento_income' ? 'inc' : RS_FAT_FIELD === 'faturamento_total_price' ? 'tp' : 'gmv';
+  const fromDaily = (s, e) => { if(s < B.minDay || e - 1 > dadosAte) return null; const a = rsSumBrand(B, s, e), m = rsMetrics(a); if(m.gmv == null && m.pedidos == null) return null;
+    const g = f => (a[RS_NF] & (1 << RS_F[f])) ? a[RS_F[f]] : 0; return { f: m.gmv || 0, p: m.pedidos || 0, t: g('pedidos_total'), c: g('pedidos_cancelados'), s: g('funil_sst'), o: g('funil_opc') }; };
+  const monthVal = (y, m, endCut) => {
+    const s = first(y, m), e = endCut || next(y, m);
+    if(!endCut && B.mes){ const o = B.mes[rsIso(s)]; if(o) return { f: o[fk], p: o.ped, t: o.tot || 0, c: o.canc || 0, s: o.sst || 0, o: o.opc || 0 }; if(s >= B.minDay && e - 1 <= dadosAte) return fromDaily(s, e); return B.mes && base && base.yoyFullCsv && s >= first(Y - 1, 1) && e - 1 <= dadosAte ? { f: 0, p: 0, t: 0, c: 0, s: 0, o: 0 } : null; }
+    return fromDaily(s, e);
+  };
+  const lastDay = next(Y, ref) - 1, partialDays = refDay < lastDay ? dd : null;
+  const raw = [];
+  for(let m = 1; m <= 12; m++){
+    const r = { ly: monthVal(Y - 1, m), cy: m <= ref ? (m === ref && partialDays ? monthVal(Y, m, refDay + 1) : monthVal(Y, m)) : null };
+    if(m === ref && partialDays){ const s = first(Y - 1, m); r.lyCut = fromDaily(s, s + partialDays); }
+    raw.push(r);
+  }
+  return { year: Y, prevYear: Y - 1, ref, partialDays, raw, src: B.mes ? 'marca_mes' : 'lojas_dia' };
+}
+function rsYoyMerge(list){
+  list = list.filter(Boolean); if(!list.length) return null; if(list.length === 1) return list[0];
+  const add = (a, b) => (a && b) ? { f: (a.f || 0) + (b.f || 0), p: (a.p || 0) + (b.p || 0), t: (a.t || 0) + (b.t || 0), c: (a.c || 0) + (b.c || 0), s: (a.s || 0) + (b.s || 0), o: (a.o || 0) + (b.o || 0) } : null;
+  const o = Object.assign({}, list[0], { raw: list[0].raw.map(r => Object.assign({}, r)) });
+  list.slice(1).forEach(x => x.raw.forEach((r, i) => { const t = o.raw[i]; t.ly = add(t.ly, r.ly); t.cy = (t.cy || r.cy) ? add(t.cy || { f: 0, p: 0, t: 0, c: 0, s: 0, o: 0 }, r.cy || { f: 0, p: 0, t: 0, c: 0, s: 0, o: 0 }) : null; if('lyCut' in t || 'lyCut' in r) t.lyCut = add(t.lyCut, r.lyCut); }));
+  return o;
+}
+function rsYoyFinish(Y0){
+  if(!Y0) return null;
+  const ref = Y0.ref, raw = Y0.raw;
+  const ytd = { cyF: 0, cyP: 0, lyF: 0, lyP: 0, cyT: 0, cyC: 0, lyT: 0, lyC: 0, cyS: 0, cyO: 0, lyS: 0, lyO: 0 }; let okLy = true, okCy = true;
+  for(let m = 1; m <= ref; m++){ const r = raw[m - 1];
+    if(!r.cy) okCy = false; else { ytd.cyF += r.cy.f; ytd.cyP += r.cy.p; ytd.cyT += r.cy.t || 0; ytd.cyC += r.cy.c || 0; ytd.cyS += r.cy.s || 0; ytd.cyO += r.cy.o || 0; }
+    const l = (m === ref && Y0.partialDays) ? r.lyCut : r.ly; if(!l) okLy = false; else { ytd.lyF += l.f; ytd.lyP += l.p; ytd.lyT += l.t || 0; ytd.lyC += l.c || 0; ytd.lyS += l.s || 0; ytd.lyO += l.o || 0; } }
+  const gF = okLy && okCy && ytd.lyF > 0 ? ytd.cyF / ytd.lyF - 1 : null, gP = okLy && okCy && ytd.lyP > 0 ? ytd.cyP / ytd.lyP - 1 : null;
+  /* RappiStage 154: a tendência segue o movimento dos ÚLTIMOS 3 MESES (mês de referência e os 2 anteriores) x os mesmos meses do ano anterior */
+  let c3F = 0, l3F = 0, c3P = 0, l3P = 0, ok3 = true;
+  for(let m = Math.max(1, ref - 2); m <= ref; m++){ const r = raw[m - 1], l = (m === ref && Y0.partialDays) ? r.lyCut : r.ly; if(!r.cy || !l) ok3 = false; else { c3F += r.cy.f; l3F += l.f; c3P += r.cy.p; l3P += l.p; } }
+  const tF = ok3 && l3F > 0 ? c3F / l3F - 1 : gF, tP = ok3 && l3P > 0 ? c3P / l3P - 1 : gP;
+  const pc = x => (x && x.t > 0) ? x.c / x.t * 100 : null, cv = x => (x && x.s > 0) ? x.o / x.s * 100 : null, ss = x => (x && x.s > 0) ? x.s : null;
+  const months = raw.map((r, i) => { const m = i + 1, o = { lyF: r.ly ? r.ly.f : null, lyP: r.ly ? r.ly.p : null, cyF: r.cy ? r.cy.f : null, cyP: r.cy ? r.cy.p : null, pjF: null, pjP: null, lyX: pc(r.ly), cyX: pc(r.cy), pjX: null, lyV: cv(r.ly), cyV: cv(r.cy), pjV: null, lyS: ss(r.ly), cyS: ss(r.cy), pjS: null };
+    if(m === ref && !Y0.partialDays){ o.pjF = o.cyF; o.pjP = o.cyP; }
+    else if(m >= ref && tF != null && r.ly){ o.pjF = r.ly.f * (1 + tF); o.pjP = r.ly.p * (1 + tP); }
+    return o; });
+  let fyLyF = 0, fyLyP = 0, okFy = true; raw.forEach(r => { if(!r.ly) okFy = false; else { fyLyF += r.ly.f; fyLyP += r.ly.p; } });
+  let pjF = null, pjP = null;
+  if(tF != null && okFy){ pjF = ytd.cyF; pjP = ytd.cyP;
+    for(let m = ref + 1; m <= 12; m++){ pjF += raw[m - 1].ly.f * (1 + tF); pjP += raw[m - 1].ly.p * (1 + tP); }
+    if(Y0.partialDays){ const r = raw[ref - 1]; pjF += (r.ly.f - r.lyCut.f) * (1 + tF); pjP += (r.ly.p - r.lyCut.p) * (1 + tP); } }
+  return { ok: okLy && okCy, year: Y0.year, prevYear: Y0.prevYear, ref, partialDays: Y0.partialDays, src: Y0.src, months, ytd, gF, gP, tF, tP,
+    fy: { pjF, pjP, lyF: okFy ? fyLyF : null, lyP: okFy ? fyLyP : null } };
+}
 function rsBuildDataset(B, base, type, periodValue, brand){
   const dadosAte = base.dadosAte;
   let cur = csvPeriodDays(type, periodValue), fallback = false, partial = false;
@@ -16907,7 +17363,8 @@ function rsBuildDataset(B, base, type, periodValue, brand){
   const produtos = rsPivot(rsRank(B, type, curRk, 'produto')).map(x => {
     const i = x.item.indexOf(' | ');
     return { ean: i > -1 ? x.item.slice(0, i) : '', nome: i > -1 ? x.item.slice(i + 3) : x.item, gmv: rsPick(x, 'total_price', 'gmv'), unidades:x.unidades === undefined ? null : x.unidades, pedidos:x.pedidos === undefined ? null : x.pedidos, gmvAnt: rsPick(x, 'total_price_anterior', 'gmv_anterior') };
-  }).sort((a, b) => (b.gmv || 0) - (a.gmv || 0));
+  }).filter(p => !/^\s*no[-_ ]?ean\s*$/i.test(p.ean || '')) // RappiStage 153: NO-EAN junta produtos diferentes num só — fora do Top Sellers
+    .sort((a, b) => (b.gmv || 0) - (a.gmv || 0));
   const makers = rsPivot(rsRank(B, type, curRk, 'maker')).map(x => ({ nome:x.item, gmv: rsPick(x, 'total_price', 'gmv'), gmvAnt: rsPick(x, 'total_price_anterior', 'gmv_anterior') })).sort((a, b) => (b.gmv || 0) - (a.gmv || 0));
   const mc = rsPivot(rsRank(B, type, curRk, 'motivo_cancelamento')).map(x => ({ motivo: rsMotivoPT(x.item), pedidos:x.pedidos === undefined ? null : x.pedidos, ant:x.pedidos_anterior === undefined ? null : x.pedidos_anterior }));
   const mcTot = mc.reduce((s, x) => s + (x.pedidos || 0), 0);
@@ -17057,6 +17514,7 @@ function rsBuildDataset(B, base, type, periodValue, brand){
   const W = S.weekly;
   const trend8w = { labels: W.labels.slice(), faturamento: W.gmv.slice(), pedidos: W.pedidos.slice(), ticket_medio: W.ticket.slice(), cancelamento: W.cancel.slice() };
   const D = {
+    yoyRaw: (type === 'monthly' || type === 'quarterly') ? rsYoyRaw(B, type, curFull, dadosAte, base) : null, // RappiStage 151
     source:'rs', fileName: base.fileName, cancelPartner: !!base.cancelPartner, hasRtLoja: !!base.hasRtLoja, importedAt: base.importedAt, dadosAte, dadosAteLabel: rsFmtDY(dadosAte),
     brandId: brand ? brand.id : null, brandName: (brand && brand.name) || B.nome, csvMarca: B.nome, agm: B.agm,
     meetingType: type, periodValue, requestedPeriod: periodValue,
@@ -17137,6 +17595,7 @@ function rsActiveDataset(){
     brands.forEach(b => { const nome = base.match[b.id]; if(nome){ byBrand[b.id] = rsBuildDataset(base.marcas[nome], base, state.meetingType, pv, b); order.push(b.id); } });
     order.forEach(id => { byBrand[id].fatBasis = basis; });
     R = Object.assign({}, byBrand[state.brandId], { byBrand: order.length > 1 ? byBrand : null, brandOrder: order, fatBasis: basis });
+    try{ R.yoy = rsYoyFinish(rsYoyMerge(order.map(id => byBrand[id].yoyRaw))); }catch(e){ console.warn('[RappiStage] YoY', e); R.yoy = null; } // RappiStage 151: grupo = soma das marcas
   }
   RS_CACHE[key] = R;
   if(R) state.importedData = R;
@@ -17188,6 +17647,19 @@ function rsKpi(D, label, origValue){
   const word = rsWordOf(D.meetingType);
   const out = (value, delta, a, b) => ({ value, delta, dir: /^[+-]/.test(delta) ? rsDir(a, b) : 'flat' }); // variação que arredonda a zero = estável
   const isLink = /^(🔍|Ver\s)/.test(String(origValue || '').trim());
+  { const ym = L.match(/^(Resultados|Faturamento|Pedidos|Ticket Médio|% Cancelamento \(Partner\)|Conversão SST→OPC|Tráfego \(SST\)) YTD$/i); // RappiStage 154: YoY acumulado do ano
+    if(ym){
+      const y = D.yoy || (D.yoyRaw ? rsYoyFinish(D.yoyRaw) : null);
+      if(!y || !y.ok) return { value: '—', delta: 'gere o CSV com a query completa', dir: 'flat' };
+      const T = y.ytd, w = ym[1].toLowerCase(), MES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const vs = ' vs Jan' + (y.ref > 1 ? '–' + MES[y.ref - 1] : '') + '/' + String(y.prevYear).slice(-2) + (y.partialDays ? ' (até dia ' + y.partialDays + ')' : '');
+      if(w === 'faturamento' || w === 'resultados') return out(rsBRL(T.cyF), rsDPct(T.cyF, T.lyF) + vs, T.cyF, T.lyF);
+      if(w === 'pedidos') return out(rsInt(T.cyP), rsDPct(T.cyP, T.lyP) + vs, T.cyP, T.lyP);
+      if(w === 'ticket médio'){ const a = T.cyP ? T.cyF / T.cyP : null, b = T.lyP ? T.lyF / T.lyP : null; return out(rsBRL(a), rsDPct(a, b) + vs, a, b); }
+      if(/cancel/.test(w)){ const a = T.cyT > 0 ? T.cyC / T.cyT * 100 : null, b = T.lyT > 0 ? T.lyC / T.lyT * 100 : null; return out(rsPct(a), rsDPP(a, b) + vs, a, b); }
+      if(/convers/.test(w)){ const a = T.cyS > 0 ? T.cyO / T.cyS * 100 : null, b = T.lyS > 0 ? T.lyO / T.lyS * 100 : null; return out(rsPct(a), rsDPP(a, b) + vs, a, b); }
+      return out(rsInt(T.cyS), rsDPct(T.cyS, T.lyS) + vs, T.cyS, T.lyS);
+    } }
   { const mm = L.match(/^MTD (Pedidos|Ticket Médio|MKD)$/i); // RappiStage 88
     if(mm && D.toDate && D.toDate.monthly && D.toDate.monthly.ma){
       const T = D.toDate.monthly, a = T.ma, b = T.mb, w = mm[1].toLowerCase(), vs = ' vs ' + T.prevRange + ' (mesmo corte)';
@@ -17728,7 +18200,39 @@ function rsConvTypeHTML(){
   });
   return '<h3>🧩 Conversão por Type</h3><div class="dd-sub">Funil somado por store type no período, com a variação do SST→OPC vs período anterior.</div>' + body + rsSourceNote(R);
 }
+function rsYtdMetric(label){ const l = String(label || '').toLowerCase(); return /cancel/.test(l) ? 'canc' : /convers/.test(l) ? 'conv' : /tr[aá]fego/.test(l) ? 'sst' : /ticket/.test(l) ? 'ticket' : /pedidos/.test(l) ? 'ped' : 'fat'; }
+function rsYtdExport(){ const R = activeRealData(); return { y: R && R.yoy && R.yoy.ok ? R.yoy : null, cfg: state.rsYtdCfg || {} }; }
+function rsYtdLupaHtml(label){ /* RappiStage 155: aba "Mês a mês (tabela)" da lupa YTD */
+  const R = activeRealData(), y = R && R.yoy;
+  if(!y || !y.ok) return '<h3>📅 ' + escapeHtml(label) + '</h3><div class="dd-sub">YoY indisponível: suba o CSV gerado com a <b>query completa (com YoY)</b> na etapa "Gerar CSV".</div>';
+  const MES = RS_YTD_MES, k0 = rsYtdKeyOf(label), Y = y.year, P = y.prevYear;
+  const grp = k0 === 'canc' ? ['canc'] : (k0 === 'conv' || k0 === 'sst') ? ['conv', 'sst'] : ['fat', 'ped', 'ticket'];
+  const pp = k => k === 'canc' || k === 'conv';
+  const dl = (a, b, k) => pp(k) ? rsDPP(a, b) : rsDPct(a, b);
+  const val = (m, k, w) => rsYoyVal(m, k, w);
+  const head = '<tr><th>Mês</th>' + grp.map(k => '<th>' + rsYtdName(k) + ' ' + Y + '</th><th>' + rsYtdName(k) + ' ' + P + '</th><th>Δ</th>').join('') + '</tr>';
+  let rows = '';
+  y.months.forEach((m, i) => {
+    const mo = i + 1, real = mo <= y.ref, tend = !real && grp[0] === 'fat' && m.pjF != null;
+    if(!real && !tend) return;
+    rows += '<tr><td' + (tend ? ' class="rs-tend"' : '') + '>' + MES[i] + (mo === y.ref && y.partialDays ? ' (até dia ' + y.partialDays + ')' : '') + (tend ? ' (projeção)' : '') + '</td>' + grp.map(k => {
+      const a = real ? val(m, k, 'cy') : val(m, k, 'pj'), b = val(m, k, 'ly');
+      return '<td' + (tend ? ' class="rs-tend"' : '') + '>' + rsYoyFmt(a, k, false) + '</td><td>' + rsYoyFmt(b, k, false) + '</td><td' + (tend ? ' class="rs-tend"' : '') + '>' + dl(a, b, k) + '</td>'; }).join('') + '</tr>';
+  });
+  const T = y.ytd, tot = { fat: [T.cyF, T.lyF], ped: [T.cyP, T.lyP], ticket: [T.cyP ? T.cyF / T.cyP : null, T.lyP ? T.lyF / T.lyP : null],
+    canc: [T.cyT > 0 ? T.cyC / T.cyT * 100 : null, T.lyT > 0 ? T.lyC / T.lyT * 100 : null], conv: [T.cyS > 0 ? T.cyO / T.cyS * 100 : null, T.lyS > 0 ? T.lyO / T.lyS * 100 : null], sst: [T.cyS, T.lyS] };
+  rows += '<tr class="rs-tot"><td>Acumulado do ano (YTD)</td>' + grp.map(k => '<td>' + rsYoyFmt(tot[k][0], k, false) + '</td><td>' + rsYoyFmt(tot[k][1], k, false) + '</td><td>' + dl(tot[k][0], tot[k][1], k) + '</td>').join('') + '</tr>';
+  if(grp[0] === 'fat' && y.fy.pjF != null){
+    const fy = { fat: [y.fy.pjF, y.fy.lyF], ped: [y.fy.pjP, y.fy.lyP], ticket: [y.fy.pjP ? y.fy.pjF / y.fy.pjP : null, y.fy.lyP ? y.fy.lyF / y.fy.lyP : null] };
+    rows += '<tr class="rs-tot"><td class="rs-tend">Fechamento ' + Y + ' (projeção) x ' + P + '</td>' + grp.map(k => '<td class="rs-tend">' + rsYoyFmt(fy[k][0], k, false) + '</td><td>' + rsYoyFmt(fy[k][1], k, false) + '</td><td class="rs-tend">' + dl(fy[k][0], fy[k][1], k) + '</td>').join('') + '</tr>';
+  }
+  const per = 'Jan' + (y.ref > 1 ? '–' + MES[y.ref - 1] : '') + (y.partialDays ? ' (até dia ' + y.partialDays + ')' : '');
+  return '<h3>📅 ' + escapeHtml(label) + ' — mês a mês</h3>' +
+    '<div class="dd-sub">' + per + ' ' + Y + ' vs ' + per + ' ' + P + '. Números fechados de cada mês (sem detalhamento por loja).' + (grp[0] === 'fat' && y.tF != null ? ' Meses em itálico = projeção: mesmo mês de ' + P + ' × crescimento dos últimos 3 meses (' + (y.tF >= 0 ? '+' : '−') + rsNf(Math.abs(y.tF * 100), 1, 1) + '%).' : '') + '</div>' +
+    '<div style="overflow-x:auto;"><table class="dd-table rs-ytd-table"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>';
+}
 function rsDrilldownHTML(type, kpiLabel){
+  if(type === 'ytd') return rsYtdLupaHtml(kpiLabel); // RappiStage 154
   const R = activeRealData(); if(!R || R.source !== 'rs' || !type) return null;
   const mt = R.meetingType, wordCap = mt === 'monthly' ? 'Mês' : mt === 'quarterly' ? 'Trimestre' : 'Semana';
   const filter = () => buildStoreFilterWidgetHtml(rsAllStoreNames(R));
@@ -18431,10 +18935,240 @@ document.getElementById('review-back-btn').addEventListener('click', () => {
 /* RappiStage 145: baixar o HTML da apresentação pronta (o mesmo documento que abre em nova aba),
    para o AGM guardar uma cópia e não perder a montagem. Para continuar EDITANDO depois, o caminho
    segue sendo "⬇️ Baixar apresentação (arquivo)" (.json) + "Importar apresentação". */
+/* RappiStage 150: calendário com vários arquivos */
+function rsCalNormalize(item){
+  if(!Array.isArray(item.calendarFiles)){
+    item.calendarFiles = [];
+    const d = item.calendarFileData || item.calendarImageUrl;
+    if(d && item.calendarFileType !== 'pdf') item.calendarFiles.push({ id: uid('calf'), data: d, aspect: item.calendarImageAspect || null, name: '', callouts: item.callouts || [] });
+  }
+  return item.calendarFiles;
+}
+function rsCalSync(item){
+  const f = (item.calendarFiles || [])[0];
+  item.calendarFileData = f ? f.data : null; item.calendarImageUrl = f ? f.data : null; item.calendarFileType = f ? 'image' : null;
+  item.calendarImageAspect = f ? f.aspect : null; item.callouts = f ? (f.callouts || (f.callouts = [])) : [];
+}
+function rsCalFiles(item){ /* para a apresentação: lista sem alterar o item */
+  if(Array.isArray(item.calendarFiles) && item.calendarFiles.length) return item.calendarFiles;
+  const d = item.calendarFileData || item.calendarImageUrl;
+  return d && item.calendarFileType !== 'pdf' ? [{ data: d, aspect: item.calendarImageAspect || null, callouts: item.callouts || [] }] : [];
+}
+function rsImgFile(file){
+  return new Promise((ok, ko) => { const r = new FileReader(); r.onload = ev => { const im = new Image(); im.onload = () => ok({ id: uid('calf'), data: ev.target.result, aspect: im.naturalWidth + ' / ' + im.naturalHeight, name: file.name, callouts: [] }); im.onerror = ko; im.src = ev.target.result; }; r.onerror = ko; r.readAsDataURL(file); });
+}
+var RS_PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+function rsLoadPdfJs(){
+  if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if(window.__rsPdfJsP) return window.__rsPdfJsP;
+  window.__rsPdfJsP = new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = RS_PDFJS + 'pdf.min.js';
+    sc.onload = () => { try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc = RS_PDFJS + 'pdf.worker.min.js'; ok(window.pdfjsLib); }catch(e){ ko(e); } };
+    sc.onerror = () => { window.__rsPdfJsP = null; ko(new Error('pdf.js não carregou')); }; document.head.appendChild(sc); });
+  return window.__rsPdfJsP;
+}
+async function rsPdfToImages(file){
+  showToast('📄 Convertendo o PDF "' + file.name + '" em imagens…');
+  const lib = await rsLoadPdfJs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  const out = [], n = Math.min(pdf.numPages, 30);
+  for(let i = 1; i <= n; i++){
+    const page = await pdf.getPage(i), v1 = page.getViewport({ scale: 1 }), sc = Math.min(2.5, 1800 / v1.width), vp = page.getViewport({ scale: sc });
+    const cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+    const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+    await page.render({ canvasContext: cx, viewport: vp }).promise;
+    out.push({ id: uid('calf'), data: cv.toDataURL('image/jpeg', 0.86), aspect: cv.width + ' / ' + cv.height, name: file.name + (pdf.numPages > 1 ? ' — pág. ' + i : ''), callouts: [] });
+  }
+  if(pdf.numPages > n) showToast('⚠️ O PDF tem ' + pdf.numPages + ' páginas; entraram as ' + n + ' primeiras.');
+  return out;
+}
+
+/* RappiStage 151: YoY — gráfico mês a mês (ano anterior x ano atual + tendência para fechar o ano) */
+function rsYoyFmt(v, metric, short){
+  if(v == null || isNaN(v)) return '—';
+  if(metric === 'ped' || metric === 'sst') return Math.round(v).toLocaleString('pt-BR');
+  if(metric === 'conv') return Number(v).toLocaleString('pt-BR', { minimumFractionDigits: short ? 1 : 2, maximumFractionDigits: short ? 1 : 2 }) + '%';
+  if(metric === 'canc') return Number(v).toLocaleString('pt-BR', { minimumFractionDigits: short ? 1 : 2, maximumFractionDigits: short ? 1 : 2 }) + '%';
+  if(metric === 'ticket') return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if(short){ if(Math.abs(v) >= 1e6) return 'R$ ' + (v / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' mi'; if(Math.abs(v) >= 1e3) return 'R$ ' + Math.round(v / 1e3).toLocaleString('pt-BR') + ' mil'; }
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+function rsYoyVal(m, metric, k){
+  var f = m[k + 'F'], p = m[k + 'P'];
+  if(metric === 'canc') return m[k + 'X'] == null ? null : m[k + 'X'];
+  if(metric === 'conv') return m[k + 'V'] == null ? null : m[k + 'V'];
+  if(metric === 'sst') return m[k + 'S'] == null ? null : m[k + 'S'];
+  if(metric === 'fat') return f == null ? null : f;
+  if(metric === 'ped') return p == null ? null : p;
+  return (f != null && p) ? f / p : null;
+}
+function rsYoyChartCfg(y, metric){
+  var L = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  var ly = y.months.map(function(m){ return rsYoyVal(m, metric, 'ly'); });
+  var cy = y.months.map(function(m){ return rsYoyVal(m, metric, 'cy'); });
+  var pj = y.months.map(function(m){ return rsYoyVal(m, metric, 'pj'); });
+  return { type: 'bar', data: { labels: L, datasets: [
+      { type: 'bar', label: String(y.prevYear), data: ly, backgroundColor: '#D9D3CF', borderRadius: 4, order: 3 },
+      { type: 'bar', label: String(y.year) + (y.partialDays ? ' (' + L[y.ref - 1] + ' até dia ' + y.partialDays + ')' : ''), data: cy, backgroundColor: '#FF5A1F', borderRadius: 4, order: 2 },
+      { type: 'line', label: 'Projeção de fechamento ' + y.year, data: (metric === 'canc' || metric === 'conv' || metric === 'sst') ? pj.map(function(){ return null; }) : pj, hidden: (metric === 'canc' || metric === 'conv' || metric === 'sst'), borderColor: '#1E1B1A', backgroundColor: '#1E1B1A', borderDash: [6, 4], borderWidth: 2, pointRadius: 3, tension: 0.25, spanGaps: false, order: 1 } ] },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom' }, datalabels: { display: false },
+        tooltip: { callbacks: { label: function(c){ return ' ' + c.dataset.label + ': ' + rsYoyFmt(c.parsed.y, metric, false); } } } },
+      scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return rsYoyFmt(v, metric, true); } } } } } };
+}
+function rsYoyDraw(cv, y, metric){
+  if(!cv || typeof Chart === 'undefined' || !y) return;
+  var old = Chart.getChart(cv); if(old) old.destroy();
+  cv.__rsYoy = y; new Chart(cv, rsYoyChartCfg(y, metric || 'fat'));
+}
+/* RappiStage 155: painel de gráficos YTD — mesmo modelo dos gráficos da lupa (modo, tipo, KPIs), só com dados YTD */
+var RS_YTD_K = [['fat', 'Faturamento'], ['ped', 'Pedidos'], ['ticket', 'Ticket Médio'], ['canc', '% Cancelamento (Partner)'], ['conv', 'Conversão SST→OPC'], ['sst', 'Tráfego (SST)']];
+var RS_YTD_COL = { fat: '#FF5A1F', ped: '#3560AA', ticket: '#1E7A44', canc: '#CC1008', conv: '#8551D3', sst: '#B07A00' };
+var RS_YTD_MES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+function rsYtdName(k){ for(var i = 0; i < RS_YTD_K.length; i++){ if(RS_YTD_K[i][0] === k) return RS_YTD_K[i][1]; } return k; }
+function rsYtdRgba(h, a){ var n = parseInt(h.slice(1), 16); return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; }
+function rsYtdKeyOf(label){ var l = String(label || '').toLowerCase(); return l.indexOf('cancel') >= 0 ? 'canc' : l.indexOf('convers') >= 0 ? 'conv' : (l.indexOf('tráfego') >= 0 || l.indexOf('trafego') >= 0) ? 'sst' : 'fat'; }
+function rsYtdAvail(y){ var T = y.ytd, o = ['fat', 'ped', 'ticket']; if(T.cyT > 0 || T.lyT > 0) o.push('canc'); if(T.cyS > 0 || T.lyS > 0){ o.push('conv'); o.push('sst'); } return o; }
+function rsYtdLbl(k, ly){ /* RappiStage 156: balão em cada mês do ano atual — valor + comparação com o mesmo mês do ano anterior */
+  var pp = k === 'canc' || k === 'conv', nl = String.fromCharCode(10);
+  return { display: function(ctx){ return ctx.dataset.data[ctx.dataIndex] != null; }, anchor: 'end', align: 'end', offset: 2, clamp: true, clip: false,
+    color: '#FFFFFF', backgroundColor: 'rgba(30,27,26,0.85)', borderRadius: 6, padding: { top: 2, bottom: 2, left: 5, right: 5 }, font: { weight: '800', size: 9.5 }, textAlign: 'center',
+    formatter: function(v, ctx){ var b = ly[ctx.dataIndex], d = '';
+      if(b != null && v != null){ if(pp) d = (v - b >= 0 ? '+' : '−') + Math.abs(v - b).toFixed(2).replace('.', ',') + ' p.p.'; else if(b) d = ((v - b) / b * 100 >= 0 ? '+' : '−') + Math.abs((v - b) / b * 100).toFixed(1).replace('.', ',') + '%'; }
+      return d || rsYoyFmt(v, k, true); } }; // só a comparação com o mesmo mês do ano anterior
+}
+function rsYtdSets(y, k, type, axis, withName, noLbl, noProj){
+  var c = RS_YTD_COL[k] || '#FF5A1F', nm = withName ? rsYtdName(k) + ' ' : '', line = type === 'line';
+  var g = function(w){ return y.months.map(function(m){ return rsYoyVal(m, k, w); }); };
+  var out = [
+    { type: type, label: nm + y.prevYear, data: g('ly'), backgroundColor: rsYtdRgba(c, 0.30), borderColor: rsYtdRgba(c, 0.55), borderWidth: line ? 2 : 0, borderRadius: 4, pointRadius: line ? 3 : 0, tension: 0.25, yAxisID: axis, order: 3, rsK: k },
+    { type: type, label: nm + y.year, data: g('cy'), backgroundColor: c, borderColor: c, borderWidth: line ? 2.5 : 0, borderRadius: 4, pointRadius: line ? 3 : 0, tension: 0.25, yAxisID: axis, order: 2, rsK: k, datalabels: noLbl ? { display: false } : rsYtdLbl(k, g('ly')) } ];
+  if(!noProj && (k === 'fat' || k === 'ped' || k === 'ticket')) out.push({ type: 'line', label: nm + 'Projeção ' + y.year, data: (function(){ var cy = g('cy'); return g('pj').map(function(v, i){ return v != null ? v : cy[i]; }); })(), borderColor: c, backgroundColor: c, borderDash: [6, 4], borderWidth: 2, pointRadius: 3, tension: 0.25, spanGaps: false, yAxisID: axis, order: 1, rsK: k });
+  return out;
+}
+function rsYtdBadge(y, k, per){ /* RappiStage 157: balão com o YTD geral (acumulado do ano x mesmo período do ano anterior) */
+  var T = y.ytd, a = null, b = null, pp = k === 'canc' || k === 'conv';
+  if(k === 'fat'){ a = T.cyF; b = T.lyF; } else if(k === 'ped'){ a = T.cyP; b = T.lyP; }
+  else if(k === 'ticket'){ a = T.cyP ? T.cyF / T.cyP : null; b = T.lyP ? T.lyF / T.lyP : null; }
+  else if(k === 'canc'){ a = T.cyT > 0 ? T.cyC / T.cyT * 100 : null; b = T.lyT > 0 ? T.lyC / T.lyT * 100 : null; }
+  else if(k === 'conv'){ a = T.cyS > 0 ? T.cyO / T.cyS * 100 : null; b = T.lyS > 0 ? T.lyO / T.lyS * 100 : null; }
+  else if(k === 'sst'){ a = T.cyS; b = T.lyS; }
+  if(a == null || b == null || (!pp && !b)) return '';
+  var d = pp ? a - b : (a - b) / b * 100, good = k === 'canc' ? d <= 0 : d >= 0;
+  var txt = (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(pp ? 2 : 1).replace('.', ',') + (pp ? ' p.p.' : '%');
+  return '<span class="rsyp-ytd ' + (good ? 'up' : 'down') + '" title="' + rsYtdName(k) + ' acumulado ' + per + ' ' + y.year + ': ' + rsYoyFmt(a, k, false) + ' x ' + rsYoyFmt(b, k, false) + ' em ' + y.prevYear + '">YTD ' + per + ': <b>' + txt + '</b> vs ' + y.prevYear + '</span>';
+}
+function rsYtdProjBadge(y, k){ /* RappiStage 158: balão com a projeção de fechamento do ano (tendência dos últimos 3 meses) */
+  var F = y.fy || {}, a = null, b = null;
+  if(k === 'fat'){ a = F.pjF; b = F.lyF; } else if(k === 'ped'){ a = F.pjP; b = F.lyP; }
+  else if(k === 'ticket'){ a = F.pjP ? F.pjF / F.pjP : null; b = F.lyP ? F.lyF / F.lyP : null; }
+  else return '';
+  if(a == null) return '';
+  var d = b ? (a - b) / b * 100 : null;
+  var dt = d == null ? '' : ' <span class="' + (d >= 0 ? 'up' : 'down') + '">' + (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(1).replace('.', ',') + '%</span> vs ' + y.prevYear;
+  return '<span class="rsyp-proj" title="Projeção de fechamento ' + y.year + ' (meses que faltam = mesmo mês de ' + y.prevYear + ' × crescimento dos últimos 3 meses): ' + rsYoyFmt(a, k, false) + (b ? ' x ' + rsYoyFmt(b, k, false) + ' em ' + y.prevYear : '') + '">📈 Projeção ' + y.year + ': <b>' + rsYoyFmt(a, k, true) + '</b>' + dt + '</span>';
+}
+function rsYtdPills(y, k, per, proj){ return '<span class="rsyp-pills">' + rsYtdBadge(y, k, per) + (proj ? rsYtdProjBadge(y, k) : '') + '</span>'; }
+function rsYtdChart(cv, y, keys, kt, noProj){
+  if(!cv || typeof Chart === 'undefined') return;
+  var old = Chart.getChart(cv); if(old) old.destroy();
+  var multi = keys.length > 1, sets = [], scales = {};
+  keys.forEach(function(k, i){ var ax = 'y' + i; sets = sets.concat(rsYtdSets(y, k, kt[k] || 'bar', ax, multi, i > 0, noProj));
+    scales[ax] = { beginAtZero: true, display: i < 2, position: i === 1 ? 'right' : 'left', grid: { drawOnChartArea: i === 0 }, ticks: { callback: (function(kk){ return function(v){ return rsYoyFmt(v, kk, true); }; })(k) } }; });
+  new Chart(cv, { type: 'bar', data: { labels: RS_YTD_MES.slice(), datasets: sets },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, layout: { padding: { top: 30 } },
+      plugins: { legend: { position: 'bottom' }, datalabels: { display: false },
+        tooltip: { callbacks: { label: function(c){ return ' ' + c.dataset.label + ': ' + rsYoyFmt(c.parsed.y, c.dataset.rsK, false); } } } },
+      scales: scales } });
+}
+function rsYtdPanel(box, y, cfg, label, onChange){
+  if(!box || !y) return;
+  var av = rsYtdAvail(y), st = { sel: {}, mode: 'separate', kt: {}, proj: true };
+  if(cfg){ st.mode = cfg.mode || st.mode; st.kt = cfg.kt || {}; if(cfg.sel) st.sel = cfg.sel; if(cfg.proj === false) st.proj = false; }
+  if(!Object.keys(st.sel).some(function(k){ return st.sel[k] && av.indexOf(k) >= 0; })){ st.sel = {}; st.sel[rsYtdKeyOf(label)] = true; }
+  var per = 'Jan' + (y.ref > 1 ? '–' + RS_YTD_MES[y.ref - 1] : '') + (y.partialDays ? ' (até dia ' + y.partialDays + ')' : '');
+  function save(){ if(onChange) onChange({ sel: st.sel, mode: st.mode, kt: st.kt, proj: st.proj }); }
+  function draw(){
+    if(typeof Chart !== 'undefined') box.querySelectorAll('canvas').forEach(function(c){ var o = Chart.getChart(c); if(o) o.destroy(); });
+    var keys = av.filter(function(k){ return st.sel[k]; });
+    var allLine = keys.length && keys.every(function(k){ return st.kt[k] === 'line'; });
+    var h = '<div class="rsyp">' +
+      '<div class="rsyp-row"><span class="rsyp-lab">Modo de exibição:</span><button type="button" class="rsyp-btn' + (st.mode === 'combined' ? ' on' : '') + '" data-mode="combined">Um gráfico só</button><button type="button" class="rsyp-btn' + (st.mode === 'separate' ? ' on' : '') + '" data-mode="separate">Separado por KPI</button></div>' +
+      '<div class="rsyp-row"><span class="rsyp-lab">Tipo de gráfico:</span><select class="rsyp-sel" data-all-type="1"><option value="bar"' + (allLine ? '' : ' selected') + '>Barra</option><option value="line"' + (allLine ? ' selected' : '') + '>Linha</option></select></div>' +
+      '<div class="rsyp-row"><span class="rsyp-lab">Dados:</span><span class="rsyp-btn on">YTD — ' + per + ' ' + y.year + ' x ' + y.prevYear + '</span></div>' +
+      (y.fy && y.fy.pjF != null ? '<div class="rsyp-row"><span class="rsyp-lab">Projeção:</span><label class="rsyp-chk"><input type="checkbox" data-proj="1"' + (st.proj ? ' checked' : '') + '> Mostrar projeção de fechamento ' + y.year + ' (balão + linha tracejada)</label></div>' : '') +
+      '<div class="rsyp-row rsyp-kpis"><span class="rsyp-lab">KPIs:</span>' + av.map(function(k){ var on = !!st.sel[k], t = st.kt[k] || 'bar';
+        return '<label class="rsyp-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-k="' + k + '"' + (on ? ' checked' : '') + '> ' + rsYtdName(k) + ' <select class="rsyp-sel rsyp-sel-sm" data-kt="' + k + '"><option value="bar"' + (t === 'bar' ? ' selected' : '') + '>Barra</option><option value="line"' + (t === 'line' ? ' selected' : '') + '>Linha</option></select></label>'; }).join('') + '</div>';
+    if(!keys.length) h += '<div class="rsyp-note">Marque pelo menos um KPI.</div>';
+    else if(st.mode === 'combined') h += '<div class="rsyp-card"><div class="rsyp-badges">' + keys.map(function(k){ return '<span class="rsyp-badge-lab">' + rsYtdName(k) + '</span>' + rsYtdPills(y, k, per, st.proj); }).join('') + '</div><div class="rsyp-chart rsyp-chart-lg"><canvas></canvas></div></div>';
+    else h += '<div class="rsyp-grid' + (keys.length === 1 ? ' one' : '') + '">' + keys.map(function(k){ return '<div class="rsyp-card"><div class="rsyp-card-title">' + rsYtdName(k) + rsYtdPills(y, k, per, st.proj) + '</div><div class="rsyp-chart"><canvas data-k="' + k + '"></canvas></div></div>'; }).join('') + '</div>';
+    h += '<div class="rsyp-note">Barras claras = ' + y.prevYear + ' · barras fortes = ' + y.year + (st.proj ? ' · linha tracejada = projeção de fechamento ' + y.year + ' (a mesma do balão 📈), percorre o ano todo: meses fechados = realizado; cada mês que falta = mesmo mês de ' + y.prevYear + ' × crescimento dos últimos 3 meses' + (y.tF != null ? ' (' + (y.tF >= 0 ? '+' : '−') + Math.abs(y.tF * 100).toFixed(1).replace('.', ',') + '%)' : '') + '. Cancelamento, Conversão e Tráfego não têm projeção' : '') + '.</div></div>';
+    box.innerHTML = h;
+    box.querySelectorAll('[data-mode]').forEach(function(b){ b.addEventListener('click', function(){ st.mode = b.getAttribute('data-mode'); save(); draw(); }); });
+    box.querySelectorAll('[data-all-type]').forEach(function(sl){ sl.addEventListener('change', function(){ av.forEach(function(k){ st.kt[k] = sl.value; }); save(); draw(); }); });
+    box.querySelectorAll('input[data-proj]').forEach(function(cb){ cb.addEventListener('change', function(){ st.proj = cb.checked; save(); draw(); }); });
+    box.querySelectorAll('input[data-k]').forEach(function(cb){ cb.addEventListener('change', function(){ st.sel[cb.getAttribute('data-k')] = cb.checked; save(); draw(); }); });
+    box.querySelectorAll('select[data-kt]').forEach(function(sl){ sl.addEventListener('click', function(e){ e.stopPropagation(); }); sl.addEventListener('change', function(){ st.kt[sl.getAttribute('data-kt')] = sl.value; save(); draw(); }); });
+    if(keys.length){ if(st.mode === 'combined') rsYtdChart(box.querySelector('canvas'), y, keys, st.kt, !st.proj); else box.querySelectorAll('canvas[data-k]').forEach(function(cv){ rsYtdChart(cv, y, [cv.getAttribute('data-k')], st.kt, !st.proj); }); }
+  }
+  draw();
+}
+function rsYoyMountAll(root){
+  if(!root) return;
+  root.querySelectorAll('.rs-yoy-wrap[data-yoy]').forEach(function(w){ var y; try{ y = JSON.parse(w.getAttribute('data-yoy')); }catch(e){ return; }
+    w.__rsYoy = y; var cv = w.querySelector('canvas'); if(cv) rsYoyDraw(cv, y, w.getAttribute('data-metric') || 'fat'); });
+}
+function rsYoyMetric(btn, metric){
+  var w = btn.closest('.rs-yoy-wrap'); if(!w) return;
+  w.querySelectorAll('[data-yoy-metric]').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-yoy-metric') === metric); });
+  var cv = w.querySelector('canvas'); if(cv) rsYoyDraw(cv, cv.__rsYoy || w.__rsYoy, metric);
+  if(w.__rsYoyItem) w.__rsYoyItem.metric = metric;
+}
+
+function rsYoyHtml(item, forExport){
+  const R = activeRealData(), y = R && R.yoy;
+  const MES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  if(!y || !y.ok){
+    const why = !R || R.source !== 'rs' ? 'Suba o CSV do Snowflake para ver o YoY.' : 'O CSV carregado não traz os meses do ano anterior — gere o CSV com a <b>query completa (com YoY)</b> na etapa "Gerar CSV" e suba de novo.';
+    return '<div class="rs-yoy-wrap"><div class="p-empty-hint rs-yoy-empty">📅 YoY indisponível: ' + why + '</div></div>';
+  }
+  const per = 'Jan' + (y.ref > 1 ? '–' + MES[y.ref - 1] : '') + (y.partialDays ? ' (até dia ' + y.partialDays + ')' : '');
+  const basis = R.fatBasis === 'income' ? 'Income' : R.fatBasis === 'total_price' ? 'Total Price' : 'GMV';
+  const dp = (a, b) => rsDPct(a, b), cls = (a, b) => (a != null && b ? (a >= b ? ' up' : ' down') : '');
+  const T = y.ytd, tk = T.cyP ? T.cyF / T.cyP : null, tkL = T.lyP ? T.lyF / T.lyP : null;
+  const tile = (lab, v, vl, fmt) => '<div class="rs-yoy-tile"><div class="rs-yoy-lab">' + lab + '</div><div class="rs-yoy-val">' + fmt(v) + '</div><div class="rs-yoy-sub">' + y.prevYear + ': ' + fmt(vl) + ' <span class="rs-yoy-d' + cls(v, vl) + '">' + dp(v, vl) + '</span></div></div>';
+  const money = v => rsYoyFmt(v, 'fat', false);
+  const cx = T.cyT > 0 ? T.cyC / T.cyT * 100 : null, cxL = T.lyT > 0 ? T.lyC / T.lyT * 100 : null;
+  const tileC = '<div class="rs-yoy-tile"><div class="rs-yoy-lab">% Cancelamento by partner YTD</div><div class="rs-yoy-val">' + rsYoyFmt(cx, 'canc') + '</div><div class="rs-yoy-sub">' + y.prevYear + ': ' + rsYoyFmt(cxL, 'canc') + ' <span class="rs-yoy-d' + (cx != null && cxL != null ? (cx <= cxL ? ' up' : ' down') : '') + '">' + rsDPP(cx, cxL) + '</span></div></div>';
+  const cvC = T.cyS > 0 ? T.cyO / T.cyS * 100 : null, cvL = T.lyS > 0 ? T.lyO / T.lyS * 100 : null;
+  const tileV = '<div class="rs-yoy-tile"><div class="rs-yoy-lab">Conversão SST→OPC YTD</div><div class="rs-yoy-val">' + rsYoyFmt(cvC, 'conv') + '</div><div class="rs-yoy-sub">' + y.prevYear + ': ' + rsYoyFmt(cvL, 'conv') + ' <span class="rs-yoy-d' + (cvC != null && cvL != null ? (cvC >= cvL ? ' up' : ' down') : '') + '">' + rsDPP(cvC, cvL) + '</span></div></div>';
+  const hasConv = T.cyS > 0 || T.lyS > 0; // RappiStage 153
+  const tiles = tile('Faturamento YTD', T.cyF, T.lyF, money) + tile('Pedidos YTD', T.cyP, T.lyP, v => rsYoyFmt(v, 'ped')) + tile('Ticket Médio YTD', tk, tkL, v => rsYoyFmt(v, 'ticket')) + (T.cyT > 0 || T.lyT > 0 ? tileC : '') + (hasConv ? tileV : '') +
+    '<div class="rs-yoy-tile rs-yoy-proj"><div class="rs-yoy-lab">📈 Projeção de fechamento ' + y.year + '</div><div class="rs-yoy-val">' + money(y.fy.pjF) + '</div><div class="rs-yoy-sub">' + y.prevYear + ' fechou ' + money(y.fy.lyF) + ' <span class="rs-yoy-d' + cls(y.fy.pjF, y.fy.lyF) + '">' + dp(y.fy.pjF, y.fy.lyF) + '</span></div></div>';
+  const metric = item.metric || 'fat';
+  const chip = (k, t) => '<button type="button" class="rs-yoy-chip' + (metric === k ? ' on' : '') + '" data-yoy-metric="' + k + '"' + (forExport ? ' onclick="rsYoyMetric(this, &#39;' + k + '&#39;)"' : '') + '>' + t + '</button>';
+  const cid = 'rs-yoy-' + item.id + (forExport ? '' : '-ed');
+  return '<div class="rs-yoy-wrap">' +
+    '<div class="rs-yoy-head">' + per + ' ' + y.year + ' vs ' + per + ' ' + y.prevYear + ' · Faturamento: ' + basis + '</div>' +
+    '<div class="rs-yoy-tiles">' + tiles + '</div>' +
+    '<div class="rs-yoy-chips">' + chip('fat', 'Faturamento') + chip('ped', 'Pedidos') + chip('ticket', 'Ticket Médio') + (T.cyT > 0 || T.lyT > 0 ? chip('canc', '% Cancelamento') : '') + (hasConv ? chip('conv', 'Conversão SST→OPC') + chip('sst', 'Tráfego (SST)') : '') + '</div>' +
+    '<div class="rs-yoy-chart"><canvas id="' + cid + '"></canvas></div>' +
+    '<div class="rs-yoy-note">Linha tracejada (Faturamento, Pedidos e Ticket) = tendência: cada mês que falta é o mesmo mês de ' + y.prevYear + ' × (1 ' + (y.gF >= 0 ? '+' : '−') + ' ' + rsNf(Math.abs(y.gF * 100), 1, 1) + '%, crescimento do faturamento no acumulado do ano)' + (y.partialDays ? '; ' + MES[y.ref - 1] + ' está em andamento (comparado com os mesmos ' + y.partialDays + ' dias de ' + y.prevYear + ')' : '') + '.</div>' +
+    (forExport ? '<script>window.__RS_YOY__ = window.__RS_YOY__ || []; window.__RS_YOY__.push(' + JSON.stringify({ canvasId: cid, y: y, metric: metric }).replace(/</g, '\\u003c') + ');<' + '/script>' : '') +
+    '</div>';
+}
+function rsWithDraftRecord(html){ /* RappiStage 149 */
+  try{
+    const rec = buildDraftRecord(); delete rec.id;
+    const js = JSON.stringify(rec).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+    const tag = '<script type="application/json" id="rs-draft-record">' + js + '</' + 'script>';
+    const i = html.lastIndexOf('</body>');
+    return i === -1 ? html + tag : html.slice(0, i) + tag + html.slice(i);
+  }catch(e){ console.warn('[RappiStage] montagem no HTML', e); return html; }
+}
 function rsDownloadPresentationHtml(){
   renderBlocks();
   let html;
-  try{ html = buildPresentationDocument(); }
+  try{ html = rsWithDraftRecord(buildPresentationDocument()); }
   catch(err){ console.error('Falha ao montar a apresentação:', err); showToast('❌ Não foi possível gerar o HTML — veja o console para detalhes.'); return; }
   const slug = v => String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   const per = state.period && state.period.label ? '-' + slug(state.period.label).slice(0, 40) : '';
@@ -18698,18 +19432,20 @@ function renderItemStatic(item, block){
     case 'list':
       return `<ul class="p-list">${item.data.filter(d => d && d.trim()).map(d => `<li>${escapeHtml(d)}</li>`).join('')}</ul>`;
 
-    case 'gallery':
-      /* Quando existe foto enviada, a peça já mostra a imagem em si — o nome (ex.: "Banner Home")
-         não deve ser sobreposto no MEIO da imagem (o tile é flex/centralizado, então esse rótulo
-         acabava caindo por cima da foto). O tipo de comunicação (commType) já aparece corretamente
-         como badge abaixo da imagem — isso permanece. O nome só é exibido dentro do tile quando NÃO
-         há foto (placeholder colorido com emoji), como legenda do espaço reservado. */
-      return `<div class="p-gallery-grid">${item.data.filter(g => g.selected !== false).map(g => `
-        <div class="p-gallery-item">
-          <div class="p-gallery-tile"${g.photoUrl ? ` onclick='openImageExpand(${JSON.stringify(g.photoUrl).replace(/'/g,"&#39;")}, ${JSON.stringify(g.name||'Peça').replace(/'/g,"&#39;")})' title="Clique para ampliar"` : ''} style="background:${g.photoUrl ? '#000' : g.color};${g.photoUrl && g.photoAspect ? ` aspect-ratio:${g.photoAspect};` : ''}${g.photoUrl ? ' cursor:zoom-in;' : ''}">${g.photoUrl ? `<img src="${g.photoUrl}" class="p-gallery-photo" alt="${escapeHtml(g.name || 'Peça')}">` : `<span class="emoji">${g.emoji}</span><span>${escapeHtml(g.name || 'Peça')}</span>`}</div>
-          ${g.commType ? `<div class="p-gallery-commtype">${escapeHtml(g.commType)}</div>` : ''}
-          ${g.result ? `<div class="p-gallery-result">${escapeHtml(g.result)}</div>` : ''}
-        </div>`).join('')}</div>`;
+    case 'gallery': {
+      /* RappiStage 150: cards do mesmo tamanho (a foto se ajusta dentro, sem esticar a linha), resultado
+         com no máx. 4 linhas no slide e completo na tela cheia, que abre ao clicar e tem ‹ › / setas. */
+      const L = (item.data || []).filter(g => g.selected !== false);
+      return '<div class="rsg-grid" data-title="' + escapeHtml(item.label || 'Comunicações Realizadas - Peças') + '">' + L.map(g =>
+        '<div class="rsg-card" onclick="rsGalleryOpen(this)" title="Clique para ver em tela cheia">' +
+          '<div class="rsg-media" style="background:' + (g.photoUrl ? '#F4F1EE' : (g.color || '#FF7A4D')) + ';">' +
+            (g.photoUrl ? '<img src="' + g.photoUrl + '" alt="' + escapeHtml(g.name || 'Peça') + '">' : '<span class="rsg-emoji">' + escapeHtml(g.emoji || '🖼️') + '</span><span class="rsg-ph-name">' + escapeHtml(g.name || '') + '</span>') +
+          '</div>' +
+          '<div class="rsg-info">' + (g.commType ? '<div class="p-gallery-commtype">' + escapeHtml(g.commType) + '</div>' : '') +
+            (g.name && g.name !== g.commType ? '<div class="rsg-name">' + escapeHtml(g.name) + '</div>' : '') +
+            (g.result ? '<div class="rsg-result">' + escapeHtml(g.result).replace(/\n/g, '<br>') + '</div>' : '') + '</div>' +
+        '</div>').join('') + '</div>';
+    }
 
     /* Item (rodada de ajustes): "Planos e Projetos para o Próximo Trimestre" (exclusivo do modelo
        Quarterly) — grade de cards livres (ícone + título + descrição) preenchidos pelo AGM na
@@ -18805,23 +19541,17 @@ function renderItemStatic(item, block){
     }
 
     case 'commercial-calendar': {
-      /* Compat com dados antigos (só calendarImageUrl, sem calendarFileType). */
-      const fileData = item.calendarFileData || item.calendarImageUrl;
-      const fileType = item.calendarFileType || (item.calendarImageUrl ? 'image' : null);
-      if(!fileData) return '<div class="p-empty-hint">' + (item.budgetPrint ? 'Print do acompanhamento de budget não anexado.' : 'Calendário comercial não anexado.') + '</div>';
-      const calTitle = item.budgetPrint ? (item.label || 'Acompanhamento de Budget') : 'Calendário Comercial Rappi';
-      if(fileType === 'pdf'){
-        /* Upload agora aceita só imagem (ver item wCalendar no editor) — isto cobre apenas dados
-           legados de uma versão anterior que ainda tinham um PDF salvo; em vez de quebrar/tentar
-           renderizar, mostramos um aviso amigável pedindo para reenviar como imagem. */
-        return `<div class="p-empty-hint">⚠️ Este calendário foi enviado como PDF numa versão anterior, que não é mais suportada. Reenvie o arquivo como imagem na curadoria.</div>`;
-      }
-      /* Diferente de outras imagens do documento (que ficam como miniatura clicável), o
-         calendário comercial já entra "incorporado" grande direto no slide — é o item central
-         do bloco e precisa ser legível sem exigir clique extra. Continua clicável (⤢ no lightbox
-         genérico) só para quem quiser ampliar ainda mais um calendário muito denso. */
-      const calloutsHtml = (item.callouts || []).map(c => `<div class="p-chart-callout" style="left:${c.xPct}%; top:${c.yPct}%;">${escapeHtml(c.text)}</div>`).join('');
-      return `<div class="p-commercial-cal-wrap p-commercial-cal-embedded" onclick='openImageExpand(${JSON.stringify(fileData).replace(/'/g,"&#39;")}, ${JSON.stringify(calTitle).replace(/'/g,"&#39;")})' title="Clique para abrir em tela cheia (com zoom)"><img src="${fileData}" class="p-commercial-cal-img" alt="${escapeHtml(calTitle)}"${item.calendarImageAspect ? ` style="aspect-ratio:${item.calendarImageAspect};"` : ''}>${calloutsHtml}</div>`;
+      /* RappiStage 150: 1 ou vários arquivos — um por vez no slide, com ‹ › e contador; clique = tela cheia com setas. */
+      const files = rsCalFiles(item);
+      if(!files.length) return '<div class="p-empty-hint">' + (item.budgetPrint ? 'Print do acompanhamento de budget não anexado.' : 'Calendário comercial não anexado.') + '</div>';
+      const calTitle = item.budgetPrint ? (item.label || 'Acompanhamento de Budget') : (item.label || 'Calendário Comercial Rappi');
+      const n = files.length;
+      return '<div class="rsc-wrap" data-title="' + escapeHtml(calTitle) + '">' + files.map((f, i) =>
+        '<div class="rsc-slide' + (i === 0 ? ' on' : '') + '" onclick="rsCalOpen(this)" title="Clique para abrir em tela cheia (com zoom e setas)">' +
+          '<div class="p-commercial-cal-wrap p-commercial-cal-embedded"><img src="' + f.data + '" class="p-commercial-cal-img" alt="' + escapeHtml(calTitle) + '"' + (f.aspect ? ' style="aspect-ratio:' + f.aspect + ';"' : '') + '>' +
+          (f.callouts || []).map(c => '<div class="p-chart-callout" style="left:' + c.xPct + '%; top:' + c.yPct + '%;">' + escapeHtml(c.text) + '</div>').join('') + '</div></div>').join('') +
+        (n > 1 ? '<button type="button" class="rsc-nav rsc-prev" onclick="event.stopPropagation(); rsCalStep(this, -1)" title="Anterior">‹</button><button type="button" class="rsc-nav rsc-next" onclick="event.stopPropagation(); rsCalStep(this, 1)" title="Próximo">›</button><div class="rsc-count">1 / ' + n + '</div>' : '') +
+        '</div>';
     }
 
     case 'biweekly-calendar': {
@@ -18865,6 +19595,8 @@ function renderItemStatic(item, block){
         <div class="p-progress-bg"><div class="p-progress-fill ${farolClass}" style="width:${Math.min(val,100)}%"></div></div></div>`;
       }).join('')}${(item.metaMsg && !item.metaValue) ? `<div class="p-kpi-note" style="margin-top:10px;">${escapeHtml(item.metaMsg)}</div>` : ''}</div>`;
     }
+
+    case 'yoy-ytd': return rsYoyHtml(item, true); // RappiStage 151
 
     case 'ranking': {
       const rsCols = item.cols && item.data.some(r => Array.isArray(r.vals)); // RappiStage 147
@@ -19648,6 +20380,76 @@ function buildPresentationDocument(){
 .p-bubble.p-ins{background:linear-gradient(90deg, rgba(255,122,77,0.1), rgba(255,37,38,0.06)); color:var(--ink);}
 .p-list{margin:0; padding-left:18px; font-size:13px; line-height:1.7;}
 .p-gallery-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+
+
+.rsyp{display:flex; flex-direction:column; gap:10px;} /* RappiStage 155 */
+.rsyp-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.rsyp-lab{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#5E5652; min-width:118px;}
+.rsyp-btn{border:1.5px solid #E5E0DC; background:#fff; border-radius:999px; padding:5px 12px; font:inherit; font-size:12.5px; font-weight:700; color:#5E5652; cursor:pointer;}
+.rsyp-btn.on{border-color:#FF441F; background:#FFF1EC; color:#B8320F;}
+.rsyp-sel{border:1.5px solid #E5E0DC; border-radius:8px; padding:4px 8px; font:inherit; font-size:12.5px; font-weight:700; background:#fff;}
+.rsyp-sel-sm{font-size:11.5px; padding:2px 4px; margin-left:4px;}
+.rsyp-chip{display:inline-flex; align-items:center; gap:5px; border:1.5px solid #E5E0DC; background:#fff; border-radius:999px; padding:4px 6px 4px 10px; font-size:12.5px; font-weight:700; color:#5E5652; cursor:pointer;}
+.rsyp-chip.on{border-color:#FF441F; background:#FFF1EC; color:#B8320F;}
+.rsyp-chip input{accent-color:#FF441F; margin:0;}
+.rsyp-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:12px;}
+.rsyp-grid.one{grid-template-columns:1fr;}
+.rsyp-card{background:#FBFAF8; border:1px solid #EFE9E5; border-radius:12px; padding:12px;}
+.rsyp-card-title{font-size:13px; font-weight:800; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+.rsyp-ytd{display:inline-block; font-size:12px; font-weight:700; border-radius:999px; padding:4px 11px; background:#1E1B1A; color:#fff; white-space:nowrap;} /* RappiStage 157 */
+.rsyp-ytd b{font-weight:900;} .rsyp-ytd.up b{color:#7CE0A3;} .rsyp-ytd.down b{color:#FF9B8A;}
+.rsyp-badges{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-bottom:8px;}
+.rsyp-pills{display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px;} /* RappiStage 158 */
+.rsyp-proj{display:inline-block; font-size:12px; font-weight:700; border-radius:999px; padding:3px 10px; background:#FFF4EE; color:#1E1B1A; border:1.5px dashed #FF5A1F; white-space:nowrap;}
+.rsyp-proj b{font-weight:900;} .rsyp-proj .up{color:#1E7A44;} .rsyp-proj .down{color:#CC1008;}
+.rsyp-chk{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; cursor:pointer;}
+.rsyp-badge-lab{font-size:12px; font-weight:800; color:#5E5652;}
+.rsyp-chart{position:relative; height:300px;} .rsyp-chart-lg{height:400px;}
+.rsyp-note{font-size:11.5px; color:#9C9490; line-height:1.45;}
+.rs-ytd-table td.rs-tend{font-style:italic; color:#837A76;}
+.rs-ytd-table tr.rs-tot td{font-weight:800; background:#FBFAF8;}
+.rs-yoy-wrap{display:flex; flex-direction:column; gap:12px;} /* RappiStage 151 */
+.rs-yoy-head{font-size:12.5px; font-weight:700; color:#837A76;}
+.rs-yoy-tiles{display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:10px;}
+.rs-yoy-tile{background:#FBFAF8; border:1px solid #EFE9E5; border-radius:12px; padding:12px 14px;}
+.rs-yoy-proj{background:#FFF6F1; border-color:#F5C9B5;}
+.rs-yoy-lab{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#837A76;}
+.rs-yoy-val{font-size:20px; font-weight:900; color:#1E1B1A; margin-top:4px;}
+.rs-yoy-sub{font-size:12px; color:#5E5652; margin-top:3px;}
+.rs-yoy-d{font-weight:800;} .rs-yoy-d.up{color:#1F8A4C;} .rs-yoy-d.down{color:#CC1008;}
+.rs-yoy-chips{display:flex; gap:6px; flex-wrap:wrap;}
+.rs-yoy-chip{border:1.5px solid #E5E0DC; background:#fff; border-radius:999px; padding:5px 12px; font:inherit; font-size:12.5px; font-weight:700; color:#5E5652; cursor:pointer;}
+.rs-yoy-chip.on{border-color:#FF441F; background:#FFF1EC; color:#B8320F;}
+.rs-yoy-chart{position:relative; height:300px;}
+.rs-yoy-note{font-size:11.5px; color:#9C9490; line-height:1.45;}
+.rsg-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:14px; align-items:stretch;}
+.rsg-card{background:#fff; border:1px solid var(--ink1); border-radius:12px; overflow:hidden; cursor:zoom-in; display:flex; flex-direction:column; min-width:0; transition:transform .15s, box-shadow .15s;}
+.rsg-card:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(30,27,26,.10);}
+.rsg-media{height:clamp(110px, 19vh, 190px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#fff; font-weight:800; font-size:12px; padding:6px; box-sizing:border-box;}
+.rsg-media img{max-width:100%; max-height:100%; object-fit:contain; display:block; border-radius:6px;}
+.rsg-emoji{font-size:30px;}
+.rsg-ph-name{background:rgba(0,0,0,.25); border-radius:999px; padding:2px 9px;}
+.rsg-info{padding:8px 12px 12px; display:flex; flex-direction:column; align-items:flex-start; min-width:0;}
+.rsg-name{font-size:12.5px; font-weight:800; margin-top:6px; color:var(--ink9, #1E1B1A);}
+.rsg-result{font-size:11.5px; color:var(--ink5); line-height:1.45; margin-top:5px; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;}
+.rsc-wrap{position:relative;}
+.rsc-slide{display:none;} .rsc-slide.on{display:block;}
+.rsc-wrap .p-commercial-cal-embedded .p-commercial-cal-img{max-height:62vh;}
+.rsc-nav{position:absolute; top:50%; transform:translateY(-50%); width:46px; height:46px; border-radius:50%; border:1.5px solid var(--ink3); background:rgba(255,255,255,.95); font-size:28px; line-height:1; cursor:pointer; color:#1E1B1A; box-shadow:0 6px 18px rgba(0,0,0,.14); z-index:3;}
+.rsc-nav:hover{border-color:var(--o1); color:var(--o2);}
+.rsc-prev{left:6px;} .rsc-next{right:6px;}
+.rsc-count{position:absolute; bottom:8px; left:50%; transform:translateX(-50%); background:rgba(30,27,26,.75); color:#fff; font-size:12px; font-weight:800; border-radius:999px; padding:3px 11px; z-index:3;}
+.rsv-body{flex-direction:column;}
+.rsv-stage{flex:1 1 auto; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+.rsv-stage .rsg-media{height:60vh; width:min(900px, 90%); border-radius:14px; font-size:20px;}
+.rsv-caption{flex:0 0 auto; max-width:min(900px, 92%); margin:12px auto 0; text-align:center; max-height:24vh; overflow:auto;}
+.rsv-caption .p-gallery-commtype{align-self:center; font-size:11px;}
+.rsv-caption .rsg-name{font-size:16px;}
+.rsv-caption .rsg-result{font-size:14.5px; -webkit-line-clamp:unset; display:block; color:var(--ink5);}
+.rsv-nav{position:absolute; top:50%; transform:translateY(-50%); width:56px; height:56px; border-radius:50%; border:1.5px solid var(--ink3); background:#fff; font-size:34px; line-height:1; cursor:pointer; color:#1E1B1A; box-shadow:0 6px 20px rgba(0,0,0,.18); z-index:4;}
+.rsv-nav:hover{border-color:var(--o1); color:var(--o2);}
+.rsv-prev{left:6px;} .rsv-next{right:6px;}
+@media print{ .rsc-slide{display:block !important; margin-bottom:12px;} .rsc-nav, .rsc-count{display:none !important;} .rsg-result{-webkit-line-clamp:unset; display:block;} }
 .p-gallery-tile{aspect-ratio:900/600; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:#fff; font-size:11px; font-weight:700; text-align:center;}
 .p-gallery-result{font-size:11px; color:var(--ink5); margin-top:6px; line-height:1.4;}
 .p-gallery-commtype{align-self:flex-start; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.02em; color:var(--o2); background:#FFF0DD; border-radius:999px; padding:3px 9px; margin-top:6px; display:inline-block;}
@@ -20801,6 +21603,8 @@ const DD_DATA = ${JSON.stringify((function(){
     });
     /* chaves específicas primeiro: a apresentação acha a lupa pela 1ª chave contida no rótulo do card */
     const ordered = {};
+    ['Resultados YTD', '% Cancelamento (Partner) YTD', 'Conversão SST→OPC YTD', 'Tráfego (SST) YTD'].forEach(function(lab){ // RappiStage 154/155
+      ordered[lab.toLowerCase()] = { type:'rshtml', html: rsYtdLupaHtml(lab), tabLabel:'📋 Mês a mês (tabela)', noChart:false }; });
     ['faturamento gerado','consumo do budget','burn rate','step positivador','step detrator','tráfego'].forEach(function(k){ if(ddFinal[k] && ddFinal[k].type === 'rshtml') ordered[k] = ddFinal[k]; });
     Object.keys(ddFinal).forEach(function(k){ if(!ordered[k] && k !== 'roi') ordered[k] = ddFinal[k]; });
     if(ddFinal['roi'] && ddFinal['roi'].type === 'rshtml') ordered['roi'] = ddFinal['roi'];
@@ -20808,6 +21612,7 @@ const DD_DATA = ${JSON.stringify((function(){
   }
   return ddFinal;
 })())};
+const RS_YTD = ${JSON.stringify(rsYtdExport())}; // RappiStage 155: dados YTD para o painel de gráficos da lupa
 const DD_TAB_OFF = ${JSON.stringify(rsDdTabOffExport())}; // RappiStage 134: abas da lupa desmarcadas pelo AGM
 function rsDdHideEmptyLupas(){
   document.querySelectorAll('[onclick^="openDrilldown("]').forEach(function(el){
@@ -21308,6 +22113,7 @@ function openDrilldown(label){
   if(!d){ box.innerHTML = '<h3>'+label+'</h3><div class="dd-sub">Detalhamento não configurado neste protótipo.</div>'+closeBtn; }
   else if(d.type==='rshtml'){
     box.innerHTML = d.html + closeBtn;
+    try{ rsYoyMountAll(box); }catch(e){ console.error('YoY', e); } // RappiStage 154
     if(typeof Chart !== 'undefined'){
       box.querySelectorAll('canvas[data-rs-donut]').forEach(function(cv){
         var cfg; try{ cfg = JSON.parse(cv.getAttribute('data-rs-donut')); }catch(e){ return; }
@@ -22177,6 +22983,12 @@ function mountChartPanel(container, panelKey, label, opts){
 /* Aba "📊 Gráficos" do drilldown (lupa) — usa o motor único acima. */
 function renderDdChartsTab(label){
   const chartBox = document.getElementById('ddChartBox');
+  if(/ ytd$/i.test(String(label || '').trim()) && typeof RS_YTD !== 'undefined'){ // RappiStage 155
+    if(!RS_YTD.y || !RS_YTD.y.ok){ chartBox.innerHTML = '<div class="dd-empty-state">YoY indisponível.</div>'; return; }
+    var yk = String(label).toLowerCase(); RS_YTD.cfg = RS_YTD.cfg || {};
+    rsYtdPanel(chartBox, RS_YTD.y, RS_YTD.cfg[yk], label, function(c){ RS_YTD.cfg[yk] = c; });
+    return;
+  }
 
   const gridId = KPI_LABEL_TO_GRID[label];
   const stateKey = IS_MULTI_BRAND ? gridId + '::mb' : gridId;
@@ -22756,6 +23568,7 @@ function openPLightbox(title){
   titleEl.textContent = title || '';
   body.innerHTML = '';
   body.classList.remove('p-lightbox-multi');
+  body.classList.remove('rsv-body'); // RappiStage 150
   overlay.classList.add('show');
   lbResetZoom();
   return body;
@@ -22763,6 +23576,7 @@ function openPLightbox(title){
 function closePLightbox(){
   const overlay = document.getElementById('pLightboxOverlay');
   overlay.classList.remove('show');
+  __rsViewer = null; // RappiStage 150
   if(__bigChartInstance__){ __bigChartInstance__.destroy(); __bigChartInstance__ = null; }
   if(__bigChartInstances__.length){ __bigChartInstances__.forEach(function(c){ c.destroy(); }); __bigChartInstances__ = []; }
   const body = document.getElementById('pLightboxBody');
@@ -22808,6 +23622,190 @@ document.getElementById('pLightboxZoomResetBtn').addEventListener('click', funct
     if(__lbDragging__){ __lbDragging__ = false; lbApplyTransform(); }
   });
 })();
+
+/* RappiStage 151: YoY — gráfico mês a mês (ano anterior x ano atual + tendência para fechar o ano) */
+function rsYoyFmt(v, metric, short){
+  if(v == null || isNaN(v)) return '—';
+  if(metric === 'ped' || metric === 'sst') return Math.round(v).toLocaleString('pt-BR');
+  if(metric === 'conv') return Number(v).toLocaleString('pt-BR', { minimumFractionDigits: short ? 1 : 2, maximumFractionDigits: short ? 1 : 2 }) + '%';
+  if(metric === 'canc') return Number(v).toLocaleString('pt-BR', { minimumFractionDigits: short ? 1 : 2, maximumFractionDigits: short ? 1 : 2 }) + '%';
+  if(metric === 'ticket') return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if(short){ if(Math.abs(v) >= 1e6) return 'R$ ' + (v / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' mi'; if(Math.abs(v) >= 1e3) return 'R$ ' + Math.round(v / 1e3).toLocaleString('pt-BR') + ' mil'; }
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+function rsYoyVal(m, metric, k){
+  var f = m[k + 'F'], p = m[k + 'P'];
+  if(metric === 'canc') return m[k + 'X'] == null ? null : m[k + 'X'];
+  if(metric === 'conv') return m[k + 'V'] == null ? null : m[k + 'V'];
+  if(metric === 'sst') return m[k + 'S'] == null ? null : m[k + 'S'];
+  if(metric === 'fat') return f == null ? null : f;
+  if(metric === 'ped') return p == null ? null : p;
+  return (f != null && p) ? f / p : null;
+}
+function rsYoyChartCfg(y, metric){
+  var L = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  var ly = y.months.map(function(m){ return rsYoyVal(m, metric, 'ly'); });
+  var cy = y.months.map(function(m){ return rsYoyVal(m, metric, 'cy'); });
+  var pj = y.months.map(function(m){ return rsYoyVal(m, metric, 'pj'); });
+  return { type: 'bar', data: { labels: L, datasets: [
+      { type: 'bar', label: String(y.prevYear), data: ly, backgroundColor: '#D9D3CF', borderRadius: 4, order: 3 },
+      { type: 'bar', label: String(y.year) + (y.partialDays ? ' (' + L[y.ref - 1] + ' até dia ' + y.partialDays + ')' : ''), data: cy, backgroundColor: '#FF5A1F', borderRadius: 4, order: 2 },
+      { type: 'line', label: 'Projeção de fechamento ' + y.year, data: (metric === 'canc' || metric === 'conv' || metric === 'sst') ? pj.map(function(){ return null; }) : pj, hidden: (metric === 'canc' || metric === 'conv' || metric === 'sst'), borderColor: '#1E1B1A', backgroundColor: '#1E1B1A', borderDash: [6, 4], borderWidth: 2, pointRadius: 3, tension: 0.25, spanGaps: false, order: 1 } ] },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom' }, datalabels: { display: false },
+        tooltip: { callbacks: { label: function(c){ return ' ' + c.dataset.label + ': ' + rsYoyFmt(c.parsed.y, metric, false); } } } },
+      scales: { y: { beginAtZero: true, ticks: { callback: function(v){ return rsYoyFmt(v, metric, true); } } } } } };
+}
+function rsYoyDraw(cv, y, metric){
+  if(!cv || typeof Chart === 'undefined' || !y) return;
+  var old = Chart.getChart(cv); if(old) old.destroy();
+  cv.__rsYoy = y; new Chart(cv, rsYoyChartCfg(y, metric || 'fat'));
+}
+/* RappiStage 155: painel de gráficos YTD — mesmo modelo dos gráficos da lupa (modo, tipo, KPIs), só com dados YTD */
+var RS_YTD_K = [['fat', 'Faturamento'], ['ped', 'Pedidos'], ['ticket', 'Ticket Médio'], ['canc', '% Cancelamento (Partner)'], ['conv', 'Conversão SST→OPC'], ['sst', 'Tráfego (SST)']];
+var RS_YTD_COL = { fat: '#FF5A1F', ped: '#3560AA', ticket: '#1E7A44', canc: '#CC1008', conv: '#8551D3', sst: '#B07A00' };
+var RS_YTD_MES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+function rsYtdName(k){ for(var i = 0; i < RS_YTD_K.length; i++){ if(RS_YTD_K[i][0] === k) return RS_YTD_K[i][1]; } return k; }
+function rsYtdRgba(h, a){ var n = parseInt(h.slice(1), 16); return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; }
+function rsYtdKeyOf(label){ var l = String(label || '').toLowerCase(); return l.indexOf('cancel') >= 0 ? 'canc' : l.indexOf('convers') >= 0 ? 'conv' : (l.indexOf('tráfego') >= 0 || l.indexOf('trafego') >= 0) ? 'sst' : 'fat'; }
+function rsYtdAvail(y){ var T = y.ytd, o = ['fat', 'ped', 'ticket']; if(T.cyT > 0 || T.lyT > 0) o.push('canc'); if(T.cyS > 0 || T.lyS > 0){ o.push('conv'); o.push('sst'); } return o; }
+function rsYtdLbl(k, ly){ /* RappiStage 156: balão em cada mês do ano atual — valor + comparação com o mesmo mês do ano anterior */
+  var pp = k === 'canc' || k === 'conv', nl = String.fromCharCode(10);
+  return { display: function(ctx){ return ctx.dataset.data[ctx.dataIndex] != null; }, anchor: 'end', align: 'end', offset: 2, clamp: true, clip: false,
+    color: '#FFFFFF', backgroundColor: 'rgba(30,27,26,0.85)', borderRadius: 6, padding: { top: 2, bottom: 2, left: 5, right: 5 }, font: { weight: '800', size: 9.5 }, textAlign: 'center',
+    formatter: function(v, ctx){ var b = ly[ctx.dataIndex], d = '';
+      if(b != null && v != null){ if(pp) d = (v - b >= 0 ? '+' : '−') + Math.abs(v - b).toFixed(2).replace('.', ',') + ' p.p.'; else if(b) d = ((v - b) / b * 100 >= 0 ? '+' : '−') + Math.abs((v - b) / b * 100).toFixed(1).replace('.', ',') + '%'; }
+      return d || rsYoyFmt(v, k, true); } }; // só a comparação com o mesmo mês do ano anterior
+}
+function rsYtdSets(y, k, type, axis, withName, noLbl, noProj){
+  var c = RS_YTD_COL[k] || '#FF5A1F', nm = withName ? rsYtdName(k) + ' ' : '', line = type === 'line';
+  var g = function(w){ return y.months.map(function(m){ return rsYoyVal(m, k, w); }); };
+  var out = [
+    { type: type, label: nm + y.prevYear, data: g('ly'), backgroundColor: rsYtdRgba(c, 0.30), borderColor: rsYtdRgba(c, 0.55), borderWidth: line ? 2 : 0, borderRadius: 4, pointRadius: line ? 3 : 0, tension: 0.25, yAxisID: axis, order: 3, rsK: k },
+    { type: type, label: nm + y.year, data: g('cy'), backgroundColor: c, borderColor: c, borderWidth: line ? 2.5 : 0, borderRadius: 4, pointRadius: line ? 3 : 0, tension: 0.25, yAxisID: axis, order: 2, rsK: k, datalabels: noLbl ? { display: false } : rsYtdLbl(k, g('ly')) } ];
+  if(!noProj && (k === 'fat' || k === 'ped' || k === 'ticket')) out.push({ type: 'line', label: nm + 'Projeção ' + y.year, data: (function(){ var cy = g('cy'); return g('pj').map(function(v, i){ return v != null ? v : cy[i]; }); })(), borderColor: c, backgroundColor: c, borderDash: [6, 4], borderWidth: 2, pointRadius: 3, tension: 0.25, spanGaps: false, yAxisID: axis, order: 1, rsK: k });
+  return out;
+}
+function rsYtdBadge(y, k, per){ /* RappiStage 157: balão com o YTD geral (acumulado do ano x mesmo período do ano anterior) */
+  var T = y.ytd, a = null, b = null, pp = k === 'canc' || k === 'conv';
+  if(k === 'fat'){ a = T.cyF; b = T.lyF; } else if(k === 'ped'){ a = T.cyP; b = T.lyP; }
+  else if(k === 'ticket'){ a = T.cyP ? T.cyF / T.cyP : null; b = T.lyP ? T.lyF / T.lyP : null; }
+  else if(k === 'canc'){ a = T.cyT > 0 ? T.cyC / T.cyT * 100 : null; b = T.lyT > 0 ? T.lyC / T.lyT * 100 : null; }
+  else if(k === 'conv'){ a = T.cyS > 0 ? T.cyO / T.cyS * 100 : null; b = T.lyS > 0 ? T.lyO / T.lyS * 100 : null; }
+  else if(k === 'sst'){ a = T.cyS; b = T.lyS; }
+  if(a == null || b == null || (!pp && !b)) return '';
+  var d = pp ? a - b : (a - b) / b * 100, good = k === 'canc' ? d <= 0 : d >= 0;
+  var txt = (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(pp ? 2 : 1).replace('.', ',') + (pp ? ' p.p.' : '%');
+  return '<span class="rsyp-ytd ' + (good ? 'up' : 'down') + '" title="' + rsYtdName(k) + ' acumulado ' + per + ' ' + y.year + ': ' + rsYoyFmt(a, k, false) + ' x ' + rsYoyFmt(b, k, false) + ' em ' + y.prevYear + '">YTD ' + per + ': <b>' + txt + '</b> vs ' + y.prevYear + '</span>';
+}
+function rsYtdProjBadge(y, k){ /* RappiStage 158: balão com a projeção de fechamento do ano (tendência dos últimos 3 meses) */
+  var F = y.fy || {}, a = null, b = null;
+  if(k === 'fat'){ a = F.pjF; b = F.lyF; } else if(k === 'ped'){ a = F.pjP; b = F.lyP; }
+  else if(k === 'ticket'){ a = F.pjP ? F.pjF / F.pjP : null; b = F.lyP ? F.lyF / F.lyP : null; }
+  else return '';
+  if(a == null) return '';
+  var d = b ? (a - b) / b * 100 : null;
+  var dt = d == null ? '' : ' <span class="' + (d >= 0 ? 'up' : 'down') + '">' + (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(1).replace('.', ',') + '%</span> vs ' + y.prevYear;
+  return '<span class="rsyp-proj" title="Projeção de fechamento ' + y.year + ' (meses que faltam = mesmo mês de ' + y.prevYear + ' × crescimento dos últimos 3 meses): ' + rsYoyFmt(a, k, false) + (b ? ' x ' + rsYoyFmt(b, k, false) + ' em ' + y.prevYear : '') + '">📈 Projeção ' + y.year + ': <b>' + rsYoyFmt(a, k, true) + '</b>' + dt + '</span>';
+}
+function rsYtdPills(y, k, per, proj){ return '<span class="rsyp-pills">' + rsYtdBadge(y, k, per) + (proj ? rsYtdProjBadge(y, k) : '') + '</span>'; }
+function rsYtdChart(cv, y, keys, kt, noProj){
+  if(!cv || typeof Chart === 'undefined') return;
+  var old = Chart.getChart(cv); if(old) old.destroy();
+  var multi = keys.length > 1, sets = [], scales = {};
+  keys.forEach(function(k, i){ var ax = 'y' + i; sets = sets.concat(rsYtdSets(y, k, kt[k] || 'bar', ax, multi, i > 0, noProj));
+    scales[ax] = { beginAtZero: true, display: i < 2, position: i === 1 ? 'right' : 'left', grid: { drawOnChartArea: i === 0 }, ticks: { callback: (function(kk){ return function(v){ return rsYoyFmt(v, kk, true); }; })(k) } }; });
+  new Chart(cv, { type: 'bar', data: { labels: RS_YTD_MES.slice(), datasets: sets },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, layout: { padding: { top: 30 } },
+      plugins: { legend: { position: 'bottom' }, datalabels: { display: false },
+        tooltip: { callbacks: { label: function(c){ return ' ' + c.dataset.label + ': ' + rsYoyFmt(c.parsed.y, c.dataset.rsK, false); } } } },
+      scales: scales } });
+}
+function rsYtdPanel(box, y, cfg, label, onChange){
+  if(!box || !y) return;
+  var av = rsYtdAvail(y), st = { sel: {}, mode: 'separate', kt: {}, proj: true };
+  if(cfg){ st.mode = cfg.mode || st.mode; st.kt = cfg.kt || {}; if(cfg.sel) st.sel = cfg.sel; if(cfg.proj === false) st.proj = false; }
+  if(!Object.keys(st.sel).some(function(k){ return st.sel[k] && av.indexOf(k) >= 0; })){ st.sel = {}; st.sel[rsYtdKeyOf(label)] = true; }
+  var per = 'Jan' + (y.ref > 1 ? '–' + RS_YTD_MES[y.ref - 1] : '') + (y.partialDays ? ' (até dia ' + y.partialDays + ')' : '');
+  function save(){ if(onChange) onChange({ sel: st.sel, mode: st.mode, kt: st.kt, proj: st.proj }); }
+  function draw(){
+    if(typeof Chart !== 'undefined') box.querySelectorAll('canvas').forEach(function(c){ var o = Chart.getChart(c); if(o) o.destroy(); });
+    var keys = av.filter(function(k){ return st.sel[k]; });
+    var allLine = keys.length && keys.every(function(k){ return st.kt[k] === 'line'; });
+    var h = '<div class="rsyp">' +
+      '<div class="rsyp-row"><span class="rsyp-lab">Modo de exibição:</span><button type="button" class="rsyp-btn' + (st.mode === 'combined' ? ' on' : '') + '" data-mode="combined">Um gráfico só</button><button type="button" class="rsyp-btn' + (st.mode === 'separate' ? ' on' : '') + '" data-mode="separate">Separado por KPI</button></div>' +
+      '<div class="rsyp-row"><span class="rsyp-lab">Tipo de gráfico:</span><select class="rsyp-sel" data-all-type="1"><option value="bar"' + (allLine ? '' : ' selected') + '>Barra</option><option value="line"' + (allLine ? ' selected' : '') + '>Linha</option></select></div>' +
+      '<div class="rsyp-row"><span class="rsyp-lab">Dados:</span><span class="rsyp-btn on">YTD — ' + per + ' ' + y.year + ' x ' + y.prevYear + '</span></div>' +
+      (y.fy && y.fy.pjF != null ? '<div class="rsyp-row"><span class="rsyp-lab">Projeção:</span><label class="rsyp-chk"><input type="checkbox" data-proj="1"' + (st.proj ? ' checked' : '') + '> Mostrar projeção de fechamento ' + y.year + ' (balão + linha tracejada)</label></div>' : '') +
+      '<div class="rsyp-row rsyp-kpis"><span class="rsyp-lab">KPIs:</span>' + av.map(function(k){ var on = !!st.sel[k], t = st.kt[k] || 'bar';
+        return '<label class="rsyp-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-k="' + k + '"' + (on ? ' checked' : '') + '> ' + rsYtdName(k) + ' <select class="rsyp-sel rsyp-sel-sm" data-kt="' + k + '"><option value="bar"' + (t === 'bar' ? ' selected' : '') + '>Barra</option><option value="line"' + (t === 'line' ? ' selected' : '') + '>Linha</option></select></label>'; }).join('') + '</div>';
+    if(!keys.length) h += '<div class="rsyp-note">Marque pelo menos um KPI.</div>';
+    else if(st.mode === 'combined') h += '<div class="rsyp-card"><div class="rsyp-badges">' + keys.map(function(k){ return '<span class="rsyp-badge-lab">' + rsYtdName(k) + '</span>' + rsYtdPills(y, k, per, st.proj); }).join('') + '</div><div class="rsyp-chart rsyp-chart-lg"><canvas></canvas></div></div>';
+    else h += '<div class="rsyp-grid' + (keys.length === 1 ? ' one' : '') + '">' + keys.map(function(k){ return '<div class="rsyp-card"><div class="rsyp-card-title">' + rsYtdName(k) + rsYtdPills(y, k, per, st.proj) + '</div><div class="rsyp-chart"><canvas data-k="' + k + '"></canvas></div></div>'; }).join('') + '</div>';
+    h += '<div class="rsyp-note">Barras claras = ' + y.prevYear + ' · barras fortes = ' + y.year + (st.proj ? ' · linha tracejada = projeção de fechamento ' + y.year + ' (a mesma do balão 📈), percorre o ano todo: meses fechados = realizado; cada mês que falta = mesmo mês de ' + y.prevYear + ' × crescimento dos últimos 3 meses' + (y.tF != null ? ' (' + (y.tF >= 0 ? '+' : '−') + Math.abs(y.tF * 100).toFixed(1).replace('.', ',') + '%)' : '') + '. Cancelamento, Conversão e Tráfego não têm projeção' : '') + '.</div></div>';
+    box.innerHTML = h;
+    box.querySelectorAll('[data-mode]').forEach(function(b){ b.addEventListener('click', function(){ st.mode = b.getAttribute('data-mode'); save(); draw(); }); });
+    box.querySelectorAll('[data-all-type]').forEach(function(sl){ sl.addEventListener('change', function(){ av.forEach(function(k){ st.kt[k] = sl.value; }); save(); draw(); }); });
+    box.querySelectorAll('input[data-proj]').forEach(function(cb){ cb.addEventListener('change', function(){ st.proj = cb.checked; save(); draw(); }); });
+    box.querySelectorAll('input[data-k]').forEach(function(cb){ cb.addEventListener('change', function(){ st.sel[cb.getAttribute('data-k')] = cb.checked; save(); draw(); }); });
+    box.querySelectorAll('select[data-kt]').forEach(function(sl){ sl.addEventListener('click', function(e){ e.stopPropagation(); }); sl.addEventListener('change', function(){ st.kt[sl.getAttribute('data-kt')] = sl.value; save(); draw(); }); });
+    if(keys.length){ if(st.mode === 'combined') rsYtdChart(box.querySelector('canvas'), y, keys, st.kt, !st.proj); else box.querySelectorAll('canvas[data-k]').forEach(function(cv){ rsYtdChart(cv, y, [cv.getAttribute('data-k')], st.kt, !st.proj); }); }
+  }
+  draw();
+}
+function rsYoyMountAll(root){
+  if(!root) return;
+  root.querySelectorAll('.rs-yoy-wrap[data-yoy]').forEach(function(w){ var y; try{ y = JSON.parse(w.getAttribute('data-yoy')); }catch(e){ return; }
+    w.__rsYoy = y; var cv = w.querySelector('canvas'); if(cv) rsYoyDraw(cv, y, w.getAttribute('data-metric') || 'fat'); });
+}
+function rsYoyMetric(btn, metric){
+  var w = btn.closest('.rs-yoy-wrap'); if(!w) return;
+  w.querySelectorAll('[data-yoy-metric]').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-yoy-metric') === metric); });
+  var cv = w.querySelector('canvas'); if(cv) rsYoyDraw(cv, cv.__rsYoy || w.__rsYoy, metric);
+  if(w.__rsYoyItem) w.__rsYoyItem.metric = metric;
+}
+/* RappiStage 150: visualizador em tela cheia com ‹ › e setas do teclado (peças e calendário) */
+var __rsViewer = null;
+function rsViewerOpen(list, idx, title){ __rsViewer = { list: list, idx: idx || 0, title: title || '' }; rsViewerRender(); }
+function rsViewerRender(){
+  var v = __rsViewer; if(!v || !v.list.length) return;
+  var it = v.list[v.idx], n = v.list.length;
+  var body = openPLightbox(v.title + (n > 1 ? '  ·  ' + (v.idx + 1) + ' de ' + n : ''));
+  body.classList.add('rsv-body');
+  var stage = document.createElement('div'); stage.className = 'rsv-stage';
+  if(it.src){ var img = document.createElement('img'); img.className = 'p-lightbox-img'; img.src = it.src; img.alt = ''; stage.appendChild(img); }
+  else stage.innerHTML = it.html || '';
+  body.appendChild(stage);
+  if(it.caption){ var cap = document.createElement('div'); cap.className = 'rsv-caption'; cap.innerHTML = it.caption; body.appendChild(cap); }
+  if(n > 1){ ['prev', 'next'].forEach(function(dir){ var b = document.createElement('button'); b.type = 'button'; b.className = 'rsv-nav rsv-' + dir; b.textContent = dir === 'prev' ? '‹' : '›'; b.title = dir === 'prev' ? 'Anterior (seta para a esquerda)' : 'Próximo (seta para a direita)';
+    b.addEventListener('click', function(e){ e.stopPropagation(); rsViewerStep(dir === 'prev' ? -1 : 1); }); body.appendChild(b); }); }
+  var zb = document.getElementById('pLightboxZoomBar'); if(zb) zb.style.display = it.src ? 'flex' : 'none';
+}
+function rsViewerStep(d){ var v = __rsViewer; if(!v) return; v.idx = (v.idx + d + v.list.length) % v.list.length; rsViewerRender(); }
+document.addEventListener('keydown', function(e){
+  if(!__rsViewer) return;
+  if(!document.getElementById('pLightboxOverlay').classList.contains('show')){ __rsViewer = null; return; }
+  if(e.key === 'ArrowRight'){ e.preventDefault(); e.stopPropagation(); rsViewerStep(1); }
+  else if(e.key === 'ArrowLeft'){ e.preventDefault(); e.stopPropagation(); rsViewerStep(-1); }
+}, true);
+function rsGalleryOpen(card){
+  var grid = card.closest('.rsg-grid'); if(!grid) return;
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.rsg-card'));
+  var list = cards.map(function(c){ var im = c.querySelector('.rsg-media img'), md = c.querySelector('.rsg-media'), info = c.querySelector('.rsg-info');
+    return { src: im ? im.getAttribute('src') : null, html: im ? '' : '<div class="rsg-media" style="' + (md.getAttribute('style') || '') + '">' + md.innerHTML + '</div>', caption: info ? info.innerHTML : '' }; });
+  rsViewerOpen(list, cards.indexOf(card), grid.getAttribute('data-title') || 'Peças');
+}
+function rsCalStep(btn, d){
+  var w = btn.closest('.rsc-wrap'); if(!w) return;
+  var sl = Array.prototype.slice.call(w.querySelectorAll('.rsc-slide')), i = sl.findIndex(function(x){ return x.classList.contains('on'); });
+  var j = (i + d + sl.length) % sl.length; sl[i].classList.remove('on'); sl[j].classList.add('on');
+  var c = w.querySelector('.rsc-count'); if(c) c.textContent = (j + 1) + ' / ' + sl.length;
+}
+function rsCalOpen(slide){
+  var w = slide.closest('.rsc-wrap'); if(!w) return;
+  var sl = Array.prototype.slice.call(w.querySelectorAll('.rsc-slide'));
+  rsViewerOpen(sl.map(function(x){ var im = x.querySelector('img'); return { src: im ? im.getAttribute('src') : '' }; }), sl.indexOf(slide), w.getAttribute('data-title') || 'Calendário');
+}
 function openImageExpand(src, title){
   const body = openPLightbox(title || '');
   const img = document.createElement('img');
@@ -23165,6 +24163,8 @@ window.addEventListener('load', () => {
   try{ Object.keys(window.__TODOS__ || {}).forEach(renderTodoBlock); }
   catch(e){ console.error('Falha ao renderizar To-Do List', e); }
 
+  try{ (window.__RS_YOY__ || []).forEach(function(c){ var cv = document.getElementById(c.canvasId); if(cv){ var w = cv.closest('.rs-yoy-wrap'); if(w) w.__rsYoy = c.y; rsYoyDraw(cv, c.y, c.metric); } }); }
+  catch(e){ console.error('Falha ao desenhar o YoY', e); } // RappiStage 151
   try{ (window.__STATIC_CHARTS__ || []).forEach(c => renderStaticComboChart(c.canvasId, c.rows)); }
   catch(e){ console.error('Falha ao renderizar gráficos estáticos (static-chart)', e); }
 
@@ -23490,7 +24490,7 @@ const DRILLDOWN_EXPORT_DATA = {
 function openInteractivePresentation(){
   let html;
   try{
-    html = buildPresentationDocument();
+    html = rsWithDraftRecord(buildPresentationDocument()); // RappiStage 149
   } catch(err){
     /* Se a montagem do documento falhar por qualquer motivo (dado inesperado em algum bloco,
        por exemplo), evita abrir uma aba/blob "em branco" sem explicação — mostra o erro real
