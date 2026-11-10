@@ -1523,6 +1523,16 @@ input,textarea,select{font-family:inherit;}
 .rank-row .rank-pos{width:22px; height:22px; border-radius:50%; background:var(--ink-100); color:var(--ink-700); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
 .rank-row .rank-name{flex:1; font-weight:600;}
 .rank-row .rank-val{font-weight:800; color:var(--rappi-orange-2); font-size:12.5px;}
+/* RappiStage 147: ranking com colunas tituladas (Search) */
+.rs-rank-vals{display:flex; margin-left:auto; flex-shrink:0;}
+.rs-rank-vals > span{flex:0 0 128px; text-align:right; font-size:12.5px; font-weight:700; color:#5E5652;}
+.rs-rank-vals > span.rs-main{font-weight:800; color:#1E1B1A;}
+.rs-rank-vals > span.rs-delta{font-weight:800;}
+.rs-rank-vals > span.rs-up{color:#1F8A4C;} .rs-rank-vals > span.rs-down{color:#CC1008;}
+.rank-row.rs-rank-head{background:transparent; border:0; padding:0 12px 2px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#837A76;}
+.rank-row.rs-rank-head .rank-pos{background:transparent;}
+.rank-row.rs-rank-head .rs-rank-vals > span{font-size:11px; font-weight:800; color:#837A76;}
+@media (max-width:700px){ .rs-rank-vals > span{flex-basis:84px;} }
 
 .add-block-btn{
   align-self:center;
@@ -2221,7 +2231,9 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
-/* RappiStage 146: Responsáveis dos cards voltam a ser lista suspensa (Rappi / marca / Rappi + marca). */
+/* RappiStage 148: Calendário Comercial Rappi também no Growth do Monthly e do Quarterly. */
+/* RappiStage 147: Search (Busca) em colunas com título — Nº de buscas / Share das buscas / Var. vs período anterior. */
+/* RappiStage 146:áveis dos cards voltam a ser lista suspensa (Rappi / marca / Rappi + marca). */
 /* RappiStage 145: Conquistas e Desafios em cards no modelo de Próximos Passos (O que foi feito / Como-Por que / Impacto / Responsáveis); responsáveis múltiplos (Rappi + marca) nos cards; botão 📄 Baixar HTML da apresentação pronta. */
 /* RappiStage 144:ções Realizadas - Peças" (galeria) no Growth do Monthly e novo bloco Growth no Quarterly. */
 /* RappiStage 143: balões de comentário dos gráficos da lupa vão para a apresentação (DD_CHART_CFG.callouts, só leitura) + cursor de alvo com o comentário armado. */
@@ -4351,6 +4363,7 @@ const MOCK_DATA = {
             { selected:true, mecanica:'CAC', budgetAprovado:'R$ 20.000', budgetConsumido:'R$ 16.200', burn:'R$ 540/dia', roi:'3,8x', faturamentoGerado:'R$ 61.560' },
             { selected:true, mecanica:'Calendário Comercial', budgetAprovado:'R$ 12.000', budgetConsumido:'R$ 9.500', burn:'R$ 317/dia', roi:'3,7x', faturamentoGerado:'R$ 34.790' },
           ]},
+        { id:'m-g-commercial-calendar', kind:'commercial-calendar', label:'Calendário Comercial Rappi', selected:true, calendarImageUrl:null, calendarImageAspect:null, callouts:[] }, // RappiStage 148
         { id:'m-g-budget', kind:'commercial-calendar', budgetPrint:true, label:'Acompanhamento de Budget', selected:true, calendarImageUrl:null, calendarImageAspect:null, callouts:[] }, // RappiStage 94
         { id:'m-g-proposal', kind:'invest-calc', label:'Proposta de Investimento — Mês Seguinte', selected:false,
           hint:'Calculadora automática de ROI e faturamento projetado por campanha',
@@ -4599,6 +4612,7 @@ const MOCK_DATA = {
       noInsights:true,
       items:[
         { id:'q-g-gallery', kind:'gallery', label:'Comunicações Realizadas - Peças', selected:true, data:[] },
+        { id:'q-g-commercial-calendar', kind:'commercial-calendar', label:'Calendário Comercial Rappi', selected:true, calendarImageUrl:null, calendarImageAspect:null, callouts:[] }, // RappiStage 148
       ]
     },
     {
@@ -9206,10 +9220,20 @@ function renderItemContent(item, block){
 
     case 'ranking': {
       wrap.className = 'ranking-list';
+      const rsCols = item.cols && item.data.some(r => Array.isArray(r.vals)); // RappiStage 147
+      const rsDcls = v => /^\+/.test(v) ? ' rs-up' : /^[-−]/.test(v) ? ' rs-down' : '';
+      if(rsCols){
+        const head = document.createElement('div');
+        head.className = 'rank-row rs-rank-head';
+        head.innerHTML = '<span class="rank-pos">#</span><span class="rank-name">' + escapeHtml(item.cols[0]) + '</span><span class="rs-rank-vals">' + item.cols.slice(1).map(c => '<span>' + escapeHtml(c) + '</span>').join('') + '</span>';
+        wrap.appendChild(head);
+      }
       item.data.forEach((r, idx) => {
         const row = document.createElement('div');
         row.className = 'rank-row';
-        row.innerHTML = `<span class="rank-pos">${idx+1}</span><span class="rank-name">${r.name}</span><span class="rank-val">${r.value}</span>`;
+        row.innerHTML = rsCols && Array.isArray(r.vals)
+          ? '<span class="rank-pos">' + (idx+1) + '</span><span class="rank-name">' + escapeHtml(r.name) + '</span><span class="rs-rank-vals">' + r.vals.map((v, j) => '<span class="' + (j === 0 ? 'rs-main' : j === r.vals.length - 1 ? 'rs-delta' + rsDcls(v) : '') + '">' + escapeHtml(v) + '</span>').join('') + '</span>'
+          : `<span class="rank-pos">${idx+1}</span><span class="rank-name">${r.name}</span><span class="rank-val">${r.value}</span>`;
         wrap.appendChild(row);
       });
       break;
@@ -17344,7 +17368,10 @@ function rsApplyOverrides(R){
     } else if(item.kind === 'progress'){
       rsApplyProgress(item, R, mt);
     } else if(item.kind === 'ranking' && /search|busca/i.test(item.label || '')){
-      item.data = R.buscas.slice(0, 10).map(t => ({ name:t.termo, value: rsInt(t.buscas) + ' buscas' + (t.share !== null ? ' · ' + rsPct(t.share, 1) : '') + (t.ant !== null && t.ant > 0 ? ' · ' + rsDPct(t.buscas, t.ant) : '') }));
+      item.data = R.buscas.slice(0, 10).map(t => ({ name:t.termo, value: rsInt(t.buscas) + ' buscas' + (t.share !== null ? ' · ' + rsPct(t.share, 1) : '') + (t.ant !== null && t.ant > 0 ? ' · ' + rsDPct(t.buscas, t.ant) : ''),
+        vals: [rsInt(t.buscas), t.share !== null ? rsPct(t.share, 1) : '—', t.ant !== null && t.ant > 0 ? rsDPct(t.buscas, t.ant) : '—'] }));
+      /* RappiStage 147: cabeçalho das colunas — antes os 3 números vinham num texto só, sem título. */
+      item.cols = ['Termo buscado', 'Nº de buscas', 'Share das buscas', 'Var. vs ' + (state.meetingType === 'monthly' ? 'mês anterior' : state.meetingType === 'quarterly' ? 'trimestre anterior' : 'semana anterior')];
       if(!item.data.length) item.data = [{ name:'Dado indisponível na base importada', value:'—' }];
     } else if(item.kind === 'invest-mechanics'){
       item.data = R.mecanicas.filter(rsIsBudgetMec).map(m => ({ selected:true, mecanica:m.mecanica, budgetAprovado:'', budgetConsumido: rsBRL(m.budget), burn: rsNull(m.burn) ? '—' : rsBRL(m.burn) + '/dia', roi: rsNull(m.roi) ? '—' : rsNf(m.roi, 1, 1) + 'x', faturamentoGerado: rsBRL(m.gmvGerado) }));
@@ -18839,8 +18866,14 @@ function renderItemStatic(item, block){
       }).join('')}${(item.metaMsg && !item.metaValue) ? `<div class="p-kpi-note" style="margin-top:10px;">${escapeHtml(item.metaMsg)}</div>` : ''}</div>`;
     }
 
-    case 'ranking':
-      return `<div class="p-rank-list">${item.data.map((r,i) => `<div class="p-rank-row"><span class="p-rank-pos">${i+1}</span><span class="p-rank-name">${escapeHtml(r.name)}</span><span class="p-rank-val">${escapeHtml(r.value)}</span></div>`).join('')}</div>`;
+    case 'ranking': {
+      const rsCols = item.cols && item.data.some(r => Array.isArray(r.vals)); // RappiStage 147
+      const rsDcls = v => /^\+/.test(v) ? ' p-rs-up' : /^[-−]/.test(v) ? ' p-rs-down' : '';
+      const head = rsCols ? '<div class="p-rank-row p-rs-rank-head"><span class="p-rank-pos">#</span><span class="p-rank-name">' + escapeHtml(item.cols[0]) + '</span><span class="p-rs-rank-vals">' + item.cols.slice(1).map(c => '<span>' + escapeHtml(c) + '</span>').join('') + '</span></div>' : '';
+      return `<div class="p-rank-list">${head}${item.data.map((r,i) => rsCols && Array.isArray(r.vals)
+        ? '<div class="p-rank-row"><span class="p-rank-pos">' + (i+1) + '</span><span class="p-rank-name">' + escapeHtml(r.name) + '</span><span class="p-rs-rank-vals">' + r.vals.map((v, j) => '<span class="' + (j === 0 ? 'p-rs-main' : j === r.vals.length - 1 ? 'p-rs-delta' + rsDcls(v) : '') + '">' + escapeHtml(v) + '</span>').join('') + '</span></div>'
+        : `<div class="p-rank-row"><span class="p-rank-pos">${i+1}</span><span class="p-rank-name">${escapeHtml(r.name)}</span><span class="p-rank-val">${escapeHtml(r.value)}</span></div>`).join('')}</div>`;
+    };
 
     case 'invest-calc': {
       /* Vira uma tabela somente-leitura no documento exportado (não recalcula ao vivo, como os
@@ -19713,6 +19746,15 @@ function buildPresentationDocument(){
 .p-rank-row{display:flex; align-items:center; gap:10px; font-size:12.5px; background:#FBFAF8; border:1px solid var(--ink1); border-radius:8px; padding:8px 12px; margin-bottom:6px;}
 .p-rank-pos{width:20px; height:20px; border-radius:50%; background:var(--ink1); font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center;}
 .p-rank-val{margin-left:auto; font-weight:800; color:var(--o2); font-size:11.5px;}
+.p-rs-rank-vals{display:flex; margin-left:auto; flex-shrink:0;}
+.p-rs-rank-vals > span{flex:0 0 118px; text-align:right; font-size:11.5px; font-weight:700; color:#5E5652;}
+.p-rs-rank-vals > span.p-rs-main{font-weight:800; color:#1E1B1A;}
+.p-rs-rank-vals > span.p-rs-delta{font-weight:800;}
+.p-rs-rank-vals > span.p-rs-up{color:#1F8A4C;} .p-rs-rank-vals > span.p-rs-down{color:#CC1008;}
+.p-rank-row.p-rs-rank-head{background:transparent; border:0; padding:0 12px 2px; margin-bottom:2px; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#837A76;}
+.p-rank-row.p-rs-rank-head .p-rank-pos{background:transparent;}
+.p-rank-row.p-rs-rank-head .p-rs-rank-vals > span{font-size:10.5px; font-weight:800; color:#837A76;}
+@media (max-width:700px){ .p-rs-rank-vals > span{flex-basis:78px;} }
 .p-invest-roi-hint{font-size:11px; font-weight:600; color:var(--ink7); background:#FFF0DD; border-radius:8px; padding:6px 10px; margin-bottom:6px; display:inline-block;}
 .p-invest-table{width:100%; border-collapse:collapse; font-size:12px; margin:10px 0;}
 .p-invest-table th{text-align:left; font-size:10px; color:var(--ink5); text-transform:uppercase; padding:0 8px 6px;}
