@@ -952,6 +952,10 @@ input,textarea,select{font-family:inherit;}
 .kpi-delta.up{color:#1E7A44;}
 .kpi-delta.down{color:#C22A2A;}
 .kpi-delta.flat{color:var(--ink-500);}
+.kpi-tile .kpi-delta-row[hidden]{display:none;}
+.rs-joined{margin-top:16px; padding-top:14px; border-top:1px dashed var(--ink-200, #E5E0DC);} /* RappiStage 163 */
+.rs-joined-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:8px;}
+.rs-joined.item-off .rs-joined-body{opacity:.45;}
 .kpi-tile .kpi-note{
   margin-top:7px; padding-top:7px; border-top:1px dashed var(--ink-300);
   font-size:10.5px; line-height:1.4; color:var(--ink-500); font-weight:600;
@@ -2284,6 +2288,8 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 164: projeção YTD desmarcada não vai para a apresentação (nem a opção, nem as linhas da tabela); gráficos mensais desde janeiro; sem selo "Dados atualizados até" e sem "Gerado em" na apresentação; Search sem Share das buscas; slide que não cabe rola em vez de cortar. */
+/* RappiStage 163: Faturamento Gerado/ROI dos investimentos = valor dos produtos (Total Price, antes do markdown) em qualquer régua; Resultados de Investimentos sem a leitura de variação; Detalhamento por Mecânica dentro do card de Resultados de Investimentos; rótulo "QoQ" do bloco Projeção editável. */
 /* RappiStage 160: a linha de Projeção percorre o ano todo (meses fechados = realizado do ano atual; meses que faltam = projeção). */
 /* RappiStage 159: a linha tracejada dos gráficos YTD passa a ser "Projeção <ano>" (mesma conta do balão de projeção); tabela marca os meses como "(projeção)". */
 /* RappiStage 158: balão da projeção de fechamento ao lado do balão YTD + checkbox "Mostrar projeção" (liga/desliga balão e linha tracejada; vale para a apresentação). */
@@ -4603,9 +4609,9 @@ const MOCK_DATA = {
           data:['Campanha de Payday gerou +14% de pedidos nos 3 dias de ativação.','Push de reativação recuperou 3.100 usuários inativos.']},
         { id:'m-g-search', kind:'ranking', label:'Search (Busca)', selected:true,
           data:[{name:'protetor solar', value:'12.400 buscas'}, {name:'dipirona', value:'9.870 buscas'}, {name:'whey protein', value:'7.220 buscas'}]},
-        { id:'m-g-invest', kind:'kpi-grid', label:'Resultados de Investimentos', selected:true, noDrilldown:true,
+        { id:'m-g-invest', kind:'kpi-grid', label:'Resultados de Investimentos', selected:true, noDrilldown:true, noDelta:true, // RappiStage 163: sem leitura de variação
           data:[ kpi('Consumo do Budget','R$ 64.200 / R$ 80.000','80% consumido','flat'), kpi('ROI','4,2x','+0,3x','up'), kpi('Burn Rate','R$ 2.140/dia','estável','flat'), kpi('Faturamento Gerado','R$ 269.600','via mídia paga','up') ]},
-        { id:'m-g-invest-mecanica', kind:'invest-mechanics', label:'Resultados de Investimentos — Detalhamento por Mecânica', selected:true,
+        { id:'m-g-invest-mecanica', kind:'invest-mechanics', label:'Detalhamento por Mecânica', selected:true, joinTo:'m-g-invest', // RappiStage 163: vai dentro do card de Resultados de Investimentos
           hint:'Quebra do resumo acima por mecânica de investimento — cada linha é opcional e editável.',
           data:[
             { selected:true, mecanica:'RappiAds', budgetAprovado:'R$ 48.000', budgetConsumido:'R$ 38.500', burn:'R$ 1.283/dia', roi:'4,5x', faturamentoGerado:'R$ 173.250' },
@@ -7850,7 +7856,7 @@ function renderBlockCard(block, visibleIdx){
      sourceKpiItemId, seriesSelected etc.), só não gera mais UI própria aqui. */
   const hasKpi   = block.items.some(item => item.kind === 'kpi-grid' && !item.attachTo);
   if(hasKpi)   itemsList.classList.add('kpi-full-body');
-  block.items.filter(item => !item.attachTo && (item.kind !== 'chart' || item.inlineChart)).forEach(item => itemsList.appendChild(renderItemRow(block, item)));
+  block.items.filter(item => !item.attachTo && !rsJoinParent(block, item) && (item.kind !== 'chart' || item.inlineChart)).forEach(item => itemsList.appendChild(renderItemRow(block, item)));
   if(typeof Sortable !== 'undefined') initSortableItems(itemsList, block); // RappiStage 123: arrastar os sub-blocos
 
   /* Insights + Highlight/Lowlight: layout compacto em até 3 colunas lado a lado (responsivo —
@@ -7944,7 +7950,11 @@ function renderBlockCard(block, visibleIdx){
 
 /* RappiStage 123: reordenar os sub-blocos de um bloco (arrastar pela alça ⠿ ou ▲▼). Só os sub-blocos visíveis no
    editor mudam de lugar — itens internos (gráficos das lupas, insights anexados) mantêm as posições deles em block.items. */
-function rsVisibleItems(block){ return block.items.filter(it => !it.attachTo && (it.kind !== 'chart' || it.inlineChart)); }
+/* RappiStage 163: item "juntado" (joinTo) aparece DENTRO do card do item pai (editor e apresentação) — ex.: Detalhamento por Mecânica
+   dentro de Resultados de Investimentos. Se o pai não existir no bloco, o item volta a ser um sub-bloco normal. */
+function rsJoinParent(block, it){ return it && it.joinTo ? (block.items || []).find(p => p.id === it.joinTo && p !== it) || null : null; }
+function rsJoined(block, item){ return (block.items || []).filter(j => j.joinTo === item.id && j !== item); }
+function rsVisibleItems(block){ return block.items.filter(it => !it.attachTo && !rsJoinParent(block, it) && (it.kind !== 'chart' || it.inlineChart)); }
 function rsApplyVisibleOrder(block, newIds){
   const vis = rsVisibleItems(block), slots = [];
   block.items.forEach((it, i) => { if(vis.indexOf(it) !== -1) slots.push(i); });
@@ -7983,6 +7993,14 @@ function renderItemRow(block, item){
   const body = document.createElement('div');
   body.className = 'item-body';
   body.appendChild(renderItemContent(item, block));
+  rsJoined(block, item).forEach(j => { // RappiStage 163: sub-bloco juntado dentro do mesmo card
+    const sec = document.createElement('div'); sec.className = 'rs-joined' + (j.selected === false ? ' item-off' : ''); sec.dataset.itemId = j.id;
+    sec.innerHTML = '<div class="rs-joined-head"><div class="item-label">' + j.label + (j.hint ? '<div class="item-hint">' + j.hint + '</div>' : '') + '</div>' +
+      '<label class="toggle" title="Incluir/excluir da apresentação final"><input type="checkbox" class="rs-joined-toggle"' + (j.selected === false ? '' : ' checked') + '><span class="track"></span><span class="thumb"></span></label></div>';
+    const jb = document.createElement('div'); jb.className = 'rs-joined-body'; jb.appendChild(renderItemContent(j, block)); sec.appendChild(jb);
+    sec.querySelector('.rs-joined-toggle').addEventListener('change', e => { j.selected = e.target.checked; sec.classList.toggle('item-off', !e.target.checked); if(typeof updateSelectionCounter === 'function') updateSelectionCounter(); });
+    body.appendChild(sec);
+  });
   row.appendChild(body);
 
   head.querySelectorAll('.item-move').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); rsMoveItem(block, item.id, +btn.dataset.dir); })); // RappiStage 123
@@ -8035,7 +8053,7 @@ function renderItemContent(item, block){
           ${showDetailBtn ? `<button type="button" class="kpi-detail-btn" title="${dd ? 'Ver detalhamento (destrinchamento)' : 'Ver gráfico deste KPI'}">🔎</button>` : ''}
           <textarea class="kpi-label-input" placeholder="Nome do KPI" rows="1">${escapeHtml(k.label)}</textarea>
           <textarea class="kpi-value-input" placeholder="Valor" rows="1">${escapeHtml(k.value)}</textarea>
-          <div class="kpi-delta-row">
+          <div class="kpi-delta-row"${item.noDelta ? ' hidden' : ''}>
             <select class="kpi-dir-select" title="Direção da variação">
               <option value="up" ${k.dir === 'up' ? 'selected' : ''}>▲</option>
               <option value="down" ${k.dir === 'down' ? 'selected' : ''}>▼</option>
@@ -9809,9 +9827,16 @@ function renderWaterfallChartItem(wrap, item){
     <div class="wf-field"><label>Valor Base (R$)</label><input type="text" inputmode="numeric" class="wf-base-value"></div>
     <div class="wf-field"><label>Rótulo Subtotal</label><input type="text" class="wf-subtotal-label"></div>
     <div class="wf-field"><label>Subtotal (auto)</label><input type="text" class="wf-subtotal-value" readonly></div>
-    <div class="wf-field"><label>QoQ % (auto)</label><input type="text" class="wf-yoy-display" readonly></div>
+    <div class="wf-field"><label>Rótulo da variação</label><input type="text" class="wf-cmp-label" placeholder="QoQ, YoY, MoM…" maxlength="12"></div>
+    <div class="wf-field"><label><span class="wf-cmp-lab">QoQ</span> % (auto)</label><input type="text" class="wf-yoy-display" readonly></div>
   `;
   controls.querySelector('.wf-base-label').value = item.baseLabel;
+  /* RappiStage 163: o rótulo da variação (badge "+5% QoQ") é editável — ex.: YoY quando a base é o mesmo período do ano anterior. */
+  const cmpLab = () => String(item.compareLabel == null ? 'QoQ' : item.compareLabel).trim() || 'QoQ';
+  controls.querySelector('.wf-cmp-label').value = cmpLab();
+  controls.querySelector('.wf-cmp-label').addEventListener('input', (e) => { item.compareLabel = e.target.value;
+    controls.querySelector('.wf-cmp-lab').textContent = cmpLab(); const u = chartWrap && chartWrap.querySelector('.wf-badge-unit'); if(u) u.textContent = cmpLab(); });
+  controls.querySelector('.wf-cmp-lab').textContent = cmpLab();
   controls.querySelector('.wf-subtotal-label').value = item.subtotalLabel;
   wrap.appendChild(controls);
 
@@ -9889,7 +9914,7 @@ function renderWaterfallChartItem(wrap, item){
 
   const chartWrap = document.createElement('div');
   chartWrap.className = 'wf-chart-wrap';
-  chartWrap.innerHTML = `<div class="wf-badge"><span class="wf-badge-pct"></span><span class="wf-badge-unit">QoQ</span></div><canvas id="${canvasId}" height="280"></canvas>`;
+  chartWrap.innerHTML = `<div class="wf-badge"><span class="wf-badge-pct"></span><span class="wf-badge-unit">${escapeHtml(cmpLab())}</span></div><canvas id="${canvasId}" height="280"></canvas>`;
   wrap.appendChild(chartWrap);
 
   /* Item (rodada de ajustes): rótulo do badge mudou de "YoY" para "QoQ" (Quarter over Quarter) —
@@ -11914,10 +11939,9 @@ function palavrasBuscadasColsRows(mt){
       buscas.toLocaleString('pt-BR'),
       '<span style="color:' + color + ';font-weight:700;">' + (pct >= 0 ? '+' : '') + pct.toFixed(2).replace('.', ',') + '%</span>',
       fmtPct(conv),
-      fmtPct(buscas / PALAVRAS_BUSCADAS_TOTAL * 100),
     ];
   });
-  return { cols: ['Termo buscado', 'Nº de buscas', deltaLabel, '% Conversão da busca', 'Share das buscas'], rows };
+  return { cols: ['Termo buscado', 'Nº de buscas', deltaLabel, '% Conversão da busca'], rows };
 }
 
 /* Deriva uma série temporal simulada de 5 pontos por KPI numérico do bloco "KPIs Principais",
@@ -15569,7 +15593,7 @@ function deleteDraftById(id){
    - itens que mudaram de formato são convertidos (ex.: Conquistas/Desafios de 1 campo → card de Próximos Passos);
    - configurações novas do modelo (rótulos, títulos, campos) são copiadas; o conteúdo do AGM fica intacto;
    - blocos adicionais (➕ Incluir blocos) são migrados contra o bloco de origem. */
-var RS_CONTENT_KEYS = { data:1, value:1, selected:1, insight:1, insights:1, highlights:1, lowlights:1, rappi:1, parceiro:1, retroEntregue:1, retroPendente:1,
+var RS_CONTENT_KEYS = { compareLabel:1, data:1, value:1, selected:1, insight:1, insights:1, highlights:1, lowlights:1, rappi:1, parceiro:1, retroEntregue:1, retroPendente:1,
   note:1, campaigns:1, calendarImageUrl:1, calendarImageAspect:1, calendarFileData:1, calendarFiles:1, callouts:1, images:1, attachments:1, chartCallouts:1, dayComments:1,
   rows:1, baseValue:1, seriesSelected:1, seriesChartType:1, chartType:1, layoutMode:1, viewMode:1, weeksSelected:1, labels:1, datasets:1, baseLabels:1, baseDatasets:1,
   kpiValue:1, kpiDelta:1, kpiDir:1, vals:1, cols:1, _uiCollapsed:1,
@@ -16571,9 +16595,11 @@ function rsMecanicas(B, type, p){
     else if(x.metrica === 'faturamento_gerado_income') o.ggInc = x.valor;
     else if(x.metrica === 'dias_ativos') o.dias = x.valor;
   });
-  /* RappiStage 70: faturamento gerado na mesma régua do faturamento escolhido no setup. */
+  /* RappiStage 163: faturamento gerado (ROI) = valor dos produtos dos pedidos com o investimento (Total Price), em QUALQUER régua.
+     O "income" desconta o markdown dos itens — que é outro investimento do parceiro — e derrubava o ROI das GOs
+     (Panvel out/26: 3 GOs, R$ 20.000 → Total Price R$ 357.229 = 17,9x; income R$ 317.345 = 15,9x). */
   Object.keys(by).forEach(k => { const o = by[k];
-    const v = RS_FAT_FIELD === 'faturamento_income' ? o.ggInc : RS_FAT_FIELD === 'faturamento_total_price' ? o.ggTp : (o.ggRaw !== undefined ? o.ggRaw : o.ggTp);
+    const v = o.ggTp !== undefined ? o.ggTp : (o.ggRaw !== undefined ? o.ggRaw : o.ggInc);
     o.gmvGerado = v === undefined ? null : v; delete o.ggRaw; delete o.ggTp; delete o.ggInc; });
   return Object.keys(by).map(k => {
     const o = by[k];
@@ -17171,6 +17197,8 @@ function rsDefeitoPT(raw){
 }
 function rsMotivoNome(item){ return rsMotivoPT(item); }
 Object.keys(RS_MOTIVO_CORES).forEach(function(en){ RS_MOTIVO_CORES[rsMotivoPT('Partner / ' + en)] = RS_MOTIVO_CORES[en]; }); // cores também pelos nomes em português
+/* RappiStage 164: gráficos mensais começam em janeiro do ano do último mês (mín. 5 meses, para o começo do ano não ficar com 1–2 pontos). */
+function rsMonthsFromJan(P){ const m = P && P.start != null ? +rsIso(P.start).slice(5, 7) : 5; return Math.max(5, m || 5); }
 function rsSeries(B, base, type, E, N, cutDays){ // RappiStage 90: cutDays = MTD (mesmo corte em todo período)
   const S = { labels:[], partial:[], gmv:[], pedidos:[], ticket:[], cancel:[], cancelados:[], pedidosTotal:[], mkdR:[], mkdPct:[], found:[], ruptura:[], defect:[], picking:[], rtLoja:[], conv:[],
     funil:{}, steps:{}, ativos:[], mixPro:[], momentum:[], retencao:[], freq:[], liquido:[], novos:[], budget:[], roi:[], burn:[], gmvGerado:[], qoq:[], yoy:[], todate:{ WTD:[], MTD:[], QTD:[] } };
@@ -17361,12 +17389,12 @@ function rsBuildDataset(B, base, type, periodValue, brand){
      ano anterior). As outras granularidades ficam disponíveis para as lupas (ex.: "Mensal (MTD)"). */
   const S = {
     weekly: rsSeries(B, base, 'weekly', rsEndPeriod('weekly', type, curFull, dadosAte), 8),
-    monthly: rsSeries(B, base, 'monthly', rsEndPeriod('monthly', type, curFull, dadosAte), 5),
+    monthly: (PEm => rsSeries(B, base, 'monthly', PEm, rsMonthsFromJan(PEm)))(rsEndPeriod('monthly', type, curFull, dadosAte)), // RappiStage 164: desde janeiro
     quarterly: rsSeries(B, base, 'quarterly', rsEndPeriod('quarterly', type, curFull, dadosAte), 5),
   };
   /* RappiStage 90: "Mensal (MTD)" da Weekly — 5 meses, cada um do dia 1 até o mesmo dia do mês atual
      (ex.: dados até 14/10 → Jun 01–14, Jul 01–14, … Out 01–14), nunca o mês anterior fechado. */
-  { const PM = rsPeriodContaining('monthly', dadosAte); S.mtd = rsSeries(B, base, 'monthly', PM, 5, dadosAte + 1 - PM.start); }
+  { const PM = rsPeriodContaining('monthly', dadosAte); S.mtd = rsSeries(B, base, 'monthly', PM, rsMonthsFromJan(PM), dadosAte + 1 - PM.start); }
   /* RappiStage 103: "Semanas até a data (WTD)" da Weekly — 8 semanas, cada uma da segunda até o mesmo dia
      da semana do último dado (ex.: dados até terça 14/10 → seg–ter de cada semana). */
   if(weekly){ const PW = rsPeriodContaining('weekly', dadosAte); S.wtd = rsSeries(B, base, 'weekly', PW, 8, dadosAte + 1 - PW.start); }
@@ -17780,10 +17808,11 @@ function rsKpi(D, label, origValue){
   if(/^Momentum/i.test(L)) return { value: rsNull(u.momentum) ? '—' : rsSigned(u.momentum, 1, ' p.p.'), delta: rsNull(u.momentumPrev) ? '—' : 'vs. ' + rsSigned(u.momentumPrev, 1, ' p.p.') + ' ' + word + ' anterior', dir: rsDir(u.momentum, 0) };
   if(/^Retenção/i.test(L)) return out(rsPct(u.retencao, 1), rsDPP(u.retencao, uP.retencao), u.retencao, uP.retencao);
   if(/^Frequência/i.test(L)) return { value: rsNull(u.freq) ? '—' : rsNf(u.freq, 2, 2) + ' pedidos/usuário', delta: (rsNull(u.freq) || rsNull(uP.freq)) ? '—' : rsSigned(u.freq - uP.freq, 2), dir: rsDir(u.freq, uP.freq) };
-  if(/^Consumo do Budget/i.test(L)) return { value: rsBRL(D.invest.budget), delta: rsNull(D.invest.budget) ? '—' : rsDPct(D.invest.budget, D.investPrev.budget) + ' vs ' + word + ' anterior', dir: rsDir(D.invest.budget, D.investPrev.budget) };
-  if(/^ROI$/i.test(L)) return { value: rsNull(D.invest.roi) ? '—' : rsNf(D.invest.roi, 1, 1) + 'x', delta: (rsNull(D.invest.roi) || rsNull(D.investPrev.roi)) ? '—' : rsSigned(D.invest.roi - D.investPrev.roi, 1, 'x'), dir: rsDir(D.invest.roi, D.investPrev.roi) };
-  if(/^Burn Rate/i.test(L)) return { value: rsNull(D.invest.burn) ? '—' : rsBRL(D.invest.burn) + '/dia', delta: rsDPct(D.invest.burn, D.investPrev.burn), dir: rsDir(D.invest.burn, D.investPrev.burn) };
-  if(/^Faturamento Gerado/i.test(L)) return { value: rsBRL(D.invest.gmvGerado), delta: rsDPct(D.invest.gmvGerado, D.investPrev.gmvGerado), dir: rsDir(D.invest.gmvGerado, D.investPrev.gmvGerado) };
+  /* RappiStage 163: Resultados de Investimentos sem leitura de variação (só o valor do período). */
+  if(/^Consumo do Budget/i.test(L)) return { value: rsBRL(D.invest.budget), delta: '', dir: 'flat' };
+  if(/^ROI$/i.test(L)) return { value: rsNull(D.invest.roi) ? '—' : rsNf(D.invest.roi, 1, 1) + 'x', delta: '', dir: 'flat' };
+  if(/^Burn Rate/i.test(L)) return { value: rsNull(D.invest.burn) ? '—' : rsBRL(D.invest.burn) + '/dia', delta: '', dir: 'flat' };
+  if(/^Faturamento Gerado/i.test(L)) return { value: rsBRL(D.invest.gmvGerado), delta: '', dir: 'flat' };
   if(isLink) return null; // links de lupa ("🔍 Ver ...") continuam iguais
   return { value:'—', delta:'—', dir:'flat' }; // sem fonte no CSV: nunca o número de exemplo
 }
@@ -17893,10 +17922,10 @@ function rsApplyOverrides(R){
     } else if(item.kind === 'progress'){
       rsApplyProgress(item, R, mt);
     } else if(item.kind === 'ranking' && /search|busca/i.test(item.label || '')){
-      item.data = R.buscas.slice(0, 10).map(t => ({ name:t.termo, value: rsInt(t.buscas) + ' buscas' + (t.share !== null ? ' · ' + rsPct(t.share, 1) : '') + (t.ant !== null && t.ant > 0 ? ' · ' + rsDPct(t.buscas, t.ant) : ''),
-        vals: [rsInt(t.buscas), t.share !== null ? rsPct(t.share, 1) : '—', t.ant !== null && t.ant > 0 ? rsDPct(t.buscas, t.ant) : '—'] }));
+      item.data = R.buscas.slice(0, 10).map(t => ({ name:t.termo, value: rsInt(t.buscas) + ' buscas' + (t.ant !== null && t.ant > 0 ? ' · ' + rsDPct(t.buscas, t.ant) : ''),
+        vals: [rsInt(t.buscas), t.ant !== null && t.ant > 0 ? rsDPct(t.buscas, t.ant) : '—'] })); // RappiStage 164: sem Share das buscas
       /* RappiStage 147: cabeçalho das colunas — antes os 3 números vinham num texto só, sem título. */
-      item.cols = ['Termo buscado', 'Nº de buscas', 'Share das buscas', 'Var. vs ' + (state.meetingType === 'monthly' ? 'mês anterior' : state.meetingType === 'quarterly' ? 'trimestre anterior' : 'semana anterior')];
+      item.cols = ['Termo buscado', 'Nº de buscas', 'Var. vs ' + (state.meetingType === 'monthly' ? 'mês anterior' : state.meetingType === 'quarterly' ? 'trimestre anterior' : 'semana anterior')];
       if(!item.data.length) item.data = [{ name:'Dado indisponível na base importada', value:'—' }];
     } else if(item.kind === 'invest-mechanics'){
       item.data = R.mecanicas.filter(rsIsBudgetMec).map(m => ({ selected:true, mecanica:m.mecanica, budgetAprovado:'', budgetConsumido: rsBRL(m.budget), burn: rsNull(m.burn) ? '—' : rsBRL(m.burn) + '/dia', roi: rsNull(m.roi) ? '—' : rsNf(m.roi, 1, 1) + 'x', faturamentoGerado: rsBRL(m.gmvGerado) }));
@@ -18259,6 +18288,7 @@ function rsYtdLupaHtml(label){ /* RappiStage 155: aba "Mês a mês (tabela)" da 
   const R = activeRealData(), y = R && R.yoy;
   if(!y || !y.ok) return '<h3>📅 ' + escapeHtml(label) + '</h3><div class="dd-sub">YoY indisponível: suba o CSV gerado com a <b>query completa (com YoY)</b> na etapa "Gerar CSV".</div>';
   const MES = RS_YTD_MES, k0 = rsYtdKeyOf(label), Y = y.year, P = y.prevYear;
+  const yc = (state.rsYtdCfg || {})[String(label).toLowerCase()], proj = !(yc && yc.proj === false); // RappiStage 164: projeção desmarcada some da tabela
   const grp = k0 === 'canc' ? ['canc'] : (k0 === 'conv' || k0 === 'sst') ? ['conv', 'sst'] : ['fat', 'ped', 'ticket'];
   const pp = k => k === 'canc' || k === 'conv';
   const dl = (a, b, k) => pp(k) ? rsDPP(a, b) : rsDPct(a, b);
@@ -18266,7 +18296,7 @@ function rsYtdLupaHtml(label){ /* RappiStage 155: aba "Mês a mês (tabela)" da 
   const head = '<tr><th>Mês</th>' + grp.map(k => '<th>' + rsYtdName(k) + ' ' + Y + '</th><th>' + rsYtdName(k) + ' ' + P + '</th><th>Δ</th>').join('') + '</tr>';
   let rows = '';
   y.months.forEach((m, i) => {
-    const mo = i + 1, real = mo <= y.ref, tend = !real && grp[0] === 'fat' && m.pjF != null;
+    const mo = i + 1, real = mo <= y.ref, tend = proj && !real && grp[0] === 'fat' && m.pjF != null;
     if(!real && !tend) return;
     rows += '<tr><td' + (tend ? ' class="rs-tend"' : '') + '>' + MES[i] + (mo === y.ref && y.partialDays ? ' (até dia ' + y.partialDays + ')' : '') + (tend ? ' (projeção)' : '') + '</td>' + grp.map(k => {
       const a = real ? val(m, k, 'cy') : val(m, k, 'pj'), b = val(m, k, 'ly');
@@ -18275,13 +18305,13 @@ function rsYtdLupaHtml(label){ /* RappiStage 155: aba "Mês a mês (tabela)" da 
   const T = y.ytd, tot = { fat: [T.cyF, T.lyF], ped: [T.cyP, T.lyP], ticket: [T.cyP ? T.cyF / T.cyP : null, T.lyP ? T.lyF / T.lyP : null],
     canc: [T.cyT > 0 ? T.cyC / T.cyT * 100 : null, T.lyT > 0 ? T.lyC / T.lyT * 100 : null], conv: [T.cyS > 0 ? T.cyO / T.cyS * 100 : null, T.lyS > 0 ? T.lyO / T.lyS * 100 : null], sst: [T.cyS, T.lyS] };
   rows += '<tr class="rs-tot"><td>Acumulado do ano (YTD)</td>' + grp.map(k => '<td>' + rsYoyFmt(tot[k][0], k, false) + '</td><td>' + rsYoyFmt(tot[k][1], k, false) + '</td><td>' + dl(tot[k][0], tot[k][1], k) + '</td>').join('') + '</tr>';
-  if(grp[0] === 'fat' && y.fy.pjF != null){
+  if(proj && grp[0] === 'fat' && y.fy.pjF != null){
     const fy = { fat: [y.fy.pjF, y.fy.lyF], ped: [y.fy.pjP, y.fy.lyP], ticket: [y.fy.pjP ? y.fy.pjF / y.fy.pjP : null, y.fy.lyP ? y.fy.lyF / y.fy.lyP : null] };
     rows += '<tr class="rs-tot"><td class="rs-tend">Fechamento ' + Y + ' (projeção) x ' + P + '</td>' + grp.map(k => '<td class="rs-tend">' + rsYoyFmt(fy[k][0], k, false) + '</td><td>' + rsYoyFmt(fy[k][1], k, false) + '</td><td class="rs-tend">' + dl(fy[k][0], fy[k][1], k) + '</td>').join('') + '</tr>';
   }
   const per = 'Jan' + (y.ref > 1 ? '–' + MES[y.ref - 1] : '') + (y.partialDays ? ' (até dia ' + y.partialDays + ')' : '');
   return '<h3>📅 ' + escapeHtml(label) + ' — mês a mês</h3>' +
-    '<div class="dd-sub">' + per + ' ' + Y + ' vs ' + per + ' ' + P + '. Números fechados de cada mês (sem detalhamento por loja).' + (grp[0] === 'fat' && y.tF != null ? ' Meses em itálico = projeção: mesmo mês de ' + P + ' × crescimento dos últimos 3 meses (' + (y.tF >= 0 ? '+' : '−') + rsNf(Math.abs(y.tF * 100), 1, 1) + '%).' : '') + '</div>' +
+    '<div class="dd-sub">' + per + ' ' + Y + ' vs ' + per + ' ' + P + '. Números fechados de cada mês (sem detalhamento por loja).' + (proj && grp[0] === 'fat' && y.tF != null ? ' Meses em itálico = projeção: mesmo mês de ' + P + ' × crescimento dos últimos 3 meses (' + (y.tF >= 0 ? '+' : '−') + rsNf(Math.abs(y.tF * 100), 1, 1) + '%).' : '') + '</div>' +
     '<div style="overflow-x:auto;"><table class="dd-table rs-ytd-table"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>';
 }
 function rsDrilldownHTML(type, kpiLabel){
@@ -18483,8 +18513,8 @@ function rsDrilldownHTML(type, kpiLabel){
     return '<h3>🔎 Palavras mais buscadas</h3><div class="dd-sub">Top termos buscados na loja da marca ' + (mt === 'monthly' ? 'no mês ' : mt === 'quarterly' ? 'no trimestre ' : 'na semana ') + escapeHtml(R.period.rkFb ? R.period.rankLabel : R.period.currentLabel) + ' vs ' + escapeHtml(R.period.rkFb ? R.period.rankPrevLabel : R.period.previousLabel) + (R.period.rkFb ? ' (último período fechado — o atual ainda está em andamento)' : '') + '; share = buscas do termo ÷ total de buscas do período; variação = buscas do mesmo termo contra o período anterior.</div>' +
       rsSections(R, D => {
         if(!D.buscas.length) return '<div class="dd-empty-state">Ranking de buscas indisponível na base importada.</div>';
-        return '<div style="overflow-x:auto;"><table class="dd-table" id="dd-t-buscas"><thead><tr><th>Termo buscado</th><th>Nº de buscas</th><th>Variação</th><th>Share das buscas</th></tr></thead><tbody>' +
-          D.buscas.slice(0, 20).map((x, i) => '<tr><td>' + (i + 1) + 'º ' + escapeHtml(x.termo) + '</td><td>' + rsInt(x.buscas) + '</td><td>' + (x.ant === null ? '—' : (x.ant === 0 ? 'novo' : rsColorSpan(rsDPct(x.buscas, x.ant), x.buscas >= x.ant))) + '</td><td>' + rsPct(x.share, 1) + '</td></tr>').join('') +
+        return '<div style="overflow-x:auto;"><table class="dd-table" id="dd-t-buscas"><thead><tr><th>Termo buscado</th><th>Nº de buscas</th><th>Variação</th></tr></thead><tbody>' +
+          D.buscas.slice(0, 20).map((x, i) => '<tr><td>' + (i + 1) + 'º ' + escapeHtml(x.termo) + '</td><td>' + rsInt(x.buscas) + '</td><td>' + (x.ant === null ? '—' : (x.ant === 0 ? 'novo' : rsColorSpan(rsDPct(x.buscas, x.ant), x.buscas >= x.ant))) + '</td></tr>').join('') +
           '</tbody></table></div><div class="dd-sub">Total de buscas no período: <b>' + rsInt(D.buscasTotal) + '</b></div>';
       }) + note;
   }
@@ -19148,7 +19178,7 @@ function rsYtdPanel(box, y, cfg, label, onChange){
       '<div class="rsyp-row"><span class="rsyp-lab">Modo de exibição:</span><button type="button" class="rsyp-btn' + (st.mode === 'combined' ? ' on' : '') + '" data-mode="combined">Um gráfico só</button><button type="button" class="rsyp-btn' + (st.mode === 'separate' ? ' on' : '') + '" data-mode="separate">Separado por KPI</button></div>' +
       '<div class="rsyp-row"><span class="rsyp-lab">Tipo de gráfico:</span><select class="rsyp-sel" data-all-type="1"><option value="bar"' + (allLine ? '' : ' selected') + '>Barra</option><option value="line"' + (allLine ? ' selected' : '') + '>Linha</option></select></div>' +
       '<div class="rsyp-row"><span class="rsyp-lab">Dados:</span><span class="rsyp-btn on">YTD — ' + per + ' ' + y.year + ' x ' + y.prevYear + '</span></div>' +
-      (y.fy && y.fy.pjF != null ? '<div class="rsyp-row"><span class="rsyp-lab">Projeção:</span><label class="rsyp-chk"><input type="checkbox" data-proj="1"' + (st.proj ? ' checked' : '') + '> Mostrar projeção de fechamento ' + y.year + ' (balão + linha tracejada)</label></div>' : '') +
+      (y.fy && y.fy.pjF != null && !(cfg && cfg.pres && !st.proj) ? '<div class="rsyp-row"><span class="rsyp-lab">Projeção:</span><label class="rsyp-chk"><input type="checkbox" data-proj="1"' + (st.proj ? ' checked' : '') + '> Mostrar projeção de fechamento ' + y.year + ' (balão + linha tracejada)</label></div>' : '') +
       '<div class="rsyp-row rsyp-kpis"><span class="rsyp-lab">KPIs:</span>' + av.map(function(k){ var on = !!st.sel[k], t = st.kt[k] || 'bar';
         return '<label class="rsyp-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-k="' + k + '"' + (on ? ' checked' : '') + '> ' + rsYtdName(k) + ' <select class="rsyp-sel rsyp-sel-sm" data-kt="' + k + '"><option value="bar"' + (t === 'bar' ? ' selected' : '') + '>Barra</option><option value="line"' + (t === 'line' ? ' selected' : '') + '>Linha</option></select></label>'; }).join('') + '</div>';
     if(!keys.length) h += '<div class="rsyp-note">Marque pelo menos um KPI.</div>';
@@ -19408,7 +19438,7 @@ function renderItemStatic(item, block){
           return `<div class="p-kpi-tile${showDetailBtn ? ' clickable' : ''}" ${showDetailBtn ? `onclick='openDrilldown(${JSON.stringify(k.label)})'` : ''}>
             <div class="p-kpi-label">${escapeHtml(k.label)}${showDetailBtn ? ' <span class="p-kpi-dd-icon" title="Ver detalhamento">🔎</span>' : ''}</div>
             <div class="p-kpi-value${/^(🔍|Ver\s)/.test(String(k.value || '').trim()) ? ' p-kpi-value-link' : kpiValueSizeClass(k.value)}">${escapeHtml(k.value).replace(/R\$ /g, () => 'R$ ')}</div>
-            <div class="p-kpi-delta ${effColor}">${dirIcon} ${escapeHtml(k.delta)}</div>
+            ${(item.noDelta || !String(k.delta || '').trim()) ? '' : `<div class="p-kpi-delta ${effColor}">${dirIcon} ${escapeHtml(k.delta)}</div>`}
             ${k.dataAte ? `<div class="p-kpi-asof">📅 ${escapeHtml(k.dataAte)}</div>` : ''}
             ${k.note ? `<div class="p-kpi-note">${k.note}</div>` : ''}
           </div>`;
@@ -19580,7 +19610,7 @@ function renderItemStatic(item, block){
        recalcula ((subtotal-base)/base)*100 a partir de baseValue/rows, exatamente como o editor. */
     case 'waterfall-chart': {
       const canvasId = 'wf-canvas-' + item.id;
-      return `<div class="p-wf-chart-wrap"><div class="p-wf-badge" id="${canvasId}-badge"><span class="p-wf-badge-pct"></span><span class="p-wf-badge-unit">QoQ</span></div><canvas id="${canvasId}"></canvas></div>
+      return `<div class="p-wf-chart-wrap"><div class="p-wf-badge" id="${canvasId}-badge"><span class="p-wf-badge-pct"></span><span class="p-wf-badge-unit">${escapeHtml(String(item.compareLabel == null ? 'QoQ' : item.compareLabel).trim() || 'QoQ')}</span></div><canvas id="${canvasId}"></canvas></div>
         <script>window.__WATERFALLS__ = window.__WATERFALLS__ || []; window.__WATERFALLS__.push(${JSON.stringify({
           canvasId, baseLabel: item.baseLabel, baseValue: item.baseValue, subtotalLabel: item.subtotalLabel,
           rows: item.rows || [],
@@ -20156,7 +20186,6 @@ function buildPresentationDocument(){
       <div class="cover-logo ${isMultiBrandCover ? 'cover-logo-multi' : ''}">${coverLogo}</div>
       <div class="cover-badge">${escapeHtml(MEETING_LABELS[state.meetingType] || '')}</div>
       <div class="cover-period">${escapeHtml(state.period ? state.period.label : '')}</div>${rsTdCoverHtml()}
-      <div class="cover-date">Gerado em ${dateStr}</div>
     </section>`
   ].concat(
     (() => {
@@ -20219,10 +20248,11 @@ function buildPresentationDocument(){
           </div>
           <div class="slide-items${block.twoColItems ? ' slide-items-2col' : ''}">
             ${(block.noInsights || block.insightsOff || (block.items || []).some(i => i.kind === 'ai-insight' && !i.attachTo)) ? '' : (block.insights || []).filter(ins => ins.selected).map(ins => `<div class="slide-item slide-insight-item"><div class="slide-insight"><b>Insights ·</b> ${linkifyInsightText(block, ins.text)}</div></div>`).join('')}
-            ${block.items.filter(i => i.selected !== false && !i.attachTo && (i.kind !== 'chart' || i.inlineChart) && !isEmptyStandaloneInsight(i, block) && !isEmptyManualItem(i)).map(item => `
+            ${block.items.filter(i => i.selected !== false && !i.attachTo && !(rsJoinParent(block, i) && rsJoinParent(block, i).selected !== false) && (i.kind !== 'chart' || i.inlineChart) && !isEmptyStandaloneInsight(i, block) && !isEmptyManualItem(i)).map(item => `
               <div class="slide-item" data-item-id="${escapeHtml(item.id)}">
                 <div class="slide-item-label">${escapeHtml(item.label)}</div>
                 ${renderItemStatic(item, block)}
+                ${rsJoined(block, item).filter(j => j.selected !== false && !isEmptyManualItem(j)).map(j => `<div class="slide-joined" data-item-id="${escapeHtml(j.id)}"><div class="slide-item-label">${escapeHtml(j.label)}</div>${renderItemStatic(j, block)}</div>`).join('')}
               </div>`).join('')}
           </div>
         </section>`);
@@ -20283,7 +20313,7 @@ function buildPresentationDocument(){
 .hidden{display:none !important;}
 /* Não há scroll dentro do slide — se o conteúdo não couber em uma tela, initSlidePagination()
    divide os itens em mais páginas ("Bloco (cont.)") em vez de deixar rolar. */
-.slide{height:100vh; padding:56px 6vw 90px; display:none; flex-direction:column; justify-content:center; overflow:hidden; position:relative;}
+.slide{height:100vh; padding:56px 6vw 90px; display:none; flex-direction:column; justify-content:safe center; overflow-x:hidden; overflow-y:auto; position:relative;} /* RappiStage 164: conteúdo maior que a tela rola (antes cortava) */
 /* Fundo personalizado com a logo do parceiro — desfocado e com opacidade baixa, só pra dar uma
    cara "feita pra esse parceiro" sem atrapalhar a leitura dos KPIs/gráficos por cima. Cada slide
    define --slide-watermark inline (ver buildPresentationDocument) com a logo certa: a marca única,
@@ -20369,6 +20399,7 @@ function buildPresentationDocument(){
 .slide-insight-item{background:none; border:none; box-shadow:none; padding:0;}
 .slide-item{background:#fff; border:1px solid var(--ink1); border-radius:16px; padding:18px 20px; box-shadow:0 4px 14px rgba(76,43,43,0.06);}
 .slide-item-label{font-size:13px; font-weight:800; margin-bottom:12px;}
+.slide-joined{margin-top:18px; padding-top:14px; border-top:1px dashed var(--ink1);}
 /* Item (rodada de ajustes): auto-fit em vez de auto-fill — mesmo raciocínio do editor (ver
    .kpi-grid) — os tiles esticam pra preencher toda a largura da última linha em vez de deixar um
    vão vazio quando a contagem de KPIs não fecha a grade certinho. */
@@ -21039,7 +21070,7 @@ body.nav-idle{cursor:none;}
 <div class="sidebar" id="sidebar">${sidebarHtml}</div>
 <div class="rappi-corner-logo-fixed" id="rappiCornerLogoFixed"><img src="${LOGO_ICON_DATAURL}" alt="Rappi"></div>
 <div class="brand-corner-logos" id="brandCornerLogos">${brandCornerLogosHtml}</div>
-${presentationAsOfBadgeHtml()}
+
 ${slidesHtml}
 <div class="nav-bar">
   <button class="nav-btn" id="prevBtn">←</button>
@@ -23039,7 +23070,7 @@ function renderDdChartsTab(label){
   if(/ ytd$/i.test(String(label || '').trim()) && typeof RS_YTD !== 'undefined'){ // RappiStage 155
     if(!RS_YTD.y || !RS_YTD.y.ok){ chartBox.innerHTML = '<div class="dd-empty-state">YoY indisponível.</div>'; return; }
     var yk = String(label).toLowerCase(); RS_YTD.cfg = RS_YTD.cfg || {};
-    rsYtdPanel(chartBox, RS_YTD.y, RS_YTD.cfg[yk], label, function(c){ RS_YTD.cfg[yk] = c; });
+    rsYtdPanel(chartBox, RS_YTD.y, Object.assign({}, RS_YTD.cfg[yk] || {}, { pres: true }), label, function(c){ RS_YTD.cfg[yk] = Object.assign(c, { pres: true }); }); // RappiStage 164
     return;
   }
 
@@ -23789,7 +23820,7 @@ function rsYtdPanel(box, y, cfg, label, onChange){
       '<div class="rsyp-row"><span class="rsyp-lab">Modo de exibição:</span><button type="button" class="rsyp-btn' + (st.mode === 'combined' ? ' on' : '') + '" data-mode="combined">Um gráfico só</button><button type="button" class="rsyp-btn' + (st.mode === 'separate' ? ' on' : '') + '" data-mode="separate">Separado por KPI</button></div>' +
       '<div class="rsyp-row"><span class="rsyp-lab">Tipo de gráfico:</span><select class="rsyp-sel" data-all-type="1"><option value="bar"' + (allLine ? '' : ' selected') + '>Barra</option><option value="line"' + (allLine ? ' selected' : '') + '>Linha</option></select></div>' +
       '<div class="rsyp-row"><span class="rsyp-lab">Dados:</span><span class="rsyp-btn on">YTD — ' + per + ' ' + y.year + ' x ' + y.prevYear + '</span></div>' +
-      (y.fy && y.fy.pjF != null ? '<div class="rsyp-row"><span class="rsyp-lab">Projeção:</span><label class="rsyp-chk"><input type="checkbox" data-proj="1"' + (st.proj ? ' checked' : '') + '> Mostrar projeção de fechamento ' + y.year + ' (balão + linha tracejada)</label></div>' : '') +
+      (y.fy && y.fy.pjF != null && !(cfg && cfg.pres && !st.proj) ? '<div class="rsyp-row"><span class="rsyp-lab">Projeção:</span><label class="rsyp-chk"><input type="checkbox" data-proj="1"' + (st.proj ? ' checked' : '') + '> Mostrar projeção de fechamento ' + y.year + ' (balão + linha tracejada)</label></div>' : '') +
       '<div class="rsyp-row rsyp-kpis"><span class="rsyp-lab">KPIs:</span>' + av.map(function(k){ var on = !!st.sel[k], t = st.kt[k] || 'bar';
         return '<label class="rsyp-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-k="' + k + '"' + (on ? ' checked' : '') + '> ' + rsYtdName(k) + ' <select class="rsyp-sel rsyp-sel-sm" data-kt="' + k + '"><option value="bar"' + (t === 'bar' ? ' selected' : '') + '>Barra</option><option value="line"' + (t === 'line' ? ' selected' : '') + '>Linha</option></select></label>'; }).join('') + '</div>';
     if(!keys.length) h += '<div class="rsyp-note">Marque pelo menos um KPI.</div>';
