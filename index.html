@@ -293,6 +293,8 @@ input,textarea,select{font-family:inherit;}
 /* Estado "armado" do botão "💬 Adicionar comentário" — próximo clique no gráfico vira comentário
    em vez de abrir em tela cheia (item F.7). */
 .chart-comment-btn.active{background:var(--rappi-orange-1); color:#fff;}
+/* RappiStage 162: query embutida (versão 10/11/2026): YTD (Resultados YTD e projeção) de TODAS as marcas soma todas as lojas da marca em 2025 e 2026 — inclusive Turbo e lojas que já saíram da carteira — para bater com o total do parceiro. Os demais KPIs seguem só com as lojas da carteira. | YoY: novo bloco com os números fechados mês a mês desde janeiro do ano passado (faturamento, pedidos, ticket, cancelamento by partner e conversão). | Top Sellers e ruptura: produtos sem EAN (NO-EAN) agora aparecem separados pelo nome — antes eram somados numa linha só. | Duas opções: query completa (com YoY, mais demorada) ou rápida (sem YoY) — escolha no botão de copiar. | Tempo na loja sem sobreposição; Zee Now separada da Petz; Carrefour (fora da farmácia) com a Rubia. */
+/* RappiStage 161: query embutida (versão 10/11/2026): Panvel: o YTD (Resultados YTD e projeção) passa a somar também as lojas Turbo By Panvel, em 2025 e 2026 — o total bate com o que a Panvel vê. Os demais KPIs seguem sem Turbo. | YoY: novo bloco com os números fechados mês a mês desde janeiro do ano passado (faturamento, pedidos, ticket, cancelamento by partner e conversão). | Top Sellers e ruptura: produtos sem EAN (NO-EAN) agora aparecem separados pelo nome — antes eram somados numa linha só. | Duas opções: query completa (com YoY, mais demorada) ou rápida (sem YoY) — escolha no botão de copiar. | Tempo na loja sem sobreposição; Zee Now separada da Petz; Carrefour (fora da farmácia) com a Rubia. */
 /* RappiStage 143: com "Adicionar comentário" armado, o mouse vira um alvo sobre o gráfico */
 .rs-comment-armed .chart-canvas-wrap, .rs-comment-armed .chart-canvas-wrap canvas, .rs-comment-armed .chart-mini-canvas-wrap, .rs-comment-armed .chart-mini-canvas-wrap canvas{
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%23FF441F' stroke-width='2'/%3E%3Cpath d='M16 1v8M16 23v8M1 16h8M23 16h8' stroke='%23fff' stroke-width='4'/%3E%3Cpath d='M16 1v8M16 23v8M1 16h8M23 16h8' stroke='%23FF441F' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%23FF441F'/%3E%3C/svg%3E") 16 16, crosshair !important;
@@ -2525,6 +2527,7 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
    (o que mudou, em linguagem de AGM, 1 item por linha começando com "- ").
    Depois rode: python _work/embutir_query.py   (gera a próxima RappiStage_NNN.html + index.html)
    VERSAO: 10/11/2026
+   - YTD (Resultados YTD e projeção) de TODAS as marcas soma todas as lojas da marca em 2025 e 2026 — inclusive Turbo e lojas que já saíram da carteira — para bater com o total do parceiro. Os demais KPIs seguem só com as lojas da carteira.
    - YoY: novo bloco com os números fechados mês a mês desde janeiro do ano passado (faturamento, pedidos, ticket, cancelamento by partner e conversão).
    - Top Sellers e ruptura: produtos sem EAN (NO-EAN) agora aparecem separados pelo nome — antes eram somados numa linha só.
    - Duas opções: query completa (com YoY, mais demorada) ou rápida (sem YoY) — escolha no botão de copiar.
@@ -3150,6 +3153,53 @@ YOY_CANC AS (
       AND COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE < $DT_INI
     GROUP BY 1, 2, 3
 ),
+/* v162: YTD com TODAS as lojas da marca — inclusive Turbo e lojas que saíram da carteira (sem AGM, desativadas).
+   Só o bloco marca_mes (YTD/projeção); lojas_dia, rankings e demais KPIs continuam só com a carteira (LOJAS).
+   Mesmas regras de marca/AGM do LOJAS: Zee Now = Petz com store type zeenow; Carrefour farmácia = joao.frausto, resto = rubia.beloto.
+   STORE_ID 0 (balde de pedidos sem loja) fica fora. Só o Carrefour tem mais de 1 AGM (conferido 10/11/2026). */
+LOJAS_EXTRA_YTD AS (
+    SELECT S.STORE_ID, M.AGM, M.MARCA
+    FROM RP_SILVER_DB_PROD.DES_PROD.STORES_BR S
+    JOIN (SELECT DISTINCT AGM, MARCA, MARCA_GRUPO FROM LOJAS) M
+      ON M.MARCA_GRUPO = S.BRAND_GROUP_NAME
+     AND M.MARCA = IFF(S.BRAND_GROUP_NAME = 'Petz' AND S.STORE_TYPE ILIKE '%zeenow%', 'Zee Now', S.BRAND_GROUP_NAME)
+     AND M.AGM = IFF(S.BRAND_GROUP_NAME = 'Carrefour',
+                     IFF(S.STORE_TYPE IN ('carrefour_farm', 'carrefour_super_farm_nc'), 'joao.frausto@rappi.com', 'rubia.beloto@rappi.com'),
+                     M.AGM)
+    WHERE S.STORE_ID <> 0
+      AND S.STORE_ID NOT IN (SELECT STORE_ID FROM LOJAS)
+),
+EXTRA_PBI AS (
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, P.CALENDAR_DATE) AS P,
+           SUM(P.PRECO_TOTAL_PRODUTOS) AS TP, SUM(P.FATURAMENTO) AS INC, SUM(P.GMV) AS GMV, SUM(P.ORDERS) AS PEDIDOS
+    FROM RP_GOLD_DB_PROD.SPA_BR.TBL_PBI_SUMMARY P
+    JOIN LOJAS_EXTRA_YTD L ON L.STORE_ID = P.STORE_ID
+    WHERE P.CALENDAR_DATE >= IFF($YOY = 1, DATEADD(YEAR, -1, DATE_TRUNC(YEAR, DATEADD(DAY, -1, $DT_FIM))), $DT_INI)
+      AND P.CALENDAR_DATE < $DT_FIM
+    GROUP BY 1, 2, 3
+),
+EXTRA_CANC AS (
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE) AS P,
+           COUNT(O.ORDER_ID) AS TOTAL,
+           SUM(CASE WHEN C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Partner' THEN 1 ELSE 0 END) AS CANC
+    FROM RP_SILVER_DB_PROD.DES_PROD.ORDERS_BR O
+    JOIN LOJAS_EXTRA_YTD L ON L.STORE_ID = O.STORE_ID
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.CANCELLATIONS_BR C ON C.ORDER_ID = O.ORDER_ID
+    LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.OPS_ORDERS_BR OPS ON OPS.ORDER_ID = O.ORDER_ID
+    WHERE OPS.IS_OPS = TRUE AND OPS.VALID_CARGO != 'non_valid_cargo' AND O.SYNTHETIC = FALSE
+      AND COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE >= IFF($YOY = 1, DATEADD(YEAR, -1, DATE_TRUNC(YEAR, DATEADD(DAY, -1, $DT_FIM))), $DT_INI)
+      AND COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE < $DT_FIM
+    GROUP BY 1, 2, 3
+),
+EXTRA_FUN AS (
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, F.SNAPSHOT::DATE) AS P, SUM(F.SST) AS SST, SUM(F.SS) AS SS, SUM(F.VPD) AS VPD, SUM(F.ATC) AS ATC, SUM(F.VC) AS VC, SUM(F.VSO) AS VSO, SUM(F.PTC) AS PTC, SUM(F.OP) AS OP, SUM(F.OPC) AS OPC
+    FROM RP_SILVER_DB_PROD.GLOBAL_CONVERSIONS.GLOBAL_CONVERSIONS F
+    JOIN LOJAS_EXTRA_YTD L ON L.STORE_ID = F.STORE_ID
+    WHERE F.COUNTRY = 'BR' AND F.STORE_FLAG = TRUE
+      AND F.SNAPSHOT::DATE >= IFF($YOY = 1, DATEADD(YEAR, -1, DATE_TRUNC(YEAR, DATEADD(DAY, -1, $DT_FIM))), $DT_INI)
+      AND F.SNAPSHOT::DATE < $DT_FIM
+    GROUP BY 1, 2, 3
+),
 MES_JAN AS (   -- meses da janela: soma dos números diários (= lojas_dia)
     SELECT O.AGM, O.MARCA, DATE_TRUNC(MONTH, O.D) AS P,
            SUM(COALESCE(T.TP, 0)) AS TP, SUM(COALESCE(T.INC, 0)) AS INC, SUM(O.GMV) AS GMV, COUNT(DISTINCT O.ORDER_ID) AS PEDIDOS
@@ -3179,10 +3229,13 @@ MARCA_MES AS (
     SELECT COALESCE(F.AGM, C.AGM, U.AGM) AS AGM, COALESCE(F.MARCA, C.MARCA, U.MARCA) AS MARCA, COALESCE(F.P, C.P, U.P) AS P,
            F.TP, F.INC, F.GMV, F.PEDIDOS, C.TOTAL, C.CANC,
            U.SST, U.SS, U.VPD, U.ATC, U.VC, U.VSO, U.PTC, U.OP, U.OPC
-    FROM (SELECT * FROM MES_JAN UNION ALL SELECT * FROM YOY_PBI) F
-    FULL OUTER JOIN (SELECT * FROM MES_CANC UNION ALL SELECT * FROM YOY_CANC) C
+    FROM (SELECT AGM, MARCA, P, SUM(TP) AS TP, SUM(INC) AS INC, SUM(GMV) AS GMV, SUM(PEDIDOS) AS PEDIDOS
+          FROM (SELECT * FROM MES_JAN UNION ALL SELECT * FROM YOY_PBI UNION ALL SELECT * FROM EXTRA_PBI) GROUP BY 1, 2, 3) F
+    FULL OUTER JOIN (SELECT AGM, MARCA, P, SUM(TOTAL) AS TOTAL, SUM(CANC) AS CANC
+          FROM (SELECT * FROM MES_CANC UNION ALL SELECT * FROM YOY_CANC UNION ALL SELECT * FROM EXTRA_CANC) GROUP BY 1, 2, 3) C
       ON C.AGM = F.AGM AND C.MARCA = F.MARCA AND C.P = F.P
-    FULL OUTER JOIN (SELECT * FROM MES_FUN UNION ALL SELECT * FROM YOY_FUN) U
+    FULL OUTER JOIN (SELECT AGM, MARCA, P, SUM(SST) AS SST, SUM(SS) AS SS, SUM(VPD) AS VPD, SUM(ATC) AS ATC, SUM(VC) AS VC, SUM(VSO) AS VSO, SUM(PTC) AS PTC, SUM(OP) AS OP, SUM(OPC) AS OPC
+          FROM (SELECT * FROM MES_FUN UNION ALL SELECT * FROM YOY_FUN UNION ALL SELECT * FROM EXTRA_FUN) GROUP BY 1, 2, 3) U
       ON U.AGM = COALESCE(F.AGM, C.AGM) AND U.MARCA = COALESCE(F.MARCA, C.MARCA) AND U.P = COALESCE(F.P, C.P)
 ),
 MARCAS AS (SELECT DISTINCT AGM, MARCA, BRAND_GROUP_ID FROM LOJAS WHERE MARCA = MARCA_GRUPO),   -- v137: marca "separada" (Zee Now) fica fora: o RappiAds é do grupo inteiro e vai para a marca do grupo (Petz)
