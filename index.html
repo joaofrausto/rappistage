@@ -2290,6 +2290,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 167: Highlight/Lowlight sempre na mesma página dos resultados (2 colunas + não separa na paginação); Conquistas e Desafios numa tela só (lado a lado, cards compactos, ajuste ao tamanho da tela); valor discreto em cada barra do gráfico de Projeção. */
 /* RappiStage 166: gráficos das lupas com todos os meses do eixo (Jan→mês da reunião) — a série mensal vinha só com os 5 últimos e o seletor "Meses a exibir" ficava com a lista antiga do rascunho. */
 /* RappiStage 165: projeção YTD editável na tabela "Mês a mês" (Faturamento e Pedidos dos meses projetados); gráfico, balão e fechamento usam os valores editados; configuração do painel YTD salva no rascunho. */
 /* RappiStage 164: projeção YTD desmarcada não vai para a apresentação (nem a opção, nem as linhas da tabela); gráficos mensais desde janeiro; sem selo "Dados atualizados até" e sem "Gerado em" na apresentação; Search sem Share das buscas; slide que não cabe rola em vez de cortar. */
@@ -9810,10 +9811,9 @@ function renderWaterfallChartItem(wrap, item){
         plugins: {
           legend: { display: false },
           tooltip: { callbacks: { label: (ctx) => formatWaterfallVal(segments[ctx.dataIndex].display) } },
-          /* chartjs-plugin-datalabels registrado globalmente (Chart.register(ChartDataLabels)) —
-             sem isso, mostraria o array bruto [start,end] de cada barra flutuante por cima do
-             gráfico. O valor de cada barra já aparece no tooltip (acima) e no eixo Y. */
-          datalabels: { display: false },
+          /* RappiStage 167: valor discreto em cima de cada barra (antes só no tooltip). */
+          datalabels: { display: true, anchor: 'end', align: (ctx) => ctx.dataIndex === segments.length - 1 ? 'start' : 'end', offset: (ctx) => ctx.dataIndex === segments.length - 1 ? 40 : 2, clip: false, color: (ctx) => ctx.dataIndex === segments.length - 1 ? '#FFFFFF' : '#837A76', font: { size: 10, weight: '600' },
+            formatter: (v, ctx) => { const sg = segments[ctx.dataIndex]; return (sg.kind === 'delta' && sg.display > 0 ? '+' : '') + formatWaterfallVal(sg.display); } },
         },
         scales: {
           x: { grid: { display: false } },
@@ -19541,8 +19541,12 @@ function renderItemStatic(item, block){
       const insightsHtml = (!item.attachTo && block && !block.insightsOff) ? (block.insights || []).filter(ins => ins.selected).map(ins => `<div class="p-bubble p-ins"><span class="p-dot"></span>${linkifyInsightText(block, ins.text)}</div>`).join('') : '';
       return `<div class="p-insight-wrap">
         ${insightsHtml}
-        ${(item.highlights||[]).filter(h => !item.highlightsOff && h.selected !== false && String(h.text || '').trim()).map(h => `<div class="p-bubble p-hl"><span class="p-dot"></span>${escapeHtml(h.text)}</div>`).join('')}
-        ${(item.lowlights||[]).filter(l => !item.lowlightsOff && l.selected !== false && String(l.text || '').trim()).map(l => `<div class="p-bubble p-ll"><span class="p-dot"></span>${escapeHtml(l.text)}</div>`).join('')}
+        ${(() => { /* RappiStage 167: Highlights e Lowlights lado a lado (ocupa metade da altura e fica na página dos resultados) */
+          const hl = (item.highlights||[]).filter(h => !item.highlightsOff && h.selected !== false && String(h.text || '').trim()).map(h => `<div class="p-bubble p-hl"><span class="p-dot"></span>${escapeHtml(h.text)}</div>`).join('');
+          const ll = (item.lowlights||[]).filter(l => !item.lowlightsOff && l.selected !== false && String(l.text || '').trim()).map(l => `<div class="p-bubble p-ll"><span class="p-dot"></span>${escapeHtml(l.text)}</div>`).join('');
+          if(!hl && !ll) return '';
+          return `<div class="p-hl-cols${hl && ll ? '' : ' one'}">${hl ? `<div class="p-hl-col">${hl}</div>` : ''}${ll ? `<div class="p-hl-col">${ll}</div>` : ''}</div>`;
+        })()}
       </div>`;
     }
 
@@ -19604,10 +19608,8 @@ function renderItemStatic(item, block){
       return `<div class="p-plans-grid">${steps.map(p => `
         <div class="p-plans-card">
           <div class="p-plans-card-icon">${escapeHtml(p.icon || item.defaultIcon || '🗂️')}</div>
-          <div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.what || 'O quê')}</span><div class="p-plans-card-desc">${escapeHtml(p.what || '').replace(/\n/g,'<br>')}</div></div>
-          <div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.how || 'Como')}</span><div class="p-plans-card-desc">${escapeHtml(p.how || '').replace(/\n/g,'<br>')}</div></div>
-          <div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.purpose || 'Impacto')}</span><div class="p-plans-card-desc">${escapeHtml(p.purpose || '').replace(/\n/g,'<br>')}</div></div>
-          <div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.owner || 'Responsáveis')}</span><div>${ownersHtml(p.owner)}</div></div>
+          ${[['what', 'O quê'], ['how', 'Como'], ['purpose', 'Impacto']].filter(f => String(p[f[0]] || '').trim()).map(f => `<div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL[f[0]] || f[1])}</span><div class="p-plans-card-desc">${escapeHtml(p[f[0]] || '').replace(/\n/g,'<br>')}</div></div>`).join('')}
+          ${String(p.owner || '').trim() ? `<div class="p-plans-card-field"><span class="p-plans-card-field-label">${escapeHtml(FL.owner || 'Responsáveis')}</span><div>${ownersHtml(p.owner)}</div></div>` : ''}
         </div>`).join('')}</div>`;
     }
 
@@ -20283,7 +20285,7 @@ function buildPresentationDocument(){
           <div class="slide-items${block.twoColItems ? ' slide-items-2col' : ''}">
             ${(block.noInsights || block.insightsOff || (block.items || []).some(i => i.kind === 'ai-insight' && !i.attachTo)) ? '' : (block.insights || []).filter(ins => ins.selected).map(ins => `<div class="slide-item slide-insight-item"><div class="slide-insight"><b>Insights ·</b> ${linkifyInsightText(block, ins.text)}</div></div>`).join('')}
             ${block.items.filter(i => i.selected !== false && !i.attachTo && !(rsJoinParent(block, i) && rsJoinParent(block, i).selected !== false) && (i.kind !== 'chart' || i.inlineChart) && !isEmptyStandaloneInsight(i, block) && !isEmptyManualItem(i)).map(item => `
-              <div class="slide-item" data-item-id="${escapeHtml(item.id)}">
+              <div class="slide-item" data-item-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}">
                 <div class="slide-item-label">${escapeHtml(item.label)}</div>
                 ${renderItemStatic(item, block)}
                 ${rsJoined(block, item).filter(j => j.selected !== false && !isEmptyManualItem(j)).map(j => `<div class="slide-joined" data-item-id="${escapeHtml(j.id)}"><div class="slide-item-label">${escapeHtml(j.label)}</div>${renderItemStatic(j, block)}</div>`).join('')}
@@ -20493,6 +20495,8 @@ function buildPresentationDocument(){
 .p-att-open{border:1px solid var(--ink3); background:#fff; color:var(--ink); font-size:11px; font-weight:800; padding:4px 10px; border-radius:999px; cursor:pointer; font-family:inherit;}
 .p-att-open:hover{border-color:var(--o1); color:var(--o2);}
 .p-insight-wrap{display:flex; flex-direction:column; gap:8px;}
+.p-hl-cols{display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; align-items:start;} .p-hl-cols.one{grid-template-columns:1fr;} /* RappiStage 167 */
+.p-hl-col{display:flex; flex-direction:column; gap:8px;}
 .p-bubble{border-radius:10px; padding:10px 14px; font-size:12.5px;}
 .p-bubble.p-hl{background:rgba(45,159,90,0.09); color:#175C34;} .p-bubble.p-ll{background:rgba(220,53,53,0.08); color:#8F2222;}
 .p-bubble.p-ins{background:linear-gradient(90deg, rgba(255,122,77,0.1), rgba(255,37,38,0.06)); color:var(--ink);}
@@ -20576,6 +20580,12 @@ function buildPresentationDocument(){
 /* Item (rodada de ajustes): "Planos e Projetos para o Próximo Trimestre" (kind 'plans-grid',
    exclusivo do modelo Quarterly) — grade de cards com ícone + título + descrição livres. */
 .p-plans-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:16px;}
+.slide-items-2col .p-plans-grid{grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:10px;} /* RappiStage 167: Conquistas e Desafios compactos */
+.slide-items-2col .p-plans-card{padding:12px 14px; gap:6px; border-radius:12px;}
+.slide-items-2col .p-plans-card-icon{width:28px; height:28px; font-size:15px; border-radius:8px;}
+.slide-items-2col .p-plans-card-desc, .slide-items-2col .p-plans-card-field{font-size:11.5px; line-height:1.4;}
+.slide-items-2col .p-plans-card-field-label{font-size:9px;}
+.slide-items-2col .slide-item{padding:16px 18px;}
 .p-plans-card{
   background:#fff; border:1.5px solid #FFD9C2; border-radius:16px; padding:18px 20px;
   display:flex; flex-direction:column; gap:8px;
@@ -21506,6 +21516,12 @@ function initSlidePagination(){
   refreshSlideList();
   showSlide(0);
 }
+function rsFitSlide(slide, itemsWrap){ /* RappiStage 167: reduz o conteúdo para caber numa tela (mín. 60%) */
+  slide.classList.add('active'); itemsWrap.style.zoom = '';
+  const avail = slideAvailableHeight(slide, itemsWrap), h = itemsWrap.scrollHeight;
+  if(h > avail + 2) itemsWrap.style.zoom = String(Math.max(0.6, Math.floor(avail / h * 100) / 100));
+  slide.classList.remove('active');
+}
 function slideAvailableHeight(slideEl, itemsWrap){
   const styles = getComputedStyle(slideEl);
   const innerHeight = slideEl.clientHeight - parseFloat(styles.paddingTop) - parseFloat(styles.paddingBottom);
@@ -21537,6 +21553,7 @@ function paginateSlide(slide){
   while(guard++ < 20){
     const itemsWrap = current.querySelector('.slide-items');
     if(!itemsWrap) return;
+    if(itemsWrap.classList.contains('slide-items-2col')){ rsFitSlide(current, itemsWrap); return; } // RappiStage 167: lado a lado = uma tela só
     const items = [...itemsWrap.children];
     if(items.length <= 1) return; // não há como paginar um único item enorme — deixa como está
     current.classList.add('active');
@@ -21557,6 +21574,10 @@ function paginateSlide(slide){
       fitCount -= 1; // evita deixar um único item "órfão" sozinho na página de continuação
       remaining += 1;
     }
+    /* RappiStage 167: Highlight / Lowlight fica na MESMA página do item de cima (os resultados): leva os dois juntos
+       para a página seguinte ou, se os resultados já são o 1º item, mantém os dois aqui (o slide rola se precisar). */
+    if(fitCount < items.length && items[fitCount].dataset.kind === 'ai-insight'){ if(fitCount >= 2) fitCount -= 1; else fitCount += 1; }
+    if(fitCount >= items.length){ current.classList.remove('active'); rsFitSlide(current, itemsWrap); return; }
 
     const overflowItems = items.slice(fitCount);
     overflowItems.forEach(el => itemsWrap.removeChild(el));
@@ -23498,8 +23519,10 @@ function renderExportWaterfall(w){
         plugins:{
           legend:{ display:false },
           tooltip:{ callbacks:{ label:(ctx) => pFormatWaterfallVal(segments[ctx.dataIndex].display) } },
-          datalabels:{ display:false },
+          datalabels:{ display:true, anchor:'end', align:(ctx) => ctx.dataIndex === segments.length - 1 ? 'start' : 'end', offset:(ctx) => ctx.dataIndex === segments.length - 1 ? 40 : 2, clip:false, color:(ctx) => ctx.dataIndex === segments.length - 1 ? '#FFFFFF' : '#837A76', font:{ size:10, weight:'600' },
+            formatter:(v, ctx) => { const sg = segments[ctx.dataIndex]; return (sg.kind === 'delta' && sg.display > 0 ? '+' : '') + pFormatWaterfallVal(sg.display); } }, // RappiStage 167
         },
+        layout:{ padding:{ top:18 } },
         scales:{
           x:{ grid:{ display:false } },
           y:{ ticks:{ callback:(v) => pFormatWaterfallVal(v) } },
