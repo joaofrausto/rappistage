@@ -1696,6 +1696,8 @@ input,textarea,select{font-family:inherit;}
 .rsyp-ytd{display:inline-block; font-size:12px; font-weight:700; border-radius:999px; padding:4px 11px; background:#1E1B1A; color:#fff; white-space:nowrap;} /* RappiStage 157 */
 .rsyp-ytd b{font-weight:900;} .rsyp-ytd.up b{color:#7CE0A3;} .rsyp-ytd.down b{color:#FF9B8A;}
 .rsyp-badges{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-bottom:8px;}
+.rs-ytd-pj{width:132px; padding:4px 6px; border:1.5px dashed #FF5A1F; border-radius:6px; font:inherit; font-style:italic; background:#FFF8F4; text-align:right;} /* RappiStage 165 */
+.rs-ytd-edit-tip{font-size:12px; color:#5E5652; margin:6px 0 8px;} .rs-ytd-pj-reset{margin-left:8px; border:1px solid #E5E0DC; background:#fff; border-radius:999px; padding:2px 10px; font-size:11.5px; cursor:pointer;}
 .rsyp-pills{display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px;} /* RappiStage 158 */
 .rsyp-proj{display:inline-block; font-size:12px; font-weight:700; border-radius:999px; padding:3px 10px; background:#FFF4EE; color:#1E1B1A; border:1.5px dashed #FF5A1F; white-space:nowrap;}
 .rsyp-proj b{font-weight:900;} .rsyp-proj .up{color:#1E7A44;} .rsyp-proj .down{color:#CC1008;}
@@ -2288,6 +2290,8 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 166: gráficos das lupas com todos os meses do eixo (Jan→mês da reunião) — a série mensal vinha só com os 5 últimos e o seletor "Meses a exibir" ficava com a lista antiga do rascunho. */
+/* RappiStage 165: projeção YTD editável na tabela "Mês a mês" (Faturamento e Pedidos dos meses projetados); gráfico, balão e fechamento usam os valores editados; configuração do painel YTD salva no rascunho. */
 /* RappiStage 164: projeção YTD desmarcada não vai para a apresentação (nem a opção, nem as linhas da tabela); gráficos mensais desde janeiro; sem selo "Dados atualizados até" e sem "Gerado em" na apresentação; Search sem Share das buscas; slide que não cabe rola em vez de cortar. */
 /* RappiStage 163: Faturamento Gerado/ROI dos investimentos = valor dos produtos (Total Price, antes do markdown) em qualquer régua; Resultados de Investimentos sem a leitura de variação; Detalhamento por Mecânica dentro do card de Resultados de Investimentos; rótulo "QoQ" do bloco Projeção editável. */
 /* RappiStage 160: a linha de Projeção percorre o ano todo (meses fechados = realizado do ano atual; meses que faltam = projeção). */
@@ -9985,6 +9989,7 @@ function renderInteractiveChartInto(wrap, item, opts){
         }
         if((item.viewMode === 'mtd' || item.viewMode === 'mom') && kpiSourceItem){
           item.labels = MTD_MONTH_LABELS.slice();
+          if(!item.baseLabels || item.baseLabels.join('|') !== item.labels.join('|')){ item.baseLabels = item.labels.slice(); item.baseDatasets = null; item.weeksSelected = null; } // RappiStage 166: lista de meses do rascunho antigo
           item.datasets = deriveAllKpiSeries(deriveKpiMonthlySeries, kpiSourceItem);
           const hasOwnM = Object.keys(item.seriesSelected).some(x => item.seriesSelected[x]); // RappiStage 96
           item.datasets.forEach(ds => { if(item.seriesSelected[ds.label] === undefined) item.seriesSelected[ds.label] = hasOwnM ? false : !ds.extra; });
@@ -9992,6 +9997,7 @@ function renderInteractiveChartInto(wrap, item, opts){
         }
         if(item.viewMode === 'qoq' && kpiSourceItem){
           item.labels = QUARTER_LABELS.slice();
+          if(!item.baseLabels || item.baseLabels.join('|') !== item.labels.join('|')){ item.baseLabels = item.labels.slice(); item.baseDatasets = null; item.weeksSelected = null; } // RappiStage 166
           item.datasets = deriveAllKpiSeries(deriveKpiQuarterlySeries, kpiSourceItem);
           const hasOwnQ = Object.keys(item.seriesSelected).some(x => item.seriesSelected[x]); // RappiStage 96
           item.datasets.forEach(ds => { if(item.seriesSelected[ds.label] === undefined) item.seriesSelected[ds.label] = hasOwnQ ? false : !ds.extra; });
@@ -14555,7 +14561,7 @@ function renderDrilldownChartsTab(kpiLabel){
     const R = activeRealData(), y = R && R.yoy;
     if(!y || !y.ok){ drilldownChartContent.innerHTML = '<div class="dd-empty-state">📅 YoY indisponível: suba o CSV da query completa (com YoY).</div>'; return; }
     state.rsYtdCfg = state.rsYtdCfg || {}; const key = String(kpiLabel).toLowerCase();
-    rsYtdPanel(drilldownChartContent, y, state.rsYtdCfg[key], kpiLabel, c => { state.rsYtdCfg[key] = c; });
+    rsYtdPanel(drilldownChartContent, rsYtdEdited(y, state.rsYtdCfg.__proj), state.rsYtdCfg[key], kpiLabel, c => { state.rsYtdCfg[key] = c; });
     return;
   }
   const chartItem = getOrBuildDrilldownChartItem(kpiLabel);
@@ -15555,6 +15561,7 @@ function buildDraftRecord(extra){
     visualTheme: deepClone(state.visualTheme),
     blocks: deepClone(state.blocks),
     autoDrilldownCharts: deepClone(state.autoDrilldownCharts || {}),
+    rsYtdCfg: deepClone(state.rsYtdCfg || {}), // RappiStage 165: modo/KPIs/projeção do painel YTD + projeção editada
     importedData: state.importedData ? deepClone(state.importedData) : null,
   }, extra || {});
 }
@@ -15751,6 +15758,7 @@ function restoreDraftFromRecord(draft){
   applyThemeColors(state.visualTheme.colorPrimary || '#FF7A4D', state.visualTheme.colorSecondary || '#FF2526');
   state.blocks = deepClone(draft.blocks || []);
   state.autoDrilldownCharts = draft.autoDrilldownCharts ? deepClone(draft.autoDrilldownCharts) : {};
+  state.rsYtdCfg = draft.rsYtdCfg ? deepClone(draft.rsYtdCfg) : {}; // RappiStage 165
   state.importedData = draft.importedData ? deepClone(draft.importedData) : null;
   /* RappiStage 149: traz as melhorias da versão atual + refaz os números com a base carregada */
   { let st = null; try{ const r = rsMigrateBlocks(state.blocks, state.meetingType); state.blocks = r.blocks; st = r.stats; }catch(e){ console.warn('[RappiStage] migração', e); }
@@ -17823,7 +17831,7 @@ function rsSeriesForKpi(k, g, n, D){
   if(!D){ const R = activeRealData(); if(!R || R.source !== 'rs') return undefined; D = R; }
   if(g === 'monthly' && D.meetingType === 'weekly' && D.S.mtd) g = 'mtd'; // RappiStage 90: MTD = mesmo corte de dias
   const S = D.S[g]; if(!S) return null;
-  if(g === 'weekly') n = S.labels.length; // RappiStage 75: toda série semanal com as mesmas 8 semanas do eixo
+  n = S.labels.length; // RappiStage 75/166: toda série com todos os períodos do eixo (semanal 8; mensal desde janeiro)
   const L = String(k.label || '').trim(), V = String(k.value || '');
   let arr = null, fmt = 'count';
   if(/^Faturamento( \((Total Price|Income|GMV)\))?$/i.test(L)){ arr = S.gmv; fmt = 'currency'; }
@@ -18283,9 +18291,9 @@ function rsConvTypeHTML(){
   return '<h3>🧩 Conversão por Type</h3><div class="dd-sub">Funil somado por store type no período, com a variação do SST→OPC vs período anterior.</div>' + body + rsSourceNote(R);
 }
 function rsYtdMetric(label){ const l = String(label || '').toLowerCase(); return /cancel/.test(l) ? 'canc' : /convers/.test(l) ? 'conv' : /tr[aá]fego/.test(l) ? 'sst' : /ticket/.test(l) ? 'ticket' : /pedidos/.test(l) ? 'ped' : 'fat'; }
-function rsYtdExport(){ const R = activeRealData(); return { y: R && R.yoy && R.yoy.ok ? R.yoy : null, cfg: state.rsYtdCfg || {} }; }
+function rsYtdExport(){ const R = activeRealData(); return { y: R && R.yoy && R.yoy.ok ? rsYtdEdited(R.yoy, (state.rsYtdCfg || {}).__proj) : null, cfg: state.rsYtdCfg || {} }; }
 function rsYtdLupaHtml(label){ /* RappiStage 155: aba "Mês a mês (tabela)" da lupa YTD */
-  const R = activeRealData(), y = R && R.yoy;
+  const R = activeRealData(), y = R && R.yoy && rsYtdEdited(R.yoy, (state.rsYtdCfg || {}).__proj), canEdit = !window.__rsYtdStatic; // RappiStage 165
   if(!y || !y.ok) return '<h3>📅 ' + escapeHtml(label) + '</h3><div class="dd-sub">YoY indisponível: suba o CSV gerado com a <b>query completa (com YoY)</b> na etapa "Gerar CSV".</div>';
   const MES = RS_YTD_MES, k0 = rsYtdKeyOf(label), Y = y.year, P = y.prevYear;
   const yc = (state.rsYtdCfg || {})[String(label).toLowerCase()], proj = !(yc && yc.proj === false); // RappiStage 164: projeção desmarcada some da tabela
@@ -18300,6 +18308,7 @@ function rsYtdLupaHtml(label){ /* RappiStage 155: aba "Mês a mês (tabela)" da 
     if(!real && !tend) return;
     rows += '<tr><td' + (tend ? ' class="rs-tend"' : '') + '>' + MES[i] + (mo === y.ref && y.partialDays ? ' (até dia ' + y.partialDays + ')' : '') + (tend ? ' (projeção)' : '') + '</td>' + grp.map(k => {
       const a = real ? val(m, k, 'cy') : val(m, k, 'pj'), b = val(m, k, 'ly');
+      if(tend && canEdit && (k === 'fat' || k === 'ped')) return '<td class="rs-tend"><input type="text" inputmode="decimal" class="rs-ytd-pj" data-label="' + escapeHtml(label) + '" data-key="' + Y + '-' + mo + '" data-f="' + (k === 'fat' ? 'F' : 'P') + '" value="' + (a == null ? '' : rsNf(a, 0, 0)) + '" title="Edite a projeção deste mês"></td><td>' + rsYoyFmt(b, k, false) + '</td><td class="rs-tend">' + dl(a, b, k) + '</td>';
       return '<td' + (tend ? ' class="rs-tend"' : '') + '>' + rsYoyFmt(a, k, false) + '</td><td>' + rsYoyFmt(b, k, false) + '</td><td' + (tend ? ' class="rs-tend"' : '') + '>' + dl(a, b, k) + '</td>'; }).join('') + '</tr>';
   });
   const T = y.ytd, tot = { fat: [T.cyF, T.lyF], ped: [T.cyP, T.lyP], ticket: [T.cyP ? T.cyF / T.cyP : null, T.lyP ? T.lyF / T.lyP : null],
@@ -18312,8 +18321,24 @@ function rsYtdLupaHtml(label){ /* RappiStage 155: aba "Mês a mês (tabela)" da 
   const per = 'Jan' + (y.ref > 1 ? '–' + MES[y.ref - 1] : '') + (y.partialDays ? ' (até dia ' + y.partialDays + ')' : '');
   return '<h3>📅 ' + escapeHtml(label) + ' — mês a mês</h3>' +
     '<div class="dd-sub">' + per + ' ' + Y + ' vs ' + per + ' ' + P + '. Números fechados de cada mês (sem detalhamento por loja).' + (proj && grp[0] === 'fat' && y.tF != null ? ' Meses em itálico = projeção: mesmo mês de ' + P + ' × crescimento dos últimos 3 meses (' + (y.tF >= 0 ? '+' : '−') + rsNf(Math.abs(y.tF * 100), 1, 1) + '%).' : '') + '</div>' +
+    (canEdit && proj && grp[0] === 'fat' && y.fy && y.fy.pjF != null ? '<div class="rs-ytd-edit-tip">✏️ Os meses em itálico são editáveis (Faturamento e Pedidos): o gráfico, o balão de projeção e o fechamento do ano usam o valor digitado.' + (y.edited ? ' <button type="button" class="rs-ytd-pj-reset" data-label="' + escapeHtml(label) + '">↺ Voltar à projeção automática</button>' : '') + '</div>' : '') +
     '<div style="overflow-x:auto;"><table class="dd-table rs-ytd-table"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>';
 }
+/* RappiStage 165: edição da projeção na tabela da lupa YTD (plataforma) */
+function rsYtdParseNum(v){ v = String(v || '').replace(/[^0-9,.-]/g, ''); if(!v) return null; if(v.indexOf(',') >= 0) v = v.replace(/\./g, '').replace(',', '.'); else if((v.match(/\./g) || []).length > 1 || /\.\d{3}$/.test(v)) v = v.replace(/\./g, ''); const n = parseFloat(v); return isNaN(n) ? null : n; }
+function rsYtdRefreshTable(label){ const box = document.getElementById('drilldown-content'); if(box && box.querySelector('.rs-ytd-table')) box.innerHTML = rsYtdLupaHtml(label); }
+document.addEventListener('change', e => {
+  const inp = e.target && e.target.closest && e.target.closest('input.rs-ytd-pj'); if(!inp) return;
+  state.rsYtdCfg = state.rsYtdCfg || {}; const ed = state.rsYtdCfg.__proj = state.rsYtdCfg.__proj || {};
+  const k = inp.dataset.key, f = inp.dataset.f, n = rsYtdParseNum(inp.value);
+  ed[k] = ed[k] || {}; if(n == null) delete ed[k][f]; else ed[k][f] = f === 'P' ? Math.round(n) : n;
+  if(!Object.keys(ed[k]).length) delete ed[k];
+  rsYtdRefreshTable(inp.dataset.label);
+});
+document.addEventListener('click', e => {
+  const b = e.target && e.target.closest && e.target.closest('.rs-ytd-pj-reset'); if(!b) return;
+  if(state.rsYtdCfg) delete state.rsYtdCfg.__proj; rsYtdRefreshTable(b.dataset.label);
+});
 function rsDrilldownHTML(type, kpiLabel){
   if(type === 'ytd') return rsYtdLupaHtml(kpiLabel); // RappiStage 154
   const R = activeRealData(); if(!R || R.source !== 'rs' || !type) return null;
@@ -19140,6 +19165,15 @@ function rsYtdBadge(y, k, per){ /* RappiStage 157: balão com o YTD geral (acumu
   var txt = (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(pp ? 2 : 1).replace('.', ',') + (pp ? ' p.p.' : '%');
   return '<span class="rsyp-ytd ' + (good ? 'up' : 'down') + '" title="' + rsYtdName(k) + ' acumulado ' + per + ' ' + y.year + ': ' + rsYoyFmt(a, k, false) + ' x ' + rsYoyFmt(b, k, false) + ' em ' + y.prevYear + '">YTD ' + per + ': <b>' + txt + '</b> vs ' + y.prevYear + '</span>';
 }
+function rsYtdEdited(y, ed){ /* RappiStage 165: projeção editada pelo AGM (chave ano-mês) substitui a automática; o fechamento acompanha */
+  if(!y || !y.months || !ed) return y;
+  var c = JSON.parse(JSON.stringify(y)), dF = 0, dP = 0, any = false;
+  c.months.forEach(function(m, i){ var e = ed[c.year + '-' + (i + 1)]; if(!e) return;
+    if(e.F != null && m.pjF != null && !(i + 1 < c.ref || (i + 1 === c.ref && !c.partialDays))){ dF += e.F - m.pjF; m.pjF = e.F; any = true; }
+    if(e.P != null && m.pjP != null && !(i + 1 < c.ref || (i + 1 === c.ref && !c.partialDays))){ dP += e.P - m.pjP; m.pjP = e.P; any = true; } });
+  if(any && c.fy){ if(c.fy.pjF != null) c.fy.pjF += dF; if(c.fy.pjP != null) c.fy.pjP += dP; c.edited = true; }
+  return c;
+}
 function rsYtdProjBadge(y, k){ /* RappiStage 158: balão com a projeção de fechamento do ano (tendência dos últimos 3 meses) */
   var F = y.fy || {}, a = null, b = null;
   if(k === 'fat'){ a = F.pjF; b = F.lyF; } else if(k === 'ped'){ a = F.pjP; b = F.lyP; }
@@ -19184,7 +19218,7 @@ function rsYtdPanel(box, y, cfg, label, onChange){
     if(!keys.length) h += '<div class="rsyp-note">Marque pelo menos um KPI.</div>';
     else if(st.mode === 'combined') h += '<div class="rsyp-card"><div class="rsyp-badges">' + keys.map(function(k){ return '<span class="rsyp-badge-lab">' + rsYtdName(k) + '</span>' + rsYtdPills(y, k, per, st.proj); }).join('') + '</div><div class="rsyp-chart rsyp-chart-lg"><canvas></canvas></div></div>';
     else h += '<div class="rsyp-grid' + (keys.length === 1 ? ' one' : '') + '">' + keys.map(function(k){ return '<div class="rsyp-card"><div class="rsyp-card-title">' + rsYtdName(k) + rsYtdPills(y, k, per, st.proj) + '</div><div class="rsyp-chart"><canvas data-k="' + k + '"></canvas></div></div>'; }).join('') + '</div>';
-    h += '<div class="rsyp-note">Barras claras = ' + y.prevYear + ' · barras fortes = ' + y.year + (st.proj ? ' · linha tracejada = projeção de fechamento ' + y.year + ' (a mesma do balão 📈), percorre o ano todo: meses fechados = realizado; cada mês que falta = mesmo mês de ' + y.prevYear + ' × crescimento dos últimos 3 meses' + (y.tF != null ? ' (' + (y.tF >= 0 ? '+' : '−') + Math.abs(y.tF * 100).toFixed(1).replace('.', ',') + '%)' : '') + '. Cancelamento, Conversão e Tráfego não têm projeção' : '') + '.</div></div>';
+    h += '<div class="rsyp-note">Barras claras = ' + y.prevYear + ' · barras fortes = ' + y.year + (st.proj ? ' · linha tracejada = projeção de fechamento ' + y.year + ' (a mesma do balão 📈), percorre o ano todo: meses fechados = realizado; cada mês que falta = mesmo mês de ' + y.prevYear + ' × crescimento dos últimos 3 meses' + (y.tF != null ? ' (' + (y.tF >= 0 ? '+' : '−') + Math.abs(y.tF * 100).toFixed(1).replace('.', ',') + '%)' : '') + (y.edited ? ' — com os valores editados na tabela Mês a mês' : '') + '. Cancelamento, Conversão e Tráfego não têm projeção' : '') + '.</div></div>';
     box.innerHTML = h;
     box.querySelectorAll('[data-mode]').forEach(function(b){ b.addEventListener('click', function(){ st.mode = b.getAttribute('data-mode'); save(); draw(); }); });
     box.querySelectorAll('[data-all-type]').forEach(function(sl){ sl.addEventListener('change', function(){ av.forEach(function(k){ st.kt[k] = sl.value; }); save(); draw(); }); });
@@ -20483,6 +20517,8 @@ function buildPresentationDocument(){
 .rsyp-ytd{display:inline-block; font-size:12px; font-weight:700; border-radius:999px; padding:4px 11px; background:#1E1B1A; color:#fff; white-space:nowrap;} /* RappiStage 157 */
 .rsyp-ytd b{font-weight:900;} .rsyp-ytd.up b{color:#7CE0A3;} .rsyp-ytd.down b{color:#FF9B8A;}
 .rsyp-badges{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-bottom:8px;}
+.rs-ytd-pj{width:132px; padding:4px 6px; border:1.5px dashed #FF5A1F; border-radius:6px; font:inherit; font-style:italic; background:#FFF8F4; text-align:right;} /* RappiStage 165 */
+.rs-ytd-edit-tip{font-size:12px; color:#5E5652; margin:6px 0 8px;} .rs-ytd-pj-reset{margin-left:8px; border:1px solid #E5E0DC; background:#fff; border-radius:999px; padding:2px 10px; font-size:11.5px; cursor:pointer;}
 .rsyp-pills{display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px;} /* RappiStage 158 */
 .rsyp-proj{display:inline-block; font-size:12px; font-weight:700; border-radius:999px; padding:3px 10px; background:#FFF4EE; color:#1E1B1A; border:1.5px dashed #FF5A1F; white-space:nowrap;}
 .rsyp-proj b{font-weight:900;} .rsyp-proj .up{color:#1E7A44;} .rsyp-proj .down{color:#CC1008;}
@@ -21670,6 +21706,7 @@ const DD_DATA = ${JSON.stringify((function(){
       'mix pro':'Mix Pro', 'non-pro':'Mix Pro', 'momentum':'Momentum', 'retenção':'Retenção', 'frequência':'Frequência', 'usuários':'Usuários',
       'top5lojas':'5 Melhores Lojas', '5 melhores':'5 Melhores Lojas', '10 melhores':'10 Melhores Lojas', 'palavras mais buscadas':'Palavras mais buscadas' };
     if(!ddFinal['qoy']) ddFinal['qoy'] = { tabLabel:'📋 Detalhamento' };
+    window.__rsYtdStatic = true;
     /* RappiStage 98: lupas que antes ficavam sem detalhamento */
     const PRIO = { 'faturamento gerado':'Faturamento Gerado', 'consumo do budget':'Consumo do Budget', 'burn rate':'Burn Rate', 'step positivador':'Step Positivador', 'step detrator':'Step Detrator', 'tráfego':'Tráfego (SST)', 'roi':'ROI' };
     Object.keys(PRIO).forEach(function(k){ REP[k] = PRIO[k]; if(!ddFinal[k]) ddFinal[k] = { tabLabel:'📋 Detalhamento' }; });
@@ -21687,8 +21724,10 @@ const DD_DATA = ${JSON.stringify((function(){
     });
     /* chaves específicas primeiro: a apresentação acha a lupa pela 1ª chave contida no rótulo do card */
     const ordered = {};
+    window.__rsYtdStatic = true; // RappiStage 165: na apresentação a tabela não tem campos de edição
     ['Resultados YTD', '% Cancelamento (Partner) YTD', 'Conversão SST→OPC YTD', 'Tráfego (SST) YTD'].forEach(function(lab){ // RappiStage 154/155
       ordered[lab.toLowerCase()] = { type:'rshtml', html: rsYtdLupaHtml(lab), tabLabel:'📋 Mês a mês (tabela)', noChart:false }; });
+    window.__rsYtdStatic = false;
     ['faturamento gerado','consumo do budget','burn rate','step positivador','step detrator','tráfego'].forEach(function(k){ if(ddFinal[k] && ddFinal[k].type === 'rshtml') ordered[k] = ddFinal[k]; });
     Object.keys(ddFinal).forEach(function(k){ if(!ordered[k] && k !== 'roi') ordered[k] = ddFinal[k]; });
     if(ddFinal['roi'] && ddFinal['roi'].type === 'rshtml') ordered['roi'] = ddFinal['roi'];
@@ -23782,6 +23821,15 @@ function rsYtdBadge(y, k, per){ /* RappiStage 157: balão com o YTD geral (acumu
   var txt = (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(pp ? 2 : 1).replace('.', ',') + (pp ? ' p.p.' : '%');
   return '<span class="rsyp-ytd ' + (good ? 'up' : 'down') + '" title="' + rsYtdName(k) + ' acumulado ' + per + ' ' + y.year + ': ' + rsYoyFmt(a, k, false) + ' x ' + rsYoyFmt(b, k, false) + ' em ' + y.prevYear + '">YTD ' + per + ': <b>' + txt + '</b> vs ' + y.prevYear + '</span>';
 }
+function rsYtdEdited(y, ed){ /* RappiStage 165: projeção editada pelo AGM (chave ano-mês) substitui a automática; o fechamento acompanha */
+  if(!y || !y.months || !ed) return y;
+  var c = JSON.parse(JSON.stringify(y)), dF = 0, dP = 0, any = false;
+  c.months.forEach(function(m, i){ var e = ed[c.year + '-' + (i + 1)]; if(!e) return;
+    if(e.F != null && m.pjF != null && !(i + 1 < c.ref || (i + 1 === c.ref && !c.partialDays))){ dF += e.F - m.pjF; m.pjF = e.F; any = true; }
+    if(e.P != null && m.pjP != null && !(i + 1 < c.ref || (i + 1 === c.ref && !c.partialDays))){ dP += e.P - m.pjP; m.pjP = e.P; any = true; } });
+  if(any && c.fy){ if(c.fy.pjF != null) c.fy.pjF += dF; if(c.fy.pjP != null) c.fy.pjP += dP; c.edited = true; }
+  return c;
+}
 function rsYtdProjBadge(y, k){ /* RappiStage 158: balão com a projeção de fechamento do ano (tendência dos últimos 3 meses) */
   var F = y.fy || {}, a = null, b = null;
   if(k === 'fat'){ a = F.pjF; b = F.lyF; } else if(k === 'ped'){ a = F.pjP; b = F.lyP; }
@@ -23826,7 +23874,7 @@ function rsYtdPanel(box, y, cfg, label, onChange){
     if(!keys.length) h += '<div class="rsyp-note">Marque pelo menos um KPI.</div>';
     else if(st.mode === 'combined') h += '<div class="rsyp-card"><div class="rsyp-badges">' + keys.map(function(k){ return '<span class="rsyp-badge-lab">' + rsYtdName(k) + '</span>' + rsYtdPills(y, k, per, st.proj); }).join('') + '</div><div class="rsyp-chart rsyp-chart-lg"><canvas></canvas></div></div>';
     else h += '<div class="rsyp-grid' + (keys.length === 1 ? ' one' : '') + '">' + keys.map(function(k){ return '<div class="rsyp-card"><div class="rsyp-card-title">' + rsYtdName(k) + rsYtdPills(y, k, per, st.proj) + '</div><div class="rsyp-chart"><canvas data-k="' + k + '"></canvas></div></div>'; }).join('') + '</div>';
-    h += '<div class="rsyp-note">Barras claras = ' + y.prevYear + ' · barras fortes = ' + y.year + (st.proj ? ' · linha tracejada = projeção de fechamento ' + y.year + ' (a mesma do balão 📈), percorre o ano todo: meses fechados = realizado; cada mês que falta = mesmo mês de ' + y.prevYear + ' × crescimento dos últimos 3 meses' + (y.tF != null ? ' (' + (y.tF >= 0 ? '+' : '−') + Math.abs(y.tF * 100).toFixed(1).replace('.', ',') + '%)' : '') + '. Cancelamento, Conversão e Tráfego não têm projeção' : '') + '.</div></div>';
+    h += '<div class="rsyp-note">Barras claras = ' + y.prevYear + ' · barras fortes = ' + y.year + (st.proj ? ' · linha tracejada = projeção de fechamento ' + y.year + ' (a mesma do balão 📈), percorre o ano todo: meses fechados = realizado; cada mês que falta = mesmo mês de ' + y.prevYear + ' × crescimento dos últimos 3 meses' + (y.tF != null ? ' (' + (y.tF >= 0 ? '+' : '−') + Math.abs(y.tF * 100).toFixed(1).replace('.', ',') + '%)' : '') + (y.edited ? ' — com os valores editados na tabela Mês a mês' : '') + '. Cancelamento, Conversão e Tráfego não têm projeção' : '') + '.</div></div>';
     box.innerHTML = h;
     box.querySelectorAll('[data-mode]').forEach(function(b){ b.addEventListener('click', function(){ st.mode = b.getAttribute('data-mode'); save(); draw(); }); });
     box.querySelectorAll('[data-all-type]').forEach(function(sl){ sl.addEventListener('change', function(){ av.forEach(function(k){ st.kt[k] = sl.value; }); save(); draw(); }); });
