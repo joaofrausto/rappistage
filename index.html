@@ -2290,6 +2290,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 168: Conquistas e Desafios com o mesmo tamanho de card de Próximos Passos (largura inteira, sem encolher), num slide só; títulos de Conquistas e Desafios e Próximos Passos menores. */
 /* RappiStage 167: Highlight/Lowlight sempre na mesma página dos resultados (2 colunas + não separa na paginação); Conquistas e Desafios numa tela só (lado a lado, cards compactos, ajuste ao tamanho da tela); valor discreto em cada barra do gráfico de Projeção. */
 /* RappiStage 166: gráficos das lupas com todos os meses do eixo (Jan→mês da reunião) — a série mensal vinha só com os 5 últimos e o seletor "Meses a exibir" ficava com a lista antiga do rascunho. */
 /* RappiStage 165: projeção YTD editável na tabela "Mês a mês" (Faturamento e Pedidos dos meses projetados); gráfico, balão e fechamento usam os valores editados; configuração do painel YTD salva no rascunho. */
@@ -20273,7 +20274,7 @@ function buildPresentationDocument(){
           <div class="divider-desc">${block.items.some(i => i.kind === 'kpi-grid') ? '' : escapeHtml(block.desc || '')}</div>
         </section>`);
 
-        slides.push(`<section class="slide content" data-block-index="${bIdx}"${slideWatermarkStyle}>
+        slides.push(`<section class="slide content" data-block-index="${bIdx}" data-block-id="${escapeHtml(block.id || '')}"${slideWatermarkStyle}>
           <div class="slide-head">
             <div class="slide-icon">${escapeHtml(block.icon)}</div>
             <div>
@@ -20282,7 +20283,7 @@ function buildPresentationDocument(){
               <div class="slide-desc">${block.items.some(i => i.kind === 'kpi-grid') ? '' : escapeHtml(block.desc || '')}</div>
             </div>
           </div>
-          <div class="slide-items${block.twoColItems ? ' slide-items-2col' : ''}">
+          <div class="slide-items${block.twoColItems && block.id !== 'q-conquistas-desafios' ? ' slide-items-2col' : ''}">
             ${(block.noInsights || block.insightsOff || (block.items || []).some(i => i.kind === 'ai-insight' && !i.attachTo)) ? '' : (block.insights || []).filter(ins => ins.selected).map(ins => `<div class="slide-item slide-insight-item"><div class="slide-insight"><b>Insights ·</b> ${linkifyInsightText(block, ins.text)}</div></div>`).join('')}
             ${block.items.filter(i => i.selected !== false && !i.attachTo && !(rsJoinParent(block, i) && rsJoinParent(block, i).selected !== false) && (i.kind !== 'chart' || i.inlineChart) && !isEmptyStandaloneInsight(i, block) && !isEmptyManualItem(i)).map(item => `
               <div class="slide-item" data-item-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}">
@@ -20435,6 +20436,9 @@ function buildPresentationDocument(){
 .slide-insight-item{background:none; border:none; box-shadow:none; padding:0;}
 .slide-item{background:#fff; border:1px solid var(--ink1); border-radius:16px; padding:18px 20px; box-shadow:0 4px 14px rgba(76,43,43,0.06);}
 .slide-item-label{font-size:13px; font-weight:800; margin-bottom:12px;}
+.slide[data-block-id="q-conquistas-desafios"] .slide-head h2, .slide[data-block-id="q-roadmap"] .slide-head h2{font-size:22px !important;} /* RappiStage 168: título menor = mais espaço */
+.slide[data-block-id="q-conquistas-desafios"] .slide-head, .slide[data-block-id="q-roadmap"] .slide-head{margin-bottom:10px !important;}
+.slide[data-block-id="q-conquistas-desafios"], .slide[data-block-id="q-roadmap"]{padding-top:40px;}
 .slide-joined{margin-top:18px; padding-top:14px; border-top:1px dashed var(--ink1);}
 /* Item (rodada de ajustes): auto-fit em vez de auto-fill — mesmo raciocínio do editor (ver
    .kpi-grid) — os tiles esticam pra preencher toda a largura da última linha em vez de deixar um
@@ -21554,6 +21558,7 @@ function paginateSlide(slide){
     const itemsWrap = current.querySelector('.slide-items');
     if(!itemsWrap) return;
     if(itemsWrap.classList.contains('slide-items-2col')){ rsFitSlide(current, itemsWrap); return; } // RappiStage 167: lado a lado = uma tela só
+    if(current.dataset.blockId === 'q-conquistas-desafios') return; // RappiStage 168: Conquistas e Desafios no mesmo slide, tamanho normal (rola se precisar)
     const items = [...itemsWrap.children];
     if(items.length <= 1) return; // não há como paginar um único item enorme — deixa como está
     current.classList.add('active');
@@ -21586,6 +21591,7 @@ function paginateSlide(slide){
     const nextSlide = document.createElement('section');
     nextSlide.className = 'slide content';
     nextSlide.dataset.blockIndex = current.dataset.blockIndex;
+    if(current.dataset.blockId) nextSlide.dataset.blockId = current.dataset.blockId; // RappiStage 168
     /* Propaga o fundo com a logo do parceiro (--slide-watermark, ver CSS .slide.content::before)
        pra página de continuação também — é uma custom property só na tag <section> original, não
        é herdada por este novo elemento irmão criado do zero. */
