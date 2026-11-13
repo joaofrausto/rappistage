@@ -2293,6 +2293,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 175: a query copiada pelo AGM sai sem a instrução inicial (começa no SET AGM); o cabeçalho continua embutido só para o aviso de versão/novidades. */
 /* RappiStage 173: % Cancelamento com todos os níveis (Partner, UX, User, Tech, Other, RT) e o AGM escolhe quais entram — vale para o %, gráficos, tabelas por loja, YTD, motivos e Motivos Ofensores; rótulo vira "% Cancelamento" e os níveis aparecem junto da variação. */
 /* RappiStage 172: tabelas de loja — ao ordenar por uma coluna, os 3 MELHORES resultados dessa coluna ficam verdes e os 3 PIORES vermelhos (onde estiverem, em ordem crescente ou decrescente); Ranking: menor é melhor; coluna de texto sem cor. */
 /* RappiStage 170: lupas com os dados novos da query 13/11 — MKD por categoria/produto (% MKD vs anterior) e unidades com/sem MKD; Found Rate e Defect por produto e categoria; Tráfego por cidade; motivos de cancelamento além de Partner (sem RT), com o KPI Motivos Ofensores só entre os de Partner. */
@@ -6907,7 +6908,8 @@ function rsQueryFill(){
   const src = document.getElementById('rs-query-src'), txt = document.getElementById('rs-query-text'), em = document.getElementById('rs-query-email');
   const email = state.user && state.user.email;
   if(!src || !txt || !email) return;
-  txt.value = src.textContent.replace("'seu.email@rappi.com'", "'" + email + "'").replace(/SET YOY\s*=\s*1;/, 'SET YOY    = ' + (state.rsQueryYoy === false ? 0 : 1) + ';'); // RappiStage 152
+  const raw = src.textContent, i0 = raw.search(/^SET AGM/m); // RappiStage 175: sem a instrução inicial
+  txt.value = (i0 > 0 ? raw.slice(i0) : raw).replace("'seu.email@rappi.com'", "'" + email + "'").replace(/SET YOY\s*=\s*1;/, 'SET YOY    = ' + (state.rsQueryYoy === false ? 0 : 1) + ';'); // RappiStage 152
   if(em) em.textContent = email;
   rsQueryAviso();
 }
