@@ -2308,6 +2308,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 186: (1) marcar/desmarcar motivos e níveis na lupa não pula mais para a aba Gráficos (fica na aba e na rolagem em que estava); (2) lupa da apresentação com o mesmo ícone da configuração (🔎 no círculo); (3) na apresentação as opções de configuração (modo de exibição, tipo de gráfico, KPIs, projeção, níveis/motivos, tabela do funil, "só com comentário") não aparecem — só o que o AGM escolheu; a tabela do funil só vai se estiver marcada; (4) Growth: cards de peças/calendário sem a contagem de arquivos; (5) lupas dos KPIs de Usuários dentro do card do Growth abrem por cima do card. */
 /* RappiStage 185: a árvore de motivos (gráfico e detalhamento) do GRÁFICO mostra sempre todos os motivos — Parceiro, UX, Usuário, Tech, Outros (sem RT) — mesmo quando o % Cancelamento está filtrado em só alguns níveis; quem escolhe o que aparece são as caixinhas da própria árvore. O Motivos Ofensores continua seguindo os níveis/submotivos marcados. Tráfego (SST): 🏙️ Tráfego por cidade em aba própria, ao lado de 📋 Tráfego por loja. */
 /* RappiStage 184: lupa de Motivos com a árvore Motivo (Parceiro, UX, Usuário, Tech, Outros) › Submotivo › Lojas para todas as categorias (antes só Parceiro tinha a raiz); corrige as lojas por motivo (nome do motivo por loja passa a ter a categoria); card Tráfego (SST) no Quarterly; card de Search no Growth com a palavra mais buscada e lupa abrindo o detalhamento de buscas. */
 /* RappiStage 183: Growth na apresentação em sub-blocos (cards com lupa que abrem o detalhe); Usuários vira sub-bloco do Growth; qualquer bloco pode ser excluído (✕) e incluído de novo; nomes exibidos: Cancelamentos, Cancelamentos YTD e Markdown. */
@@ -8111,7 +8112,7 @@ function rsGrowthSummary(item){
   const big = (v, u) => '<div class="g-big">' + escapeHtml(String(v)) + (u ? '<small>' + escapeHtml(u) + '</small>' : '') + '</div>';
   const sub = t => t ? '<div class="g-sub">' + t + '</div>' : '';
   const kv = lab => { const k = (item.data || []).find(x => new RegExp(lab, 'i').test(x.label || '')); return k ? k : null; };
-  if(item.kind === 'gallery'){ const L = (item.data || []).filter(g => g.selected !== false); return thumbs(L.map(g => g.photoUrl).filter(Boolean)) + big(L.length, L.length === 1 ? 'peça' : 'peças'); }
+  if(item.kind === 'gallery'){ const L = (item.data || []).filter(g => g.selected !== false); return thumbs(L.map(g => g.photoUrl).filter(Boolean)); } // RappiStage 186: sem contagem
   if(item.kind === 'list'){ const L = (item.data || []).filter(x => x && String(x).trim()); return big(L.length, L.length === 1 ? 'comunicação' : 'comunicações') + sub(L[0] ? escapeHtml(String(L[0]).slice(0, 110)) + (String(L[0]).length > 110 ? '…' : '') : ''); }
   if(item.kind === 'ranking'){ const x = (item.data || [])[0]; if(!x) return sub('Ver detalhes'); const v = x.vals || []; /* RappiStage 184: igual ao card de Usuários — palavra mais buscada em destaque */
     return '<div class="g-big g-word">' + escapeHtml(String(x.name || '')) + '</div>' + sub([v[0] ? escapeHtml(v[0]) + ' buscas' : '', v[1] && v[1] !== '—' ? escapeHtml(v[1]) + ' vs período anterior' : '', 'palavra mais buscada'].filter(Boolean).join(' · ')); }
@@ -8119,7 +8120,7 @@ function rsGrowthSummary(item){
     const u = kv('^Usuários Únicos'); if(u){ const n = kv('^Novos Usuários'), mx = kv('^Mix Pro'); return big(u.value, 'únicos') + sub([n ? escapeHtml(n.value) + ' novos' + (n.delta && n.delta !== '—' ? ' (' + escapeHtml(n.delta) + ')' : '') : '', mx && mx.value !== '—' ? 'Mix Pro ' + escapeHtml(String(mx.value).split(' / ')[0]) : ''].filter(Boolean).join(' · ')); }
     const r = kv('^ROI$'); if(r){ const bd = kv('^Consumo do Budget'), fg = kv('^Faturamento Gerado'); return big(r.value, 'ROI') + sub([bd ? 'Budget ' + escapeHtml(bd.value) : '', fg ? 'Faturamento gerado ' + escapeHtml(fg.value) : ''].filter(Boolean).join(' · ')); }
     const k0 = (item.data || []).filter(x => x.selected !== false)[0]; return k0 ? big(k0.value, rsDisp(k0.label)) : sub('Ver detalhes'); }
-  if(item.kind === 'commercial-calendar'){ const F = typeof rsCalFiles === 'function' ? rsCalFiles(item) : []; const im = F.map(f => f.data).filter(d => /^data:image|^https?:/.test(d || '')); return thumbs(im.slice(0, 2)) + big(F.length, F.length === 1 ? 'arquivo' : 'arquivos'); }
+  if(item.kind === 'commercial-calendar'){ const F = typeof rsCalFiles === 'function' ? rsCalFiles(item) : []; const im = F.map(f => f.data).filter(d => /^data:image|^https?:/.test(d || '')); return thumbs(im.slice(0, 4)); } // RappiStage 186: sem contagem
   if(item.kind === 'invest-calc'){ const n = (item.campaigns || []).length; return big(n, n === 1 ? 'campanha' : 'campanhas') + sub('ROI e budget por mecânica'); }
   if(item.kind === 'textarea'){ const t = String(item.value || '').trim(); return sub(t ? escapeHtml(t.slice(0, 140)) + (t.length > 140 ? '…' : '') : 'Ver detalhes'); }
   return sub('Ver detalhes');
@@ -17382,7 +17383,7 @@ function rsDefPedHTML(forExport){
         (forExport ? '' : '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px;font-size:12.5px;"><span style="font-weight:700;color:#5E5652;">☑ Marque na 1ª coluna os pedidos que vão para a apresentação e PDFs:</span>' +
           '<button type="button" class="btn btn-ghost btn-sm" onclick="rsDefPedAll(\'' + id + '\', true)">Marcar todos</button><button type="button" class="btn btn-ghost btn-sm" onclick="rsDefPedAll(\'' + id + '\', false)">Desmarcar todos</button>' +
           '<span id="' + id + '-cnt" style="color:#837A76;font-weight:700;">' + rsInt(L.filter(o => !rsDefPedOff(o.oid)).length) + ' de ' + rsInt(L.length) + ' pedidos vão para a apresentação</span></div>') +
-        '<label style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:#5E5652;cursor:pointer;margin:0 0 8px;"><input type="checkbox" style="accent-color:#E8501B;" onchange="var t=document.getElementById(\'' + id + '\');var on=this.checked;t.querySelectorAll(\'tbody tr\').forEach(function(r){r.style.display=(on&&!r.getAttribute(\'data-com\'))?\'none\':\'\';});"> Mostrar só pedidos com comentário do cliente</label>' +
+        '<label class="rs-cfg-only" style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:#5E5652;cursor:pointer;margin:0 0 8px;"><input type="checkbox" style="accent-color:#E8501B;" onchange="var t=document.getElementById(\'' + id + '\');var on=this.checked;t.querySelectorAll(\'tbody tr\').forEach(function(r){r.style.display=(on&&!r.getAttribute(\'data-com\'))?\'none\':\'\';});"> Mostrar só pedidos com comentário do cliente</label>' +
         '<div style="overflow-x:auto;"><table class="dd-table" data-colpick="def-ped" id="' + id + '" style="width:100%;min-width:1100px;border-collapse:collapse;"><thead><tr>' +
         sh(0, 'Data') + sh(1, 'Pedido') + sh(2, 'Loja') + sh(3, 'Motivo do defeito') + sh(4, 'Detalhe') + sh(5, 'Produto(s) reclamado(s)') + sh(6, 'Comentário do cliente') + sh(7, 'Valor do pedido (Total Price)') + sh(8, 'Canal') +
         '</tr></thead><tbody>' + L.map(o => { const off = !forExport && rsDefPedOff(o.oid); return '<tr' + (o.comentario ? ' data-com="1"' : '') + (off ? ' style="opacity:.4;"' : '') + '>' +
@@ -18775,7 +18776,7 @@ document.addEventListener('click', e => { /* RappiStage 179: botões da árvore 
   else { const cat = b.getAttribute('data-cat'); Object.keys(state.rsCancSubOff || {}).forEach(k => { if(rsMotCat(k) === cat) delete state.rsCancSubOff[k]; }); }
   try{ applyRealDataOverrides(); }catch(err){ console.warn('[RappiStage] motivos', err); }
   if(typeof renderBlocks === 'function') renderBlocks();
-  const lab = b.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') openDrilldown(lab);
+  const lab = b.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') rsDdReopen(lab); // RappiStage 186
 });
 function rsMotCatResumo(){ /* RappiStage 176: motivos por categoria (com as subcategorias) */
   const R = activeRealData(); if(!R || R.source !== 'rs') return '';
@@ -18801,7 +18802,7 @@ document.addEventListener('change', e => {
   if(cb.checked) delete state.rsCancSubOff[raw]; else state.rsCancSubOff[raw] = true;
   try{ applyRealDataOverrides(); }catch(err){ console.warn('[RappiStage] subcategoria', err); }
   if(typeof renderBlocks === 'function') renderBlocks();
-  const lab = cb.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') openDrilldown(lab);
+  const lab = cb.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') rsDdReopen(lab); // RappiStage 186
 });
 document.addEventListener('change', e => {
   const cb = e.target && e.target.closest && e.target.closest('input.rs-canc-cat'); if(!cb) return;
@@ -18810,8 +18811,16 @@ document.addEventListener('change', e => {
   state.rsCancCats = L.length >= RS_CANC_CATS.length ? null : L;
   try{ applyRealDataOverrides(); }catch(err){ console.warn('[RappiStage] níveis de cancelamento', err); }
   if(typeof renderBlocks === 'function') renderBlocks();
-  const lab = cb.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') openDrilldown(lab);
+  const lab = cb.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') rsDdReopen(lab); // RappiStage 186
 });
+function rsDdReopen(lab){ /* RappiStage 186: reabre a lupa na mesma aba e na mesma rolagem */
+  var tab = (typeof currentDrilldownTab !== 'undefined' && currentDrilldownTab) || undefined;
+  var root = typeof drilldownModal !== 'undefined' ? drilldownModal : null;
+  var keep = root ? [root].concat([].slice.call(root.querySelectorAll('*'))).filter(function(e){ return e.scrollTop > 0; }).map(function(e){ return [e.id || null, e.className || null, e.scrollTop, e]; }) : [];
+  openDrilldown(lab, tab);
+  var back = function(){ keep.forEach(function(k){ var e = k[3]; if(!e.isConnected && k[0]) e = document.getElementById(k[0]); if(e && e.isConnected) e.scrollTop = k[2]; }); };
+  back(); requestAnimationFrame(back); setTimeout(back, 60);
+}
 function rsDrilldownHTML(type, kpiLabel){
   if((type === 'cancelamento' || type === 'motivos') && !rsDrilldownHTML.__inC){ rsDrilldownHTML.__inC = 1; try{ const h = rsDrilldownHTML(type, kpiLabel); return h ? rsCancChipsHtml(kpiLabel) + (type === 'motivos' ? rsMotCatResumo() : '') + h : h; } finally { rsDrilldownHTML.__inC = 0; } }
   if(type === 'mkd' && !rsDrilldownHTML.__in){ /* RappiStage 185: Tráfego por cidade foi para aba própria */
@@ -21308,6 +21317,19 @@ function buildPresentationDocument(){
 .slide-counter{font-size:12px; font-weight:700; color:var(--ink5); min-width:50px; text-align:center;}
 
 .dd-overlay{position:fixed; inset:0; background:rgba(30,27,26,0.5); display:none; align-items:center; justify-content:center; z-index:999; padding:20px;}
+
+/* RappiStage 186 */
+#gOverlay{z-index:990;} /* a lupa (#ddOverlay, 999) abre por cima do card do Growth */
+.rsyp-row:has(button, select, input){display:none !important;}
+.rs-canc-chips, .rs-cfg-only, .dd-chart-ctrl-row, .rs-kpi-add, .rs-mt-root{display:none !important;}
+.rs-funil-foot > label{display:none !important;}
+.rs-funil-foot:has(> label input:not(:checked)){display:none !important;}
+.p-kpi-grid-big .p-kpi-dd-icon{font-size:17px !important; width:36px; height:36px; border-radius:50%; background:#F3EFEC; display:flex; align-items:center; justify-content:center; line-height:1; top:20px; right:22px; transition:background .15s;}
+.p-kpi-grid-big .p-kpi-dd-icon::after{display:none !important;}
+.p-kpi-tile.clickable:hover .p-kpi-dd-icon{background:#FF4D00;}
+.g-ico{background:#F3EFEC !important; width:36px !important; height:36px !important; border-radius:50%; display:flex; align-items:center; justify-content:center; top:18px !important; right:20px !important; transition:background .15s;}
+.g-ico::after{content:'🔎'; font-size:17px; line-height:1;}
+.g-card:hover .g-ico{background:#FF4D00 !important;}
 .dd-overlay.show{display:flex;}
 /* .dd-box agora é o CARD inteiro do modal (moldura), que hospeda o toggle de abas + os dois
    painéis de conteúdo (#ddBox "por loja" e #ddChartBox "Gráficos") — ver openDrilldown/setDdTab
