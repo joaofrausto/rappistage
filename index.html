@@ -293,6 +293,7 @@ input,textarea,select{font-family:inherit;}
 /* Estado "armado" do botão "💬 Adicionar comentário" — próximo clique no gráfico vira comentário
    em vez de abrir em tela cheia (item F.7). */
 .chart-comment-btn.active{background:var(--rappi-orange-1); color:#fff;}
+/* RappiStage 177: query embutida (versão 13/11/2026): % Cancelamento e motivos: agora trazem os níveis Partner, UX, User, Tech e Other (sem RT), inclusive por loja — o AGM escolhe na plataforma quais categorias e subcategorias entram no %, nos gráficos e nos Motivos Ofensores. | MKD: categorias e produtos com maior % de markdown (com o período anterior) e unidades vendidas com e sem markdown. | Found Rate e Defect: principais produtos e categorias no detalhamento. | Tráfego: cidade de cada loja (tráfego por cidade). | YTD de todas as marcas soma todas as lojas da marca em 2025 e 2026 (inclusive Turbo e lojas que saíram da carteira). */
 /* RappiStage 174: query embutida (versão 13/11/2026): % Cancelamento e motivos: agora trazem todos os níveis (Partner, UX, User, Tech, Other e RT), inclusive por loja — o AGM escolhe na plataforma quais níveis entram no %, nos gráficos e nos Motivos Ofensores. | MKD: categorias e produtos com maior % de markdown (com o período anterior) e unidades vendidas com e sem markdown. | Found Rate e Defect: principais produtos e categorias no detalhamento. | Tráfego: cidade de cada loja (tráfego por cidade). | YTD de todas as marcas soma todas as lojas da marca em 2025 e 2026 (inclusive Turbo e lojas que saíram da carteira). */
 /* RappiStage 171: query embutida (versão 13/11/2026): MKD: categorias e produtos com maior % de markdown (com o período anterior) e unidades vendidas com e sem markdown. | Found Rate e Defect: principais produtos e categorias no detalhamento. | Motivos de cancelamento: além dos de Partner, entram Other, Tech, UX e User (só os de RT/entregador ficam fora). O % Cancelamento continua só Partner. | Tráfego: cidade de cada loja (tráfego por cidade). | YTD de todas as marcas soma todas as lojas da marca em 2025 e 2026 (inclusive Turbo e lojas que saíram da carteira). */
 /* RappiStage 162: query embutida (versão 10/11/2026): YTD (Resultados YTD e projeção) de TODAS as marcas soma todas as lojas da marca em 2025 e 2026 — inclusive Turbo e lojas que já saíram da carteira — para bater com o total do parceiro. Os demais KPIs seguem só com as lojas da carteira. | YoY: novo bloco com os números fechados mês a mês desde janeiro do ano passado (faturamento, pedidos, ticket, cancelamento by partner e conversão). | Top Sellers e ruptura: produtos sem EAN (NO-EAN) agora aparecem separados pelo nome — antes eram somados numa linha só. | Duas opções: query completa (com YoY, mais demorada) ou rápida (sem YoY) — escolha no botão de copiar. | Tempo na loja sem sobreposição; Zee Now separada da Petz; Carrefour (fora da farmácia) com a Rubia. */
@@ -2184,6 +2185,7 @@ table.dd-show-motivo .dd-optional-col{display:table-cell;}
 .day-comment-chip{ display:flex; align-items:center; gap:6px; font-size:10.5px; font-weight:700; padding:5px 9px; border-radius:8px; border:1px dashed var(--ink-300); cursor:pointer; }
 .day-comment-chip.has-comment{ border-style:solid; border-color:var(--rappi-orange-1); background:var(--bg-peach); }
 .chart-canvas-wrap{ position:relative; cursor:crosshair; height:400px; }
+.rs-dd-x{position:sticky; top:0; float:right; z-index:20; width:38px; height:38px; border-radius:50%; border:none; background:#FF5A1F; color:#fff; font-size:18px; font-weight:800; line-height:38px; text-align:center; cursor:pointer; box-shadow:0 4px 12px rgba(255,90,31,0.35); margin:-6px -6px 0 auto; padding:0; display:block; align-self:flex-end; flex-shrink:0;} .rs-dd-x:hover{background:#E8501B;} /* RappiStage 176 */
 .chart-callouts-layer{ position:absolute; inset:0; pointer-events:none; }
 .rs-fs-callout{position:absolute; transform:translate(-50%,-100%); max-width:240px; background:#fff; border:1.5px solid #FF5A1F; border-radius:12px; border-bottom-left-radius:2px; padding:8px 11px; box-shadow:0 8px 20px rgba(30,27,26,0.16); font-size:13px; font-weight:700; color:#1E1B1A;} /* RappiStage 169 */
 .chart-callout{ position:absolute; transform:translate(-50%,-100%); pointer-events:auto; max-width:170px; background:#fff; border:1.5px solid var(--rappi-orange-1); border-radius:12px; border-bottom-left-radius:2px; padding:8px 10px; box-shadow:0 8px 20px rgba(30,27,26,0.14); font-size:11px; font-weight:600; color:var(--ink-700); z-index:5; }
@@ -2293,6 +2295,8 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 178: KPIs da apresentação no layout novo — cards grandes, 3 por linha (4 quando há mais de 9), nome em cinza maiúsculo com lupa azul à direita, número grande com "R$" menor, variação embaixo, fontes maiores. */
+/* RappiStage 176: aba "Detalhamento por produto" em Found Rate e Defect; seções e colunas da lupa de MKD com checkbox de levar ou não; botão laranja ✕ para fechar a lupa; sem cancelamento de RT; motivos de cancelamento por categoria › subcategoria, com filtro de categoria e de subcategoria. */
 /* RappiStage 175: a query copiada pelo AGM sai sem a instrução inicial (começa no SET AGM); o cabeçalho continua embutido só para o aviso de versão/novidades. */
 /* RappiStage 173: % Cancelamento com todos os níveis (Partner, UX, User, Tech, Other, RT) e o AGM escolhe quais entram — vale para o %, gráficos, tabelas por loja, YTD, motivos e Motivos Ofensores; rótulo vira "% Cancelamento" e os níveis aparecem junto da variação. */
 /* RappiStage 172: tabelas de loja — ao ordenar por uma coluna, os 3 MELHORES resultados dessa coluna ficam verdes e os 3 PIORES vermelhos (onde estiverem, em ordem crescente ou decrescente); Ranking: menor é melhor; coluna de texto sem cor. */
@@ -2547,7 +2551,7 @@ body:not([data-screen="screen-setup"]) .admin-fab{display:none !important;}
    (o que mudou, em linguagem de AGM, 1 item por linha começando com "- ").
    Depois rode: python _work/embutir_query.py   (gera a próxima RappiStage_NNN.html + index.html)
    VERSAO: 13/11/2026
-   - % Cancelamento e motivos: agora trazem todos os níveis (Partner, UX, User, Tech, Other e RT), inclusive por loja — o AGM escolhe na plataforma quais níveis entram no %, nos gráficos e nos Motivos Ofensores.
+   - % Cancelamento e motivos: agora trazem os níveis Partner, UX, User, Tech e Other (sem RT), inclusive por loja — o AGM escolhe na plataforma quais categorias e subcategorias entram no %, nos gráficos e nos Motivos Ofensores.
    - MKD: categorias e produtos com maior % de markdown (com o período anterior) e unidades vendidas com e sem markdown.
    - Found Rate e Defect: principais produtos e categorias no detalhamento.
    - Tráfego: cidade de cada loja (tráfego por cidade).
@@ -2762,14 +2766,13 @@ CANCEL_ROW AS (
            CASE WHEN C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Partner'
                 THEN 1 ELSE 0 END AS CANC,
            -- v170: motivos da marca = todo cancelamento efetivo, menos os de RT (entregador)
-           CASE WHEN C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND COALESCE(C.CATEGORY, '') <> ''
+           CASE WHEN C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND COALESCE(C.CATEGORY, '') NOT IN ('RT', '')
                 THEN 1 ELSE 0 END AS CANC_MOT,
            -- v173: cancelamento efetivo por categoria (o AGM escolhe quais entram no % Cancelamento)
            IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'UX', 1, 0) AS CANC_UX,
            IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'User', 1, 0) AS CANC_USER,
            IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Tech', 1, 0) AS CANC_TECH,
-           IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Other', 1, 0) AS CANC_OTHER,
-           IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'RT', 1, 0) AS CANC_RT
+           IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Other', 1, 0) AS CANC_OTHER
     FROM RP_SILVER_DB_PROD.DES_PROD.ORDERS_BR O
     JOIN LOJAS L ON L.STORE_ID = O.STORE_ID
     LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.CANCELLATIONS_BR C ON C.ORDER_ID = O.ORDER_ID
@@ -2779,7 +2782,7 @@ CANCEL_ROW AS (
       AND COALESCE(C.CLOSED_AT, C.CANCELLED_AT, C.CREATED_AT)::DATE <  $DT_FIM
 ),
 CANCEL AS (
-    SELECT D, STORE_ID, COUNT(ORDER_ID) AS TOTAL, SUM(CANC) AS CANC, SUM(CANC_UX) AS CANC_UX, SUM(CANC_USER) AS CANC_USER, SUM(CANC_TECH) AS CANC_TECH, SUM(CANC_OTHER) AS CANC_OTHER, SUM(CANC_RT) AS CANC_RT FROM CANCEL_ROW GROUP BY 1, 2
+    SELECT D, STORE_ID, COUNT(ORDER_ID) AS TOTAL, SUM(CANC) AS CANC, SUM(CANC_UX) AS CANC_UX, SUM(CANC_USER) AS CANC_USER, SUM(CANC_TECH) AS CANC_TECH, SUM(CANC_OTHER) AS CANC_OTHER FROM CANCEL_ROW GROUP BY 1, 2
 ),
 
 /* ---------- itens: 1 linha por (pedido, produto), a não deletada primeiro (régua do found rate do PBI) ---------- */
@@ -3176,8 +3179,7 @@ YOY_CANC AS (
            SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'UX', 1, 0)) AS CANC_UX,
            SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'User', 1, 0)) AS CANC_USER,
            SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Tech', 1, 0)) AS CANC_TECH,
-           SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Other', 1, 0)) AS CANC_OTHER,
-           SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'RT', 1, 0)) AS CANC_RT
+           SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Other', 1, 0)) AS CANC_OTHER
     FROM RP_SILVER_DB_PROD.DES_PROD.ORDERS_BR O
     JOIN LOJAS L ON L.STORE_ID = O.STORE_ID
     LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.CANCELLATIONS_BR C ON C.ORDER_ID = O.ORDER_ID
@@ -3220,8 +3222,7 @@ EXTRA_CANC AS (
            SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'UX', 1, 0)) AS CANC_UX,
            SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'User', 1, 0)) AS CANC_USER,
            SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Tech', 1, 0)) AS CANC_TECH,
-           SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Other', 1, 0)) AS CANC_OTHER,
-           SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'RT', 1, 0)) AS CANC_RT
+           SUM(IFF(C.EFFECTIVE_REPURCHASE = FALSE AND O.IS_CANCELLED = TRUE AND C.CATEGORY = 'Other', 1, 0)) AS CANC_OTHER
     FROM RP_SILVER_DB_PROD.DES_PROD.ORDERS_BR O
     JOIN LOJAS_EXTRA_YTD L ON L.STORE_ID = O.STORE_ID
     LEFT JOIN RP_SILVER_DB_PROD.DES_PROD.CANCELLATIONS_BR C ON C.ORDER_ID = O.ORDER_ID
@@ -3247,7 +3248,7 @@ MES_JAN AS (   -- meses da janela: soma dos números diários (= lojas_dia)
     GROUP BY 1, 2, 3
 ),
 MES_CANC AS (
-    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, C.D) AS P, SUM(C.TOTAL) AS TOTAL, SUM(C.CANC) AS CANC, SUM(C.CANC_UX) AS CANC_UX, SUM(C.CANC_USER) AS CANC_USER, SUM(C.CANC_TECH) AS CANC_TECH, SUM(C.CANC_OTHER) AS CANC_OTHER, SUM(C.CANC_RT) AS CANC_RT
+    SELECT L.AGM, L.MARCA, DATE_TRUNC(MONTH, C.D) AS P, SUM(C.TOTAL) AS TOTAL, SUM(C.CANC) AS CANC, SUM(C.CANC_UX) AS CANC_UX, SUM(C.CANC_USER) AS CANC_USER, SUM(C.CANC_TECH) AS CANC_TECH, SUM(C.CANC_OTHER) AS CANC_OTHER
     FROM CANCEL C JOIN LOJAS L ON L.STORE_ID = C.STORE_ID
     GROUP BY 1, 2, 3
 ),
@@ -3267,11 +3268,11 @@ MES_FUN AS (   -- meses da janela: soma do FUNIL diário (= lojas_dia)
 ),
 MARCA_MES AS (
     SELECT COALESCE(F.AGM, C.AGM, U.AGM) AS AGM, COALESCE(F.MARCA, C.MARCA, U.MARCA) AS MARCA, COALESCE(F.P, C.P, U.P) AS P,
-           F.TP, F.INC, F.GMV, F.PEDIDOS, C.TOTAL, C.CANC, C.CANC_UX, C.CANC_USER, C.CANC_TECH, C.CANC_OTHER, C.CANC_RT,
+           F.TP, F.INC, F.GMV, F.PEDIDOS, C.TOTAL, C.CANC, C.CANC_UX, C.CANC_USER, C.CANC_TECH, C.CANC_OTHER,
            U.SST, U.SS, U.VPD, U.ATC, U.VC, U.VSO, U.PTC, U.OP, U.OPC
     FROM (SELECT AGM, MARCA, P, SUM(TP) AS TP, SUM(INC) AS INC, SUM(GMV) AS GMV, SUM(PEDIDOS) AS PEDIDOS
           FROM (SELECT * FROM MES_JAN UNION ALL SELECT * FROM YOY_PBI UNION ALL SELECT * FROM EXTRA_PBI) GROUP BY 1, 2, 3) F
-    FULL OUTER JOIN (SELECT AGM, MARCA, P, SUM(TOTAL) AS TOTAL, SUM(CANC) AS CANC, SUM(CANC_UX) AS CANC_UX, SUM(CANC_USER) AS CANC_USER, SUM(CANC_TECH) AS CANC_TECH, SUM(CANC_OTHER) AS CANC_OTHER, SUM(CANC_RT) AS CANC_RT
+    FULL OUTER JOIN (SELECT AGM, MARCA, P, SUM(TOTAL) AS TOTAL, SUM(CANC) AS CANC, SUM(CANC_UX) AS CANC_UX, SUM(CANC_USER) AS CANC_USER, SUM(CANC_TECH) AS CANC_TECH, SUM(CANC_OTHER) AS CANC_OTHER
           FROM (SELECT * FROM MES_CANC UNION ALL SELECT * FROM YOY_CANC UNION ALL SELECT * FROM EXTRA_CANC) GROUP BY 1, 2, 3) C
       ON C.AGM = F.AGM AND C.MARCA = F.MARCA AND C.P = F.P
     FULL OUTER JOIN (SELECT AGM, MARCA, P, SUM(SST) AS SST, SUM(SS) AS SS, SUM(VPD) AS VPD, SUM(ATC) AS ATC, SUM(VC) AS VC, SUM(VSO) AS VSO, SUM(PTC) AS PTC, SUM(OP) AS OP, SUM(OPC) AS OPC
@@ -3574,7 +3575,6 @@ SELECT
        CN.CANC_USER::NUMBER(38,0) AS "pedidos_cancelados_user",
        CN.CANC_TECH::NUMBER(38,0) AS "pedidos_cancelados_tech",
        CN.CANC_OTHER::NUMBER(38,0) AS "pedidos_cancelados_other",
-       CN.CANC_RT::NUMBER(38,0) AS "pedidos_cancelados_rt",
        ROUND(I.GMV_BRUTO, 2)::NUMBER(38,2) AS "gmv_bruto",
        ROUND(I.MKD_VALOR, 2)::NUMBER(38,2) AS "mkd_valor",
        I.ITENS_PEDIDOS::NUMBER(38,0) AS "itens_pedidos",
@@ -3642,7 +3642,6 @@ SELECT
        NULL::NUMBER(38,0) AS "pedidos_cancelados_user",
        NULL::NUMBER(38,0) AS "pedidos_cancelados_tech",
        NULL::NUMBER(38,0) AS "pedidos_cancelados_other",
-       NULL::NUMBER(38,0) AS "pedidos_cancelados_rt",
        NULL::NUMBER(38,2) AS "gmv_bruto",
        NULL::NUMBER(38,2) AS "mkd_valor",
        NULL::NUMBER(38,0) AS "itens_pedidos",
@@ -3706,7 +3705,6 @@ SELECT
        NULL::NUMBER(38,0) AS "pedidos_cancelados_user",
        NULL::NUMBER(38,0) AS "pedidos_cancelados_tech",
        NULL::NUMBER(38,0) AS "pedidos_cancelados_other",
-       NULL::NUMBER(38,0) AS "pedidos_cancelados_rt",
        NULL::NUMBER(38,2) AS "gmv_bruto",
        NULL::NUMBER(38,2) AS "mkd_valor",
        NULL::NUMBER(38,0) AS "itens_pedidos",
@@ -3766,7 +3764,6 @@ SELECT
        NULL::NUMBER(38,0) AS "pedidos_cancelados_user",
        NULL::NUMBER(38,0) AS "pedidos_cancelados_tech",
        NULL::NUMBER(38,0) AS "pedidos_cancelados_other",
-       NULL::NUMBER(38,0) AS "pedidos_cancelados_rt",
        NULL::NUMBER(38,2) AS "gmv_bruto",
        NULL::NUMBER(38,2) AS "mkd_valor",
        NULL::NUMBER(38,0) AS "itens_pedidos",
@@ -3829,7 +3826,6 @@ SELECT     -- v151: YoY (1 linha por marca × mês, desde janeiro do ano anterio
        M.CANC_USER::NUMBER(38,0) AS "pedidos_cancelados_user",
        M.CANC_TECH::NUMBER(38,0) AS "pedidos_cancelados_tech",
        M.CANC_OTHER::NUMBER(38,0) AS "pedidos_cancelados_other",
-       M.CANC_RT::NUMBER(38,0) AS "pedidos_cancelados_rt",
        NULL::NUMBER(38,2) AS "gmv_bruto",
        NULL::NUMBER(38,2) AS "mkd_valor",
        NULL::NUMBER(38,0) AS "itens_pedidos",
@@ -4157,6 +4153,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
 <!-- Modal de detalhamento (drilldown) de KPI -->
 <div class="modal-overlay" id="drilldown-modal">
   <div class="modal-box drilldown-modal-box" style="text-align:left;">
+    <button type="button" class="rs-dd-x" title="Fechar" onclick="document.getElementById('drilldown-close-btn').click()">✕</button>
     <div id="dd-kpi-head"></div>
     <div class="chart-mode-toggle drilldown-tab-toggle" id="drilldown-tab-toggle" hidden>
       <button type="button" class="chip-toggle-btn" data-dd-tab="graficos">📊 Gráficos</button>
@@ -4170,6 +4167,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
       <button type="button" class="chip-toggle-btn" data-dd-tab="stockout" id="dd-tab-btn-stockout" hidden>📦 Cancelamento por Stockout</button>
       <button type="button" class="chip-toggle-btn" data-dd-tab="vitrine" id="dd-tab-btn-vitrine" hidden>🖼️ Vitrine de ruptura</button>
       <button type="button" class="chip-toggle-btn" data-dd-tab="pedidos" id="dd-tab-btn-pedidos" hidden>🧾 Detalhamento por pedido</button>
+      <button type="button" class="chip-toggle-btn" data-dd-tab="produtos" id="dd-tab-btn-produtos" hidden>🧴 Detalhamento por produto</button>
     </div>
     <div id="drilldown-content" class="drilldown-box"></div>
     <div id="drilldown-chart-content" class="drilldown-box hidden"></div>
@@ -4178,6 +4176,7 @@ ORDER BY "bloco", "agm", "marca", "granularidade", "periodo_inicio", "data", "lo
     <div id="drilldown-stockout-content" class="drilldown-box hidden"></div>
     <div id="drilldown-vitrine-content" class="drilldown-box hidden"></div>
     <div id="drilldown-pedidos-content" class="drilldown-box hidden"></div>
+    <div id="drilldown-produtos-content" class="drilldown-box hidden"></div>
     <div id="dd-funil-foot"></div>
     <div class="modal-actions" style="justify-content:flex-end; margin-top:6px;">
       <button class="btn btn-ghost btn-sm" id="drilldown-close-btn">Fechar</button>
@@ -14766,7 +14765,8 @@ function setDrilldownTab(tab){
   drilldownStockoutContent.classList.toggle('hidden', tab !== 'stockout'); // RappiStage 83
   drilldownVitrineContent.classList.toggle('hidden', tab !== 'vitrine'); // RappiStage 115
   { const pc = document.getElementById('drilldown-pedidos-content'); if(pc) pc.classList.toggle('hidden', tab !== 'pedidos'); } // RappiStage 129
-  if(tab === 'stockout' || tab === 'vitrine' || tab === 'pedidos'){
+  { const pr = document.getElementById('drilldown-produtos-content'); if(pr) pr.classList.toggle('hidden', tab !== 'produtos'); } // RappiStage 176
+  if(tab === 'stockout' || tab === 'vitrine' || tab === 'pedidos' || tab === 'produtos'){
     cleanupOrphanChartInstances();
     drilldownChartContent.classList.add('hidden'); drilldownChartContent.innerHTML = '';
     drilldownLojasContent.classList.add('hidden'); drilldownLojaNivelContent.classList.add('hidden');
@@ -14927,6 +14927,8 @@ function openDrilldown(kpiLabel, initialTab){
   { const gb = drilldownTabToggle.querySelector('[data-dd-tab="graficos"]'); if(gb) gb.hidden = !!(showVit && noChart); if(showVit && noChart) drilldownTabToggle.hidden = false; }
   { const showPed = dd === 'defect' && rsIsActive(), pb = document.getElementById('dd-tab-btn-pedidos'), pc = document.getElementById('drilldown-pedidos-content'); // RappiStage 129
     if(pb) pb.hidden = !showPed; if(pc){ pc.innerHTML = showPed ? rsDefPedHTML() : ''; if(showPed) rsColPickMount(pc); } } // RappiStage 130: checkbox por coluna
+  { const showPr = (dd === 'foundrate' || dd === 'defect') && rsIsActive(), pb2 = document.getElementById('dd-tab-btn-produtos'), pc2 = document.getElementById('drilldown-produtos-content'); // RappiStage 176
+    if(pb2) pb2.hidden = !showPr; if(pc2){ pc2.innerHTML = showPr ? rsV170Extra(dd) : ''; if(showPr) rsColPickMount(pc2); } }
   setDrilldownTab(noChart ? 'lojas' : (initialTab || 'graficos'));
   drilldownModal.classList.add('show');
 }
@@ -15745,7 +15747,8 @@ function buildDraftRecord(extra){
     blocks: deepClone(state.blocks),
     autoDrilldownCharts: deepClone(state.autoDrilldownCharts || {}),
     rsYtdCfg: deepClone(state.rsYtdCfg || {}), // RappiStage 165
-    rsCancCats: state.rsCancCats ? state.rsCancCats.slice() : null, // RappiStage 173: modo/KPIs/projeção do painel YTD + projeção editada
+    rsCancCats: state.rsCancCats ? state.rsCancCats.slice() : null, // RappiStage 173
+    rsCancSubOff: deepClone(state.rsCancSubOff || {}), rsSecOff: deepClone(state.rsSecOff || {}), // RappiStage 176: modo/KPIs/projeção do painel YTD + projeção editada
     importedData: state.importedData ? deepClone(state.importedData) : null,
   }, extra || {});
 }
@@ -15947,6 +15950,7 @@ function restoreDraftFromRecord(draft){
   state.autoDrilldownCharts = draft.autoDrilldownCharts ? deepClone(draft.autoDrilldownCharts) : {};
   state.rsYtdCfg = draft.rsYtdCfg ? deepClone(draft.rsYtdCfg) : {}; // RappiStage 165
   state.rsCancCats = draft.rsCancCats ? draft.rsCancCats.slice() : null; // RappiStage 173
+  state.rsCancSubOff = draft.rsCancSubOff ? deepClone(draft.rsCancSubOff) : {}; state.rsSecOff = draft.rsSecOff ? deepClone(draft.rsSecOff) : {}; // RappiStage 176
   state.importedData = draft.importedData ? deepClone(draft.importedData) : null;
   /* RappiStage 149: traz as melhorias da versão atual + refaz os números com a base carregada */
   { let st = null; try{ const r = rsMigrateBlocks(state.blocks, state.meetingType); state.blocks = r.blocks; st = r.stats; }catch(e){ console.warn('[RappiStage] migração', e); }
@@ -16365,12 +16369,16 @@ var RS_ALIASES = {
 };
 function rsColIndex(idx, f){ const al = RS_ALIASES[f] || [f]; for(const a of al){ if(idx[a] !== undefined) return idx[a]; } return undefined; }
 /* RappiStage 173: níveis de cancelamento escolhidos pelo AGM (null = todos) */
-var RS_CANC_CATS = [['Partner', 'pedidos_cancelados'], ['UX', 'pedidos_cancelados_ux'], ['User', 'pedidos_cancelados_user'], ['Tech', 'pedidos_cancelados_tech'], ['Other', 'pedidos_cancelados_other'], ['RT', 'pedidos_cancelados_rt']];
-var RS_CANC_PT = { Partner:'Partner', UX:'UX', User:'User', Tech:'Tech', Other:'Other', RT:'RT' };
+var RS_CANC_CATS = [['Partner', 'pedidos_cancelados'], ['UX', 'pedidos_cancelados_ux'], ['User', 'pedidos_cancelados_user'], ['Tech', 'pedidos_cancelados_tech'], ['Other', 'pedidos_cancelados_other']]; // RappiStage 176: sem RT
+var RS_CANC_PT = { Partner:'Parceiro', UX:'UX', User:'Usuário', Tech:'Tech', Other:'Outros', RT:'Entregador' };
 var RS_CANC_SEL = null;
-function rsCancSelFromState(){ const L = (typeof state !== 'undefined' && state.rsCancCats) || null; if(!L || !L.length || L.length >= RS_CANC_CATS.length) return null; const o = {}; L.forEach(c => { o[c] = true; }); return o; }
-function rsCancTxt(){ const L = (typeof state !== 'undefined' && state.rsCancCats) || null; if(!L || !L.length || L.length >= RS_CANC_CATS.length) return 'todos os níveis'; if(L.length === 1) return 'só ' + L[0]; return L.join(' + '); }
-function rsMotCatOk(item){ if(!RS_CANC_SEL) return true; const t = String(item || ''), i = t.indexOf(' / '); const cat = i > -1 ? t.slice(0, i) : 'Partner'; return !!RS_CANC_SEL[cat]; }
+function rsCancSelFromState(){ const L = ((typeof state !== 'undefined' && state.rsCancCats) || []).filter(c => c !== 'RT'); if(!L.length || L.length >= RS_CANC_CATS.length) return null; const o = {}; L.forEach(c => { o[c] = true; }); return o; }
+function rsCancTxt(){ const L = (typeof state !== 'undefined' && state.rsCancCats) || null; const sub = typeof state !== 'undefined' && state.rsCancSubOff && Object.keys(state.rsCancSubOff).length ? ' (filtro de subcategoria)' : '';
+  if(!L || !L.length || L.length >= RS_CANC_CATS.length) return 'todos os níveis' + sub; if(L.length === 1) return 'só ' + (RS_CANC_PT[L[0]] || L[0]) + sub; return L.map(x => RS_CANC_PT[x] || x).join(' + ') + sub; }
+function rsMotCat(item){ const t = String(item || ''), i = t.indexOf(' / '); return i > -1 ? t.slice(0, i) : 'Partner'; }
+function rsMotCatOk(item){ const cat = rsMotCat(item); if(cat === 'RT') return false; // RappiStage 176: RT nunca entra
+  if(typeof state !== 'undefined' && state.rsCancSubOff && state.rsCancSubOff[String(item)]) return false;
+  if(!RS_CANC_SEL) return true; return !!RS_CANC_SEL[cat]; }
 var RS_NF = RS_SUM_FIELDS.length; // slot RS_NF = máscara de presença (bit i = o campo i veio preenchido em alguma linha)
 var RS_F = {}; RS_SUM_FIELDS.forEach(function(f, i){ RS_F[f] = i; });
 var RS_FUNIL = ['SST','SS','VPD','ATC','VC','VSO','PTC','OP','OPC'];
@@ -17406,8 +17414,11 @@ function rsDefeitoPT(raw){
   const tr = p => RS_DEFEITO_PT[p.toLowerCase().replace(/\s+/g, ' ').trim()];
   return t.split(' / ').map(p => tr(p) || (p.indexOf('/') > -1 ? p.split(/\s*\/\s*/).map(q => tr(q) || q.trim()).join(' / ') : p.trim())).filter(Boolean).join(' / ');
 }
-function rsMotivoNome(item){ return rsMotivoPT(item); }
-Object.keys(RS_MOTIVO_CORES).forEach(function(en){ RS_MOTIVO_CORES[rsMotivoPT('Partner / ' + en)] = RS_MOTIVO_CORES[en]; }); // cores também pelos nomes em português
+var RS_MOT_CAT_PT = { Partner:'Parceiro', UX:'UX', User:'Usuário', Tech:'Tech', Other:'Outros', RT:'Entregador' };
+function rsMotivoNome(item){ /* RappiStage 176: "Categoria › Subcategoria" */
+  const cat = rsMotCat(item); let sub = rsMotivoPT(item); const j = sub.indexOf(' / '); if(j > -1) sub = sub.slice(j + 3);
+  return (RS_MOT_CAT_PT[cat] || cat) + ' › ' + sub; }
+Object.keys(RS_MOTIVO_CORES).forEach(function(en){ RS_MOTIVO_CORES[rsMotivoPT('Partner / ' + en)] = RS_MOTIVO_CORES[en]; RS_MOTIVO_CORES['Parceiro › ' + rsMotivoPT('Partner / ' + en)] = RS_MOTIVO_CORES[en]; }); // cores também pelos nomes em português (e com a categoria, RappiStage 176)
 /* RappiStage 164: gráficos mensais começam em janeiro do ano do último mês (mín. 5 meses, para o começo do ano não ficar com 1–2 pontos). */
 function rsMonthsFromJan(P){ const m = P && P.start != null ? +rsIso(P.start).slice(5, 7) : 5; return Math.max(5, m || 5); }
 function rsSeries(B, base, type, E, N, cutDays){ // RappiStage 90: cutDays = MTD (mesmo corte em todo período)
@@ -17659,7 +17670,8 @@ function rsBuildDataset(B, base, type, periodValue, brand){
   }).filter(p => !/^\s*no[-_ ]?ean\s*$/i.test(p.ean || '')) // RappiStage 153: NO-EAN junta produtos diferentes num só — fora do Top Sellers
     .sort((a, b) => (b.gmv || 0) - (a.gmv || 0));
   const makers = rsPivot(rsRank(B, type, curRk, 'maker')).map(x => ({ nome:x.item, gmv: rsPick(x, 'total_price', 'gmv'), gmvAnt: rsPick(x, 'total_price_anterior', 'gmv_anterior') })).sort((a, b) => (b.gmv || 0) - (a.gmv || 0));
-  const mc = rsPivot(rsRank(B, type, curRk, 'motivo_cancelamento')).filter(x => rsMotCatOk(x.item)).map(x => ({ motivo: rsMotivoPT(x.item), partner: !/ \/ /.test(x.item) || /^Partner \//.test(x.item), pedidos:x.pedidos === undefined ? null : x.pedidos, ant:x.pedidos_anterior === undefined ? null : x.pedidos_anterior }));
+  const mcAllRaw = rsPivot(rsRank(B, type, curRk, 'motivo_cancelamento')).map(x => x.item).filter(it => rsMotCat(it) !== 'RT'); // RappiStage 176: lista para o filtro de subcategoria
+  const mc = rsPivot(rsRank(B, type, curRk, 'motivo_cancelamento')).filter(x => rsMotCatOk(x.item)).map(x => ({ motivo: rsMotivoNome(x.item), raw: x.item, cat: rsMotCat(x.item), partner: !/ \/ /.test(x.item) || /^Partner \//.test(x.item), pedidos:x.pedidos === undefined ? null : x.pedidos, ant:x.pedidos_anterior === undefined ? null : x.pedidos_anterior }));
   /* RappiStage 170: MKD / Found Rate / Defect por produto e categoria + cidade da loja (query 13/11) */
   const pv170 = t => rsPivot(rsRank(B, type, curRk, t));
   const mkdOf = x => ({ nome: x.item, tp: x.total_price || 0, mkd: x.mkd || 0, un: x.unidades || 0, unMkd: x.unidades_mkd || 0, mkdAnt: x.mkd_anterior == null ? null : x.mkd_anterior, tpAnt: x.total_price_anterior == null ? null : x.total_price_anterior });
@@ -17823,7 +17835,7 @@ function rsBuildDataset(B, base, type, periodValue, brand){
       partial, rkFb: partial && !tdOk, td: tdOk, rankLabel: rsPeriodLong(type, curRk), rankPrevLabel: rsPeriodLong(type, prevRk) }, // RappiStage 101 / 117 (rkFb = fallback p/ período fechado)
     m: { cur:mCur, prev:mPrev, l4w:mL4 }, users, usersPrev, S, conv10, convTdDias, tipos, lojas,
     lojasComVenda: comp.length, vendasTP, toDate, meta, produtos, makers,
-    mkdProd, mkdCat, mkdRes, mkdResAnt, foundProd, foundCat, defProd, defCat, lojaCidade, // RappiStage 170
+    mkdProd, mkdCat, mkdRes, mkdResAnt, foundProd, foundCat, defProd, defCat, lojaCidade, motivosAllRaw: mcAllRaw, // RappiStage 170/176
     motivosCanc: mc, motivosCancTotal: mcTot, motivosCancLoja, hasMotivoLoja: !!base.hasMotivoLoja, stockoutProdutos, stockoutCanc, hasVitrine: !!base.hasVitrine, defPedidos, hasDefPed: !!B.defPed, hasStockoutProd: !!base.hasStockoutProd, motivosDefeito: md, buscas, buscasTotal,
     mecanicas, mecanicasPrev, invest, investPrev, fatInvest, demografia,
     trend8w, lojas_semana, gmv_rows, pedidos_rows, ticket_rows,
@@ -17890,7 +17902,7 @@ function rsActiveDataset(){
   const basis = rsEffectiveBasis(base);
   RS_FAT_FIELD = basis === 'income' ? 'faturamento_income' : basis === 'total_price' ? 'faturamento_total_price' : 'gmv';
   RS_CANC_SEL = rsCancSelFromState(); // RappiStage 173
-  const key = brands.map(b => b.id).join(',') + '|' + state.brandId + '|' + state.meetingType + '|' + pv + '|' + basis + '|' + (RS_CANC_SEL ? Object.keys(RS_CANC_SEL).sort().join('+') : 'all');
+  const key = brands.map(b => b.id).join(',') + '|' + state.brandId + '|' + state.meetingType + '|' + pv + '|' + basis + '|' + (RS_CANC_SEL ? Object.keys(RS_CANC_SEL).sort().join('+') : 'all') + '|' + Object.keys(state.rsCancSubOff || {}).sort().join('~'); // RappiStage 176
   if(Object.prototype.hasOwnProperty.call(RS_CACHE, key)) return RS_CACHE[key];
   let R = null;
   if(base.match[state.brandId]){
@@ -18451,6 +18463,14 @@ function rsColPickPaint(table){
 }
 function rsColPickMount(container){
   if(!container) return;
+  container.querySelectorAll('[data-rssec]').forEach(sec => { /* RappiStage 176: checkbox de levar a seção */
+    const k = sec.getAttribute('data-rssec'), h = sec.querySelector('h3, h4, div[style*="font-weight:800"]'); if(!h || h.querySelector('.rs-sec-box')) return;
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.className = 'rs-sec-box'; cb.checked = !(state.rsSecOff && state.rsSecOff[k]);
+    cb.title = 'Levar esta seção para a apresentação e os PDFs'; cb.style.cssText = 'margin:0 7px 0 0;vertical-align:-2px;cursor:pointer;accent-color:#E8501B;width:15px;height:15px;';
+    const paint = () => { Array.from(sec.children).forEach(ch => { if(!ch.contains(h)) ch.style.opacity = cb.checked ? '' : '0.3'; }); };
+    cb.addEventListener('change', () => { state.rsSecOff = state.rsSecOff || {}; if(cb.checked) delete state.rsSecOff[k]; else state.rsSecOff[k] = true; paint(); });
+    h.insertBefore(cb, h.firstChild); paint();
+  });
   container.querySelectorAll('table[data-colpick]').forEach(table => {
     const tk = table.getAttribute('data-colpick'), head = table.tHead && table.tHead.rows[0]; if(!head) return;
     Array.from(head.cells).forEach((th, i) => {
@@ -18480,6 +18500,8 @@ function rsColPickMount(container){
   }
 }
 function rsColPickStrip(html){
+  if(html && html.indexOf('data-rssec') > -1 && state.rsSecOff && Object.keys(state.rsSecOff).length){ // RappiStage 176: seções desmarcadas não vão
+    const b0 = document.createElement('div'); b0.innerHTML = html; b0.querySelectorAll('[data-rssec]').forEach(x => { if(state.rsSecOff[x.getAttribute('data-rssec')]) x.remove(); }); html = b0.innerHTML; }
   if(!html || html.indexOf('data-colpick') < 0 || !state.rsColPick) return html;
   const box = document.createElement('div'); box.innerHTML = html;
   box.querySelectorAll('table[data-colpick]').forEach(table => {
@@ -18567,7 +18589,7 @@ document.addEventListener('click', e => {
 function rsV170Extra(type){
   const R = activeRealData(); if(!R || R.source !== 'rs') return '';
   const nm = t => escapeHtml(String(t || '').replace(/^[^|]*\| /, ''));
-  const tbl = (cols, rows, id) => '<div style="overflow-x:auto;"><table class="dd-table" id="' + id + '" style="width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;"><thead><tr style="background:#F3EFEC;">' + cols.map((c, i) => '<th style="padding:6px 10px;text-align:' + (i ? 'right' : 'left') + ';">' + c + '</th>').join('') + '</tr></thead><tbody>' +
+  const tbl = (cols, rows, id, ck) => '<div style="overflow-x:auto;"><table class="dd-table"' + (ck ? ' data-colpick="' + ck + '"' : '') + ' id="' + id + '" style="width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;"><thead><tr style="background:#F3EFEC;">' + cols.map((c, i) => '<th style="padding:6px 10px;text-align:' + (i ? 'right' : 'left') + ';">' + c + '</th>').join('') + '</tr></thead><tbody>' +
     rows.map(r => '<tr>' + r.map((c, i) => '<td style="padding:6px 10px;' + (i ? 'text-align:right;' : '') + '">' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
   const h4 = t => '<div style="font-weight:800;font-size:14px;margin:18px 0 4px;">' + t + '</div>';
   const old = '<div class="dd-sub" style="margin-top:14px;">Para ver por produto e categoria, gere o CSV com a query nova (13/11/2026) e suba de novo.</div>';
@@ -18576,29 +18598,29 @@ function rsV170Extra(type){
       if(!D.mkdRes) return old;
       const pc = (m, t) => (t + m) > 0 ? m / (t + m) * 100 : null;
       const res = D.mkdRes, ra = D.mkdResAnt, un = res.unidades || 0, um = res.unidades_mkd || 0, sh = un ? um / un * 100 : null, sha = ra && ra.unidades ? (ra.unidades_mkd || 0) / ra.unidades * 100 : null;
-      const resumo = h4('📦 Unidades vendidas com e sem markdown') + tbl(['', 'Com markdown', 'Sem markdown', 'Total'], [
+      const resumo = '<div data-rssec="mkd-un">' + h4('📦 Unidades vendidas com e sem markdown') + tbl(['', 'Com markdown', 'Sem markdown', 'Total'], [
         ['Unidades', rsInt(um), rsInt(un - um), rsInt(un)],
         ['Share das unidades', rsPct(sh, 1), sh === null ? '—' : rsPct(100 - sh, 1), '100%'],
         ['Share no período anterior', rsPct(sha, 1), sha === null ? '—' : rsPct(100 - sha, 1), ra ? '100%' : '—'],
-        ['Variação do share (p.p.)', sh !== null && sha !== null ? rsDPP(sh, sha) : '—', sh !== null && sha !== null ? rsDPP(100 - sh, 100 - sha) : '—', '']], 'dd-t-mkd-un-' + bi);
+        ['Variação do share (p.p.)', sh !== null && sha !== null ? rsDPP(sh, sha) : '—', sh !== null && sha !== null ? rsDPP(100 - sh, 100 - sha) : '—', '']], 'dd-t-mkd-un-' + bi, 'mkd-un') + '</div>';
       const lin = L => L.map(x => ({ x, p: pc(x.mkd, x.tp), pa: x.mkdAnt !== null && x.tpAnt !== null ? pc(x.mkdAnt, x.tpAnt) : null })).sort((a, b) => (b.p || 0) - (a.p || 0));
       const rowsOf = L => lin(L).slice(0, 20).map(o => [nm(o.x.nome), '<b>' + rsPct(o.p, 1) + '</b>', o.pa === null ? '—' : rsPct(o.pa, 1), o.pa === null ? 'novo' : rsDPP(o.p, o.pa), rsBRL(o.x.mkd), rsInt(o.x.unMkd), rsInt(o.x.un)]);
       const cols = n => [n, '% MKD', '% MKD anterior', 'Δ p.p.', 'MKD (R$)', 'Unid. com MKD', 'Unid. total'];
-      return resumo + h4('🏷️ Categorias com maior % de markdown') + '<div class="dd-sub">% MKD = markdown ÷ preço cheio (faturamento + markdown). Entre as 30 categorias com mais markdown (R$) no período.</div>' + tbl(cols('Categoria'), rowsOf(D.mkdCat), 'dd-t-mkd-cat-' + bi) +
-        h4('🧴 Produtos com maior % de markdown') + '<div class="dd-sub">Entre os 30 produtos com mais markdown (R$) no período.</div>' + tbl(cols('Produto'), rowsOf(D.mkdProd), 'dd-t-mkd-prod-' + bi);
+      return resumo + '<div data-rssec="mkd-cat">' + h4('🏷️ Categorias com maior % de markdown') + '<div class="dd-sub">% MKD = markdown ÷ preço cheio (faturamento + markdown). Entre as 30 categorias com mais markdown (R$) no período.</div>' + tbl(cols('Categoria'), rowsOf(D.mkdCat), 'dd-t-mkd-cat-' + bi, 'mkd-cat') + '</div>' +
+        '<div data-rssec="mkd-prod">' + h4('🧴 Produtos com maior % de markdown') + '<div class="dd-sub">Entre os 30 produtos com mais markdown (R$) no período.</div>' + tbl(cols('Produto'), rowsOf(D.mkdProd), 'dd-t-mkd-prod-' + bi, 'mkd-prod') + '</div>';
     }
     if(type === 'foundrate'){
       if(!D.foundCat || !D.foundCat.length) return old;
       const rowsOf = L => L.slice().sort((a, b) => (b.ped - b.ent) - (a.ped - a.ent)).slice(0, 20).map(x => [nm(x.nome), rsInt(x.ped), '<b>' + rsInt(x.ped - x.ent) + '</b>', x.ped ? rsPct(x.ent / x.ped * 100) : '—']);
-      return h4('🧴 Principais produtos não encontrados') + tbl(['Produto', 'Itens pedidos', 'Não encontrados', 'Found Rate'], rowsOf(D.foundProd || []), 'dd-t-found-prod-' + bi) +
-        h4('🏷️ Found Rate por categoria') + tbl(['Categoria', 'Itens pedidos', 'Não encontrados', 'Found Rate'], rowsOf(D.foundCat), 'dd-t-found-cat-' + bi);
+      return h4('🧴 Principais produtos não encontrados') + tbl(['Produto', 'Itens pedidos', 'Não encontrados', 'Found Rate'], rowsOf(D.foundProd || []), 'dd-t-found-prod-' + bi, 'found-prod') +
+        h4('🏷️ Found Rate por categoria') + tbl(['Categoria', 'Itens pedidos', 'Não encontrados', 'Found Rate'], rowsOf(D.foundCat), 'dd-t-found-cat-' + bi, 'found-cat');
     }
     if(type === 'defect'){
       if(!D.defCat || !D.defCat.length) return old;
       const tot = D.m && D.m.cur ? D.m.cur.defects : null;
       const rowsOf = L => L.slice().sort((a, b) => b.n - a.n).slice(0, 20).map(x => [nm(x.nome), '<b>' + rsInt(x.n) + '</b>', tot ? rsPct(x.n / tot * 100, 1) : '—']);
-      return h4('🧴 Produtos mais presentes nos pedidos com defeito') + '<div class="dd-sub">Quantos pedidos com defeito (culpa da loja) tinham o produto.</div>' + tbl(['Produto', 'Pedidos com defeito', '% dos pedidos com defeito'], rowsOf(D.defProd || []), 'dd-t-def-prod-' + bi) +
-        h4('🏷️ Categorias nos pedidos com defeito') + tbl(['Categoria', 'Pedidos com defeito', '% dos pedidos com defeito'], rowsOf(D.defCat), 'dd-t-def-cat-' + bi);
+      return h4('🧴 Produtos mais presentes nos pedidos com defeito') + '<div class="dd-sub">Quantos pedidos com defeito (culpa da loja) tinham o produto.</div>' + tbl(['Produto', 'Pedidos com defeito', '% dos pedidos com defeito'], rowsOf(D.defProd || []), 'dd-t-def-prod-' + bi, 'def-prod') +
+        h4('🏷️ Categorias nos pedidos com defeito') + tbl(['Categoria', 'Pedidos com defeito', '% dos pedidos com defeito'], rowsOf(D.defCat), 'dd-t-def-cat-' + bi, 'def-cat');
     }
     if(type === 'trafego'){
       const C = D.lojaCidade || {}; if(!Object.keys(C).length) return old;
@@ -18614,8 +18636,35 @@ function rsCancChipsHtml(label){ /* RappiStage 173 */
   const L = state.rsCancCats && state.rsCancCats.length ? state.rsCancCats : RS_CANC_CATS.map(c => c[0]);
   return '<div class="rs-canc-chips" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 12px;padding:10px 12px;border:1px solid #F3D9CC;border-radius:12px;background:#FFF8F4;"><b style="font-size:12.5px;margin-right:4px;">Níveis de cancelamento:</b>' +
     RS_CANC_CATS.map(c => '<label style="display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;border:1.5px solid ' + (L.indexOf(c[0]) !== -1 ? '#FF5A1F' : '#E5E0DC') + ';border-radius:999px;padding:3px 10px;cursor:pointer;background:#fff;"><input type="checkbox" class="rs-canc-cat" value="' + c[0] + '"' + (L.indexOf(c[0]) !== -1 ? ' checked' : '') + ' data-label="' + escapeHtml(label || '') + '"> ' + RS_CANC_PT[c[0]] + '</label>').join('') +
-    '<span style="font-size:11.5px;color:#837A76;flex-basis:100%;">Vale para o % Cancelamento (cards, gráficos, lojas e YTD), os motivos e o Motivos Ofensores — na plataforma e na apresentação.</span></div>';
+    rsCancSubChips(label, L) +
+    '<span style="font-size:11.5px;color:#837A76;flex-basis:100%;">Categoria vale para o % Cancelamento (cards, gráficos, lojas e YTD), os motivos e o Motivos Ofensores; subcategoria filtra os motivos, os gráficos de motivos e o Motivos Ofensores — na plataforma e na apresentação.</span></div>';
 }
+function rsMotCatResumo(){ /* RappiStage 176: motivos por categoria (com as subcategorias) */
+  const R = activeRealData(); if(!R || R.source !== 'rs') return '';
+  return rsSections(R, (D, bi) => { const M = D.motivosCanc || []; const tot = M.reduce((t, x) => t + (x.pedidos || 0), 0); if(!tot) return '';
+    const by = {}; M.forEach(x => { const c = x.cat || 'Partner'; (by[c] = by[c] || { n: 0, L: [] }); by[c].n += x.pedidos || 0; by[c].L.push(x); });
+    const rows = Object.keys(by).sort((a, b) => by[b].n - by[a].n).map(c => '<tr><td style="padding:6px 10px;font-weight:800;white-space:nowrap;">' + (RS_CANC_PT[c] || c) + '</td><td style="padding:6px 10px;text-align:right;"><b>' + rsInt(by[c].n) + '</b></td><td style="padding:6px 10px;text-align:right;">' + rsPct(by[c].n / tot * 100, 1) + '</td><td style="padding:6px 10px;font-size:12px;color:#5E5652;">' +
+      by[c].L.sort((a, b) => (b.pedidos || 0) - (a.pedidos || 0)).map(x => escapeHtml(String(x.motivo).replace(/^[^›]*› /, '')) + ' <b>' + rsInt(x.pedidos) + '</b>').join(' · ') + '</td></tr>').join('');
+    return '<div style="font-weight:800;font-size:14px;margin:6px 0 4px;">🗂️ Motivos por categoria</div><div style="overflow-x:auto;"><table class="dd-table" style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:#F3EFEC;"><th style="padding:6px 10px;text-align:left;">Categoria</th><th style="padding:6px 10px;text-align:right;">Pedidos cancelados</th><th style="padding:6px 10px;text-align:right;">% dos cancelamentos</th><th style="padding:6px 10px;text-align:left;">Subcategorias</th></tr></thead><tbody>' + rows + '</tbody></table></div>'; });
+}
+function rsCancSubChips(label, L){ /* RappiStage 176: subcategorias das categorias marcadas */
+  const R = activeRealData(); if(!R) return '';
+  const raws = {}; rsBrandList(R).forEach(b => (b.D.motivosAllRaw || []).forEach(it => { raws[it] = 1; })); (R.motivosAllRaw || []).forEach(it => { raws[it] = 1; });
+  const off = state.rsCancSubOff || {};
+  const by = {}; Object.keys(raws).forEach(it => { const c = rsMotCat(it); if(L.indexOf(c) === -1) return; (by[c] = by[c] || []).push(it); });
+  const cats = RS_CANC_CATS.map(c => c[0]).filter(c => by[c]); if(!cats.length) return '';
+  return '<div style="flex-basis:100%;display:flex;flex-direction:column;gap:6px;margin-top:6px;">' + cats.map(c => '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;"><b style="font-size:12px;min-width:74px;">' + RS_CANC_PT[c] + ':</b>' +
+    by[c].sort((a, b) => rsMotivoNome(a).localeCompare(rsMotivoNome(b))).map(it => { const on = !off[it], nm = rsMotivoNome(it).replace(/^[^›]*› /, '');
+      return '<label style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;border:1px solid ' + (on ? '#FDBA9A' : '#E5E0DC') + ';border-radius:999px;padding:2px 9px;cursor:pointer;background:' + (on ? '#fff' : '#F5F2F0') + ';"><input type="checkbox" class="rs-canc-sub"' + (on ? ' checked' : '') + ' data-raw="' + escapeHtml(it) + '" data-label="' + escapeHtml(label || '') + '"> ' + escapeHtml(nm) + '</label>'; }).join('') + '</div>').join('') + '</div>';
+}
+document.addEventListener('change', e => {
+  const cb = e.target && e.target.closest && e.target.closest('input.rs-canc-sub'); if(!cb) return;
+  state.rsCancSubOff = state.rsCancSubOff || {}; const raw = cb.getAttribute('data-raw');
+  if(cb.checked) delete state.rsCancSubOff[raw]; else state.rsCancSubOff[raw] = true;
+  try{ applyRealDataOverrides(); }catch(err){ console.warn('[RappiStage] subcategoria', err); }
+  if(typeof renderBlocks === 'function') renderBlocks();
+  const lab = cb.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') openDrilldown(lab);
+});
 document.addEventListener('change', e => {
   const cb = e.target && e.target.closest && e.target.closest('input.rs-canc-cat'); if(!cb) return;
   const box = cb.closest('.rs-canc-chips'); const L = [...box.querySelectorAll('input.rs-canc-cat')].filter(x => x.checked).map(x => x.value);
@@ -18626,9 +18675,9 @@ document.addEventListener('change', e => {
   const lab = cb.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') openDrilldown(lab);
 });
 function rsDrilldownHTML(type, kpiLabel){
-  if((type === 'cancelamento' || type === 'motivos') && !rsDrilldownHTML.__inC){ rsDrilldownHTML.__inC = 1; try{ const h = rsDrilldownHTML(type, kpiLabel); return h ? rsCancChipsHtml(kpiLabel) + h : h; } finally { rsDrilldownHTML.__inC = 0; } }
-  if((type === 'mkd' || type === 'foundrate' || type === 'defect' || type === 'trafego') && !rsDrilldownHTML.__in){
-    rsDrilldownHTML.__in = 1; try{ const h = rsDrilldownHTML(type, kpiLabel); return h ? h + rsV170Extra(type) : h; } finally { rsDrilldownHTML.__in = 0; } }
+  if((type === 'cancelamento' || type === 'motivos') && !rsDrilldownHTML.__inC){ rsDrilldownHTML.__inC = 1; try{ const h = rsDrilldownHTML(type, kpiLabel); return h ? rsCancChipsHtml(kpiLabel) + (type === 'motivos' ? rsMotCatResumo() : '') + h : h; } finally { rsDrilldownHTML.__inC = 0; } }
+  if((type === 'mkd' || type === 'trafego') && !rsDrilldownHTML.__in){
+    rsDrilldownHTML.__in = 1; try{ let h = rsDrilldownHTML(type, kpiLabel); if(h && type === 'mkd') h = '<div data-rssec="mkd-det">' + h.replace('<table class="dd-table">', '<table class="dd-table" data-colpick="mkd-serie">') + '</div>'; return h ? h + rsV170Extra(type) : h; } finally { rsDrilldownHTML.__in = 0; } }
   if(type === 'ytd') return rsYtdLupaHtml(kpiLabel); // RappiStage 154
   const R = activeRealData(); if(!R || R.source !== 'rs' || !type) return null;
   const mt = R.meetingType, wordCap = mt === 'monthly' ? 'Mês' : mt === 'quarterly' ? 'Trimestre' : 'Semana';
@@ -19764,9 +19813,12 @@ function renderItemStatic(item, block){
           const showDetailBtn = !item.noDrilldown && (!!dd || !isNaN(parseSortValue(k.value)));
           const effColor = resolveKpiDir(k.label, k.delta, k.dir);
           const dirIcon = k.dir === 'up' ? '▲' : k.dir === 'down' ? '▼' : '•';
-          return `<div class="p-kpi-tile${showDetailBtn ? ' clickable' : ''}" ${showDetailBtn ? `onclick='openDrilldown(${JSON.stringify(k.label)})'` : ''}>
+          const vt178 = String(k.value || '').trim(), num178 = /^(R\$\s?)?[-+−]?[0-9][0-9.,]*(\s?(%|min|x|mi|\/dia))?$/.test(vt178); // RappiStage 178
+          const nod178 = !String(k.delta || '').trim() || /^[•\s—-]*$/.test(String(k.delta || '').trim());
+          const len178 = vt178.replace(/^R\$\s?/, '').length, lc178 = !num178 ? '' : len178 > 13 ? ' rs-xlong' : len178 > 9 ? ' rs-long' : '';
+          return `<div class="p-kpi-tile${showDetailBtn ? ' clickable' : ''}${num178 ? '' : ' rs-txt'}${lc178}${nod178 ? ' rs-nodelta' : ''}" ${showDetailBtn ? `onclick='openDrilldown(${JSON.stringify(k.label)})'` : ''}>
             <div class="p-kpi-label">${escapeHtml(k.label)}${showDetailBtn ? ' <span class="p-kpi-dd-icon" title="Ver detalhamento">🔎</span>' : ''}</div>
-            <div class="p-kpi-value${/^(🔍|Ver\s)/.test(String(k.value || '').trim()) ? ' p-kpi-value-link' : kpiValueSizeClass(k.value)}">${escapeHtml(k.value).replace(/R\$ /g, () => 'R$ ')}</div>
+            <div class="p-kpi-value${/^(🔍|Ver\s)/.test(String(k.value || '').trim()) ? ' p-kpi-value-link' : kpiValueSizeClass(k.value)}">${num178 && /^R\$/.test(vt178) ? '<span class="rs-cur">R$</span>' + escapeHtml(vt178.replace(/^R\$\s?/, '')) : escapeHtml(k.value).replace(/R\$ /g, () => 'R$ ')}</div>
             ${(item.noDelta || !String(k.delta || '').trim()) ? '' : `<div class="p-kpi-delta ${effColor}">${dirIcon} ${escapeHtml(k.delta)}</div>`}
             ${k.dataAte ? `<div class="p-kpi-asof">📅 ${escapeHtml(k.dataAte)}</div>` : ''}
             ${k.note ? `<div class="p-kpi-note">${k.note}</div>` : ''}
@@ -19779,17 +19831,17 @@ function renderItemStatic(item, block){
           const leftover = kpiVisible.filter(k => !k.group || !KPI_GROUP_ORDER.includes(k.group));
           const sections = usedGroups.map(g => `<div class="p-kpi-group">
             <div class="p-kpi-group-label">${escapeHtml(g)}</div>
-            <div class="p-kpi-grid">${kpiVisible.filter(k => k.group === g).map(tileHtml).join('')}</div>
+            <div class="p-kpi-grid p-kpi-grid-big${kpiVisible.filter(k => k.group === g).length > 9 ? ' big4' : ''}">${kpiVisible.filter(k => k.group === g).map(tileHtml).join('')}</div>
           </div>`);
           if(leftover.length){
             sections.push(`<div class="p-kpi-group">
               <div class="p-kpi-group-label">Outros</div>
-              <div class="p-kpi-grid">${leftover.map(tileHtml).join('')}</div>
+              <div class="p-kpi-grid p-kpi-grid-big${leftover.length > 9 ? ' big4' : ''}">${leftover.map(tileHtml).join('')}</div>
             </div>`);
           }
           gridHtml = sections.join('');
         } else {
-          gridHtml = `<div class="p-kpi-grid">${kpiVisible.map(tileHtml).join('')}</div>`;
+          gridHtml = `<div class="p-kpi-grid p-kpi-grid-big${kpiVisible.length > 9 ? ' big4' : ''}">${kpiVisible.map(tileHtml).join('')}</div>`; // RappiStage 178
         }
       }
       const linkedInsight = block ? (block.items || []).find(i => i.kind === 'ai-insight' && i.attachTo === item.id) : null;
@@ -20581,7 +20633,7 @@ function buildPresentationDocument(){
             ${(block.noInsights || block.insightsOff || (block.items || []).some(i => i.kind === 'ai-insight' && !i.attachTo)) ? '' : (block.insights || []).filter(ins => ins.selected).map(ins => `<div class="slide-item slide-insight-item"><div class="slide-insight"><b>Insights ·</b> ${linkifyInsightText(block, ins.text)}</div></div>`).join('')}
             ${block.items.filter(i => i.selected !== false && !i.attachTo && !(rsJoinParent(block, i) && rsJoinParent(block, i).selected !== false) && (i.kind !== 'chart' || i.inlineChart) && !isEmptyStandaloneInsight(i, block) && !isEmptyManualItem(i)).map(item => `
               <div class="slide-item" data-item-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}">
-                <div class="slide-item-label">${escapeHtml(item.label)}</div>
+                <div class="slide-item-label${item.kind === 'kpi-grid' && /\bvs\b|\bx\b/i.test(item.label || '') ? ' rs-hide-label' : ''}">${escapeHtml(item.label)}</div>
                 ${renderItemStatic(item, block)}
                 ${rsJoined(block, item).filter(j => j.selected !== false && !isEmptyManualItem(j)).map(j => `<div class="slide-joined" data-item-id="${escapeHtml(j.id)}"><div class="slide-item-label">${escapeHtml(j.label)}</div>${renderItemStatic(j, block)}</div>`).join('')}
               </div>`).join('')}
@@ -21098,6 +21150,8 @@ function buildPresentationDocument(){
    no script exportado. Item 1 (Round 4): passou a ocupar a tela quase toda (antes 640px) pra
    caber tabelas largas sem cortar dados. */
 .dd-box{background:#fff; border-radius:20px; padding:30px; max-width:96vw; width:96vw; max-height:94vh; height:94vh; overflow:auto;}
+.rs-dd-x{position:sticky; top:0; float:right; z-index:20; width:38px; height:38px; border-radius:50%; border:none; background:#FF5A1F; color:#fff; font-size:18px; font-weight:800; line-height:38px; text-align:center; cursor:pointer; box-shadow:0 4px 12px rgba(255,90,31,0.35); margin:-6px -6px 0 auto; padding:0; display:block; align-self:flex-end; flex-shrink:0;} .rs-dd-x:hover{background:#E8501B;} /* RappiStage 176 */
+
 .dd-box #ddBox.hidden, .dd-box #ddChartBox.hidden, .dd-box #ddLojaNivelBox.hidden, .dd-box #ddConvTypeBox.hidden{display:none;}
 .dd-tab-toggle{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
 .dd-tab-toggle[hidden]{display:none;}
@@ -21342,6 +21396,28 @@ body.lz-laser #laserBtn, body.lz-draw #laserBtn{cursor:pointer !important;}
 .p-kpi-tile{padding:18px 20px; border-radius:14px;}
 .p-kpi-label{font-size:12.5px; margin-bottom:8px; letter-spacing:.02em;}
 .p-kpi-value{font-size:clamp(22px, 2vw, 36px); line-height:1.15; margin-bottom:6px; overflow-wrap:break-word;}
+/* RappiStage 178: layout novo dos KPIs */
+.slide-item[data-kind="kpi-grid"]:has(.p-kpi-grid-big){background:transparent; border:none; box-shadow:none; padding:0;}
+.slide-item-label.rs-hide-label{display:none;}
+.p-kpi-grid.p-kpi-grid-big{grid-template-columns:repeat(3, minmax(0, 1fr)); gap:24px;}
+.p-kpi-grid.p-kpi-grid-big.big4{grid-template-columns:repeat(4, minmax(0, 1fr)); gap:18px;}
+.p-kpi-grid-big .p-kpi-tile{position:relative; background:#FAFAF9; border:1px solid #EFEAE6; border-radius:18px; padding:30px 32px 28px; min-height:210px; display:flex; flex-direction:column; box-shadow:none;}
+.p-kpi-grid-big .p-kpi-label{font-size:14px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#8A8481; margin-bottom:26px; padding-right:34px; line-height:1.35;}
+.p-kpi-grid-big .p-kpi-dd-icon{position:absolute; top:26px; right:28px; font-size:0;}
+.p-kpi-grid-big .p-kpi-dd-icon::after{content:''; display:block; width:20px; height:20px; background:no-repeat center/20px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6FE4' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E");}
+.p-kpi-grid-big .p-kpi-tile .p-kpi-value{font-size:54px !important; font-weight:900; line-height:1.08; letter-spacing:-.01em; color:#111; margin-bottom:20px; overflow-wrap:anywhere;}
+.p-kpi-grid-big .p-kpi-tile.rs-txt .p-kpi-value{font-size:28px !important; line-height:1.28; font-weight:800;}
+.p-kpi-grid-big .p-kpi-tile.rs-long .p-kpi-value{font-size:44px !important;}
+.p-kpi-grid-big .p-kpi-tile.rs-xlong .p-kpi-value{font-size:38px !important;}
+.p-kpi-grid-big .rs-cur{font-size:28px !important; font-weight:800; margin-right:8px;}
+.p-kpi-grid-big .p-kpi-delta{font-size:16px; font-weight:800; margin-top:auto;}
+.p-kpi-grid-big .rs-nodelta .p-kpi-delta{visibility:hidden;}
+.p-kpi-grid-big.big4 .p-kpi-tile{padding:24px 24px 22px; min-height:180px;}
+.p-kpi-grid-big.big4 .p-kpi-tile .p-kpi-value{font-size:42px !important;}
+.p-kpi-grid-big.big4 .p-kpi-tile.rs-long .p-kpi-value, .p-kpi-grid-big.big4 .p-kpi-tile.rs-xlong .p-kpi-value{font-size:32px !important;}
+.p-kpi-grid-big.big4 .p-kpi-tile.rs-txt .p-kpi-value, .p-kpi-grid-big.big4 .rs-cur{font-size:22px !important;}
+@media (max-width:1100px){ .p-kpi-grid.p-kpi-grid-big, .p-kpi-grid.p-kpi-grid-big.big4{grid-template-columns:repeat(2, minmax(0, 1fr));} }
+
 .p-kpi-value.p-kpi-value-link{font-size:clamp(15px, 1.25vw, 20px); white-space:normal; line-height:1.3;}
 .p-kpi-value.p-kpi-value-long{font-size:clamp(16px, 1.3vw, 25px); overflow-wrap:normal; word-break:normal;}
 .p-kpi-value.p-kpi-value-xlong{font-size:clamp(15px, 1.12vw, 22px);}
@@ -21449,6 +21525,7 @@ ${slidesHtml}
 
 <div class="dd-overlay" id="ddOverlay">
   <div class="dd-box">
+    <button type="button" class="rs-dd-x" title="Fechar" onclick="document.getElementById('ddOverlay').classList.remove('show')">✕</button>
     <div id="ddKpiHead"></div>
     <div class="dd-tab-toggle" id="ddTabToggle" hidden>
       <button type="button" class="dd-tab-btn" data-dd-tab="graficos">📊 Gráficos</button>
@@ -21458,6 +21535,7 @@ ${slidesHtml}
       <button type="button" class="dd-tab-btn" data-dd-tab="stockout" id="ddTabBtnStockout" hidden>📦 Cancelamento por Stockout</button>
       <button type="button" class="dd-tab-btn" data-dd-tab="vitrine" id="ddTabBtnVitrine" hidden>🖼️ Vitrine de ruptura</button>
       <button type="button" class="dd-tab-btn" data-dd-tab="pedidos" id="ddTabBtnPedidos" hidden>🧾 Detalhamento por pedido</button>
+      <button type="button" class="dd-tab-btn" data-dd-tab="produtos" id="ddTabBtnProdutos" hidden>🧴 Detalhamento por produto</button>
     </div>
     <div id="ddBox"></div>
     <div id="ddChartBox" class="hidden"></div>
@@ -21466,6 +21544,7 @@ ${slidesHtml}
     <div id="ddStockoutBox" class="hidden"></div>
     <div id="ddVitrineBox" class="hidden"></div>
     <div id="ddPedidosBox" class="hidden"></div>
+    <div id="ddProdutosBox" class="hidden"></div>
     <div id="ddFunilFoot"></div>
   </div>
 </div>
@@ -21561,7 +21640,7 @@ document.getElementById('pdfBtn').addEventListener('click', () => {
    abas (Gráficos, Detalhamento por loja, Conversão a nível loja / por Type, Cancelamento por Stockout…)
    para páginas logo depois do slide do KPI. Gráficos viram imagem; listas que abrem/fecham vão abertas;
    tabelas com rolagem vão inteiras. As páginas extras somem depois da impressão. */
-var PDF_BOX = { graficos:'ddChartBox', lojas:'ddBox', lojanivel:'ddLojaNivelBox', convtype:'ddConvTypeBox', stockout:'ddStockoutBox', vitrine:'ddVitrineBox', pedidos:'ddPedidosBox' };
+var PDF_BOX = { graficos:'ddChartBox', lojas:'ddBox', lojanivel:'ddLojaNivelBox', convtype:'ddConvTypeBox', stockout:'ddStockoutBox', vitrine:'ddVitrineBox', pedidos:'ddPedidosBox', produtos:'ddProdutosBox' };
 function pdfWait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 function pdfEsc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function pdfCloneBox(box){
@@ -22046,6 +22125,7 @@ const DD_DATA = ${JSON.stringify((function(){
       if(t === 'cancelamento'){ ddFinal[key].mchartHtml = rsMotivoChartsHtml(); ddFinal[key].stockoutHtml = rsStockoutHTML(); ddFinal[key].vitrineHtml = rsVitrineHTML(); }
       if(t === 'motivos') ddFinal[key].vitrineHtml = rsVitrineHTML(); // RappiStage 115
       if(t === 'defect') ddFinal[key].pedidosHtml = rsColPickStrip(rsDefPedHTML(true)); // RappiStage 129 / 130: sem as colunas desmarcadas
+      if(t === 'defect' || t === 'foundrate') ddFinal[key].produtosHtml = rsColPickStrip(rsV170Extra(t)); // RappiStage 176
     });
     /* chaves específicas primeiro: a apresentação acha a lupa pela 1ª chave contida no rótulo do card */
     const ordered = {};
@@ -23107,6 +23187,7 @@ function openDrilldown(label){
   var showPed = !!(d && d.pedidosHtml); // RappiStage 129
   document.getElementById('ddTabBtnPedidos').hidden = !showPed;
   document.getElementById('ddPedidosBox').innerHTML = showPed ? d.pedidosHtml : '';
+  var showPr = !!(d && d.produtosHtml); document.getElementById('ddTabBtnProdutos').hidden = !showPr; document.getElementById('ddProdutosBox').innerHTML = showPr ? d.produtosHtml : ''; // RappiStage 176
   /* RappiStage 134: abas desmarcadas no editor não aparecem (nem no PDF completo) */
   var tOff = (DD_TAB_OFF[String(label).toLowerCase().trim()] || {}).off || {};
   var tTg = document.getElementById('ddTabToggle'), tFirst = null, tCount = 0;
@@ -23139,7 +23220,8 @@ function setDdTab(tab){
   stkBox.classList.toggle('hidden', tab !== 'stockout');
   document.getElementById('ddVitrineBox').classList.toggle('hidden', tab !== 'vitrine'); // RappiStage 115
   document.getElementById('ddPedidosBox').classList.toggle('hidden', tab !== 'pedidos'); // RappiStage 129
-  if(tab === 'stockout' || tab === 'vitrine' || tab === 'pedidos'){
+  document.getElementById('ddProdutosBox').classList.toggle('hidden', tab !== 'produtos'); // RappiStage 176
+  if(tab === 'stockout' || tab === 'vitrine' || tab === 'pedidos' || tab === 'produtos'){
     chartBox.classList.add('hidden'); chartBox.innerHTML = '';
     lojasBox.classList.add('hidden'); lojaNivelBox.classList.add('hidden');
     return;
