@@ -2308,6 +2308,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 185: a árvore de motivos (gráfico e detalhamento) do GRÁFICO mostra sempre todos os motivos — Parceiro, UX, Usuário, Tech, Outros (sem RT) — mesmo quando o % Cancelamento está filtrado em só alguns níveis; quem escolhe o que aparece são as caixinhas da própria árvore. O Motivos Ofensores continua seguindo os níveis/submotivos marcados. Tráfego (SST): 🏙️ Tráfego por cidade em aba própria, ao lado de 📋 Tráfego por loja. */
 /* RappiStage 184: lupa de Motivos com a árvore Motivo (Parceiro, UX, Usuário, Tech, Outros) › Submotivo › Lojas para todas as categorias (antes só Parceiro tinha a raiz); corrige as lojas por motivo (nome do motivo por loja passa a ter a categoria); card Tráfego (SST) no Quarterly; card de Search no Growth com a palavra mais buscada e lupa abrindo o detalhamento de buscas. */
 /* RappiStage 183: Growth na apresentação em sub-blocos (cards com lupa que abrem o detalhe); Usuários vira sub-bloco do Growth; qualquer bloco pode ser excluído (✕) e incluído de novo; nomes exibidos: Cancelamentos, Cancelamentos YTD e Markdown. */
 /* RappiStage 182: blocos sempre recolhidos ao abrir rascunho/modelo; sem o aviso de "Query atualizada" na etapa Gerar CSV. */
@@ -15042,8 +15043,8 @@ function openDrilldown(kpiLabel, initialTab){
   { const gb = drilldownTabToggle.querySelector('[data-dd-tab="graficos"]'); if(gb) gb.hidden = !!(showVit && noChart); if(showVit && noChart) drilldownTabToggle.hidden = false; }
   { const showPed = dd === 'defect' && rsIsActive(), pb = document.getElementById('dd-tab-btn-pedidos'), pc = document.getElementById('drilldown-pedidos-content'); // RappiStage 129
     if(pb) pb.hidden = !showPed; if(pc){ pc.innerHTML = showPed ? rsDefPedHTML() : ''; if(showPed) rsColPickMount(pc); } } // RappiStage 130: checkbox por coluna
-  { const showPr = (dd === 'foundrate' || dd === 'defect') && rsIsActive(), pb2 = document.getElementById('dd-tab-btn-produtos'), pc2 = document.getElementById('drilldown-produtos-content'); // RappiStage 176
-    if(pb2) pb2.hidden = !showPr; if(pc2){ pc2.innerHTML = showPr ? rsV170Extra(dd) : ''; if(showPr) rsColPickMount(pc2); } }
+  { const showPr = (dd === 'foundrate' || dd === 'defect' || dd === 'trafego') && rsIsActive(), pb2 = document.getElementById('dd-tab-btn-produtos'), pc2 = document.getElementById('drilldown-produtos-content'); // RappiStage 176 / 185: Tráfego por cidade
+    if(pb2){ pb2.hidden = !showPr; pb2.textContent = dd === 'trafego' ? '🏙️ Tráfego por cidade' : '🧴 Detalhamento por produto'; } if(pc2){ pc2.innerHTML = showPr ? rsV170Extra(dd) : ''; if(showPr) rsColPickMount(pc2); } }
   setDrilldownTab(noChart ? 'lojas' : (initialTab || 'graficos'));
   drilldownModal.classList.add('show');
 }
@@ -16494,6 +16495,7 @@ function rsCancSelFromState(){ const L = ((typeof state !== 'undefined' && state
 function rsCancTxt(){ const L = (typeof state !== 'undefined' && state.rsCancCats) || null; const sub = typeof state !== 'undefined' && state.rsCancSubOff && Object.keys(state.rsCancSubOff).length ? ' (filtro de subcategoria)' : '';
   if(!L || !L.length || L.length >= RS_CANC_CATS.length) return 'todos os níveis' + sub; if(L.length === 1) return 'só ' + (RS_CANC_PT[L[0]] || L[0]) + sub; return L.map(x => RS_CANC_PT[x] || x).join(' + ') + sub; }
 function rsMotCat(item){ const t = String(item || ''), i = t.indexOf(' / '); return i > -1 ? t.slice(0, i) : 'Partner'; }
+function rsMotTreeOk(item){ return rsMotCat(item) !== 'RT'; } /* RappiStage 185 */
 function rsMotCatOk(item){ const cat = rsMotCat(item); if(cat === 'RT') return false; // RappiStage 176: RT nunca entra
   if(typeof state !== 'undefined' && state.rsCancSubOff && state.rsCancSubOff[String(item)]) return false;
   if(!RS_CANC_SEL) return true; return !!RS_CANC_SEL[cat]; }
@@ -17563,7 +17565,7 @@ function rsSeries(B, base, type, E, N, cutDays){ // RappiStage 90: cutDays = MTD
     ['ativos','mixPro','momentum','retencao','freq','liquido','novos'].forEach(key => S[key].push(rsR4(u[key])));
     if(!cutDays){ const idx = S.labels.length - 1; // motivos vêm por período fechado — não entram no MTD
       rsPivot(rsRank(B, type, p, 'motivo_cancelamento')).forEach(x => {
-        if(!rsMotCatOk(x.item)) return; // RappiStage 173
+        if(!rsMotTreeOk(x.item)) return; // RappiStage 185 (antes seguia os níveis do % Cancelamento)
         const nome = rsMotivoNome(x.item); if(!nome || x.pedidos === undefined || x.pedidos === null) return;
         const arr = S.motivos[nome] || (S.motivos[nome] = new Array(N).fill(null));
         arr[idx] = (m.pedidosTotal > 0) ? rsR4(x.pedidos / m.pedidosTotal * 100) : null;
@@ -18812,7 +18814,7 @@ document.addEventListener('change', e => {
 });
 function rsDrilldownHTML(type, kpiLabel){
   if((type === 'cancelamento' || type === 'motivos') && !rsDrilldownHTML.__inC){ rsDrilldownHTML.__inC = 1; try{ const h = rsDrilldownHTML(type, kpiLabel); return h ? rsCancChipsHtml(kpiLabel) + (type === 'motivos' ? rsMotCatResumo() : '') + h : h; } finally { rsDrilldownHTML.__inC = 0; } }
-  if((type === 'mkd' || type === 'trafego') && !rsDrilldownHTML.__in){
+  if(type === 'mkd' && !rsDrilldownHTML.__in){ /* RappiStage 185: Tráfego por cidade foi para aba própria */
     rsDrilldownHTML.__in = 1; try{ let h = rsDrilldownHTML(type, kpiLabel); if(h && type === 'mkd') h = '<div data-rssec="mkd-det">' + h.replace('<table class="dd-table">', '<table class="dd-table" data-colpick="mkd-serie">') + '</div>'; return h ? h + rsV170Extra(type) : h; } finally { rsDrilldownHTML.__in = 0; } }
   if(type === 'ytd') return rsYtdLupaHtml(kpiLabel); // RappiStage 154
   const R = activeRealData(); if(!R || R.source !== 'rs' || !type) return null;
@@ -22296,12 +22298,13 @@ const DD_DATA = ${JSON.stringify((function(){
       const html = t ? rsColPickStrip(rsDrilldownHTML(t, lab)) : null; // RappiStage 114: sem as colunas desmarcadas
       if(!html) return;
       const prevEntry = ddFinal[key] || {};
-      ddFinal[key] = { type:'rshtml', html: html, tabLabel: (t === 'mecanicas' || t === 'conversao') ? ddTabLabelFor(t) : (prevEntry.tabLabel || ddTabLabelFor(t)), noChart: !!prevEntry.noChart };
+      ddFinal[key] = { type:'rshtml', html: html, tabLabel: (t === 'mecanicas' || t === 'conversao' || t === 'trafego') ? ddTabLabelFor(t) : (prevEntry.tabLabel || ddTabLabelFor(t)), noChart: !!prevEntry.noChart };
       if(t === 'conversao'){ ddFinal[key].lojaNivelHtml = rsColPickStrip(rsConvLojaNivelHTML()); ddFinal[key].convTypeHtml = rsColPickStrip(rsConvTypeHTML()); }
       if(t === 'cancelamento'){ ddFinal[key].mchartHtml = rsMotivoChartsHtml(); ddFinal[key].stockoutHtml = rsStockoutHTML(); ddFinal[key].vitrineHtml = rsVitrineHTML(); }
       if(t === 'motivos') ddFinal[key].vitrineHtml = rsVitrineHTML(); // RappiStage 115
       if(t === 'defect') ddFinal[key].pedidosHtml = rsColPickStrip(rsDefPedHTML(true)); // RappiStage 129 / 130: sem as colunas desmarcadas
-      if(t === 'defect' || t === 'foundrate') ddFinal[key].produtosHtml = rsColPickStrip(rsV170Extra(t)); // RappiStage 176
+      if(t === 'defect' || t === 'foundrate' || t === 'trafego') ddFinal[key].produtosHtml = rsColPickStrip(rsV170Extra(t)); // RappiStage 176 / 185
+      if(t === 'trafego') ddFinal[key].produtosLabel = '🏙️ Tráfego por cidade'; // RappiStage 185
     });
     /* chaves específicas primeiro: a apresentação acha a lupa pela 1ª chave contida no rótulo do card */
     const ordered = {};
@@ -23421,7 +23424,7 @@ function openDrilldown(label){
   var showPed = !!(d && d.pedidosHtml); // RappiStage 129
   document.getElementById('ddTabBtnPedidos').hidden = !showPed;
   document.getElementById('ddPedidosBox').innerHTML = showPed ? d.pedidosHtml : '';
-  var showPr = !!(d && d.produtosHtml); document.getElementById('ddTabBtnProdutos').hidden = !showPr; document.getElementById('ddProdutosBox').innerHTML = showPr ? d.produtosHtml : ''; // RappiStage 176
+  var showPr = !!(d && d.produtosHtml); document.getElementById('ddTabBtnProdutos').hidden = !showPr; document.getElementById('ddTabBtnProdutos').textContent = (d && d.produtosLabel) || '🧴 Detalhamento por produto'; /* RappiStage 185 */ document.getElementById('ddProdutosBox').innerHTML = showPr ? d.produtosHtml : ''; // RappiStage 176
   /* RappiStage 134: abas desmarcadas no editor não aparecem (nem no PDF completo) */
   var tOff = (DD_TAB_OFF[String(label).toLowerCase().trim()] || {}).off || {};
   var tTg = document.getElementById('ddTabToggle'), tFirst = null, tCount = 0;
