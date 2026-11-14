@@ -1528,6 +1528,15 @@ input,textarea,select{font-family:inherit;}
 
 /* Ranking */
 .ranking-list{display:flex; flex-direction:column; gap:7px;}
+.rs-edg-wrap{display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 380px)); gap:16px;} /* RappiStage 187 */
+.rs-edg-card{position:relative; background:#FAFAF9; border:1px solid #EFEAE6; border-radius:18px; padding:22px 24px 20px; min-height:170px; display:flex; flex-direction:column; cursor:pointer; transition:box-shadow .15s, border-color .15s;}
+.rs-edg-card:hover{border-color:#FF5A1F; box-shadow:0 6px 18px rgba(255,90,31,.12);}
+.rs-edg-card .g-lab{font-size:12.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#8A8481; margin-bottom:12px; padding-right:40px; line-height:1.35;}
+.rs-edg-card .g-ico{position:absolute; top:16px; right:18px; width:34px; height:34px; border-radius:50%; background:#F3EFEC; display:flex; align-items:center; justify-content:center; transition:background .15s;}
+.rs-edg-card .g-ico::after{content:'🔎'; font-size:16px; line-height:1;}
+.rs-edg-card:hover .g-ico{background:#FF4D00;}
+.rs-edg-card .g-big{font-size:32px; font-weight:900; line-height:1.15; color:#111; overflow-wrap:anywhere; text-transform:none;}
+.rs-edg-card .g-sub{font-size:13.5px; font-weight:700; color:#5E5652; margin-top:auto; padding-top:10px; line-height:1.4;}
 .rank-row{display:flex; align-items:center; gap:10px; font-size:13px; background:var(--white); border:1px solid var(--ink-100); border-radius:var(--radius-sm); padding:9px 12px;}
 .rank-row .rank-pos{width:22px; height:22px; border-radius:50%; background:var(--ink-100); color:var(--ink-700); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
 .rank-row .rank-name{flex:1; font-weight:600;}
@@ -2308,6 +2317,7 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 187: (1) lupa de MKD volta a ter o "＋ Adicionar KPI" (abre só com MKD marcado, os demais KPIs ficam na lista); (2) Search (Busca) na configuração do Growth vira card igual ao da apresentação (clique abre a lupa); (3) cancelamentos sem a observação do nível selecionado ("só Parceiro"…); (4) vitrine de ruptura com os 50 produtos mais ofensores. */
 /* RappiStage 186: (1) marcar/desmarcar motivos e níveis na lupa não pula mais para a aba Gráficos (fica na aba e na rolagem em que estava); (2) lupa da apresentação com o mesmo ícone da configuração (🔎 no círculo); (3) na apresentação as opções de configuração (modo de exibição, tipo de gráfico, KPIs, projeção, níveis/motivos, tabela do funil, "só com comentário") não aparecem — só o que o AGM escolheu; a tabela do funil só vai se estiver marcada; (4) Growth: cards de peças/calendário sem a contagem de arquivos; (5) lupas dos KPIs de Usuários dentro do card do Growth abrem por cima do card. */
 /* RappiStage 185: a árvore de motivos (gráfico e detalhamento) do GRÁFICO mostra sempre todos os motivos — Parceiro, UX, Usuário, Tech, Outros (sem RT) — mesmo quando o % Cancelamento está filtrado em só alguns níveis; quem escolhe o que aparece são as caixinhas da própria árvore. O Motivos Ofensores continua seguindo os níveis/submotivos marcados. Tráfego (SST): 🏙️ Tráfego por cidade em aba própria, ao lado de 📋 Tráfego por loja. */
 /* RappiStage 184: lupa de Motivos com a árvore Motivo (Parceiro, UX, Usuário, Tech, Outros) › Submotivo › Lojas para todas as categorias (antes só Parceiro tinha a raiz); corrige as lojas por motivo (nome do motivo por loja passa a ter a categoria); card Tráfego (SST) no Quarterly; card de Search no Growth com a palavra mais buscada e lupa abrindo o detalhamento de buscas. */
@@ -9674,6 +9684,12 @@ function renderItemContent(item, block){
     }
 
     case 'ranking': {
+      if(/search|busca/i.test(item.label || '') && typeof rsGrowthSummary === 'function'){ /* RappiStage 187: card igual ao da apresentação; o clique abre a lupa */
+        wrap.className = 'rs-edg-wrap';
+        wrap.innerHTML = '<div class="g-card rs-edg-card" title="Clique para ver as palavras mais buscadas"><div class="g-ico"></div><div class="g-lab">' + escapeHtml(item.label || '') + '</div>' + rsGrowthSummary(item) + '</div>';
+        wrap.firstChild.addEventListener('click', () => { if(typeof openDrilldown === 'function') openDrilldown('Palavras mais buscadas'); });
+        break;
+      }
       wrap.className = 'ranking-list';
       const rsCols = item.cols && item.data.some(r => Array.isArray(r.vals)); // RappiStage 147
       const rsDcls = v => /^\+/.test(v) ? ' rs-up' : /^[-−]/.test(v) ? ' rs-down' : '';
@@ -10189,7 +10205,7 @@ function renderInteractiveChartInto(wrap, item, opts){
         }
       }
       recomputeDatasets();
-      if(item.lockKpi){ const lk = new RegExp(item.lockKpi, 'i'); item.datasets = (item.datasets || []).filter(ds => lk.test(ds.label)); if(item.baseDatasets) item.baseDatasets = item.baseDatasets.filter(ds => lk.test(ds.label)); } // RappiStage 169
+      if(item.lockKpi && !item.rsLockInit){ const lk = new RegExp(item.lockKpi, 'i'); (item.datasets || []).forEach(ds => { item.seriesSelected[ds.label] = lk.test(ds.label); }); item.rsLockInit = true; } // RappiStage 187: abre só com MKD marcado, mas os outros KPIs ficam no "＋ Adicionar KPI"
       if(opts.dataOnly) return; // usado por exportDrilldownChartConfig: só calcula, não desenha
 
       function destroyMiniCharts(){
@@ -17120,7 +17136,7 @@ function rsVitrineHTML(){
       const hasEnt = x.ent !== null && x.ent !== undefined;
       const rup = (x.pedidos || 0) + (hasEnt ? (x.entRupt || 0) : 0), tot = (x.pedidos || 0) + (hasEnt ? (x.ent || 0) : 0);
       return Object.assign({}, x, { rup, tot, pct: hasEnt && tot > 0 ? rup / tot * 100 : null });
-    }).sort((a, b2) => (b2.pedidos || 0) - (a.pedidos || 0) || (b2.pct || 0) - (a.pct || 0) || (b2.valor || 0) - (a.valor || 0)).slice(0, 20);
+    }).sort((a, b2) => (b2.pedidos || 0) - (a.pedidos || 0) || (b2.pct || 0) - (a.pct || 0) || (b2.valor || 0) - (a.valor || 0)).slice(0, 50); // RappiStage 187: top 50
     if(!L.length) return '<div class="dd-empty-state">Nenhum pedido cancelado por stockout com produto identificado neste período.</div>';
     const badge = p => p === null ? '' : '<span style="position:absolute;top:10px;left:10px;background:' + (p >= 75 ? '#DC2626' : p >= 40 ? '#EA580C' : '#D97706') + ';color:#fff;font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:6px;">' + rsNf(p, 0, 0) + '% rupt.</span>';
     const rank = i => '<span style="position:absolute;top:10px;right:10px;background:#1E1B1A;color:#fff;font-size:11px;font-weight:800;padding:3px 7px;border-radius:6px;">' + (i + 1) + 'º</span>';
@@ -18092,7 +18108,7 @@ function rsKpi(D, label, origValue){
       if(w === 'faturamento' || w === 'resultados') return out(rsBRL(T.cyF), rsDPct(T.cyF, T.lyF) + vs, T.cyF, T.lyF);
       if(w === 'pedidos') return out(rsInt(T.cyP), rsDPct(T.cyP, T.lyP) + vs, T.cyP, T.lyP);
       if(w === 'ticket médio'){ const a = T.cyP ? T.cyF / T.cyP : null, b = T.lyP ? T.lyF / T.lyP : null; return out(rsBRL(a), rsDPct(a, b) + vs, a, b); }
-      if(/cancel/.test(w)){ const a = T.cyT > 0 ? T.cyC / T.cyT * 100 : null, b = T.lyT > 0 ? T.lyC / T.lyT * 100 : null; return out(rsPct(a), rsDPP(a, b) + vs + (window.RS_BASE && RS_BASE.hasCancCats ? ' · ' + rsCancTxt() : ''), a, b); } // RappiStage 173
+      if(/cancel/.test(w)){ const a = T.cyT > 0 ? T.cyC / T.cyT * 100 : null, b = T.lyT > 0 ? T.lyC / T.lyT * 100 : null; return out(rsPct(a), rsDPP(a, b) + vs /* RappiStage 187: sem o texto do nível */, a, b); } // RappiStage 173
       if(/convers/.test(w)){ const a = T.cyS > 0 ? T.cyO / T.cyS * 100 : null, b = T.lyS > 0 ? T.lyO / T.lyS * 100 : null; return out(rsPct(a), rsDPP(a, b) + vs, a, b); }
       return out(rsInt(T.cyS), rsDPct(T.cyS, T.lyS) + vs, T.cyS, T.lyS);
     } }
@@ -18113,7 +18129,7 @@ function rsKpi(D, label, origValue){
       const vp = (cur0 && cur0.ant !== null && p.pedidosTotal > 0) ? cur0.ant / p.pedidosTotal * 100 : null;
       return out(rsPct(v), rsDPP(v, vp), v, vp);
     } }
-  if(/^% Cancelamento( \(Partner\))?$/i.test(L)){ const oc = out(rsPct(c.cancel), rsDPP(c.cancel, p.cancel), c.cancel, p.cancel); if(window.RS_BASE && RS_BASE.hasCancCats && oc && oc.delta && oc.delta !== '—') oc.delta += ' · ' + rsCancTxt(); return oc; } // RappiStage 173
+  if(/^% Cancelamento( \(Partner\))?$/i.test(L)){ const oc = out(rsPct(c.cancel), rsDPP(c.cancel, p.cancel), c.cancel, p.cancel); /* RappiStage 187: sem " · só Parceiro" no delta */ return oc; } // RappiStage 173
   if(/^MKD/i.test(L)){
     if(/R\$/.test(L)) return out(rsBRL(c.mkdR), rsDPct(c.mkdR, p.mkdR), c.mkdR, p.mkdR); // RappiStage 99: MKD em % em todos os modelos (R$ só se o rótulo pedir)
     return out(rsPct(c.mkdPct), rsDPP(c.mkdPct, p.mkdPct), c.mkdPct, p.mkdPct);
@@ -18843,7 +18859,7 @@ function rsDrilldownHTML(type, kpiLabel){
             : { id:'rs-gmv', col:'Faturamento', get: m => m.gmv, fmt: rsBRL, kind:'pct', money:true, l4wAvg:true, extra: [{ h:'Média diária', f: s => rsBRL(s.c.gmv / days) }] }, n);
   }
   if(type === 'ticket') return store('🏪 Ticket Médio — Nível Loja', 'Faturamento ÷ pedidos de cada loja física no período.', { id:'rs-ticket', col:'Ticket Médio', get: m => m.ticket, fmt: rsBRL, kind:'pct', money:true, minBase: m => m.pedidos, minN:20, minLabel:'pedidos', extra:[{ h:'Pedidos', f: s => rsInt(s.c.pedidos) }] });
-  if(type === 'cancelamento') return store(R.cancelPartner ? '🛠️ % Cancelamento by Partner — Nível Loja' : '🛠️ % Cancelamento — Nível Loja' + (R.hasCancCats ? ' (' + rsCancTxt() + ')' : ''), R.cancelPartner ? 'Só cancelamentos de responsabilidade do parceiro (categoria Partner: stockout, atraso na loja, shopper…) ÷ todos os pedidos da loja física (menor é melhor).' : 'Pedidos cancelados ÷ pedidos totais por loja física (menor é melhor).',
+  if(type === 'cancelamento') return store(R.cancelPartner ? '🛠️ % Cancelamento by Partner — Nível Loja' : '🛠️ % Cancelamento — Nível Loja' /* RappiStage 187 */, R.cancelPartner ? 'Só cancelamentos de responsabilidade do parceiro (categoria Partner: stockout, atraso na loja, shopper…) ÷ todos os pedidos da loja física (menor é melhor).' : 'Pedidos cancelados ÷ pedidos totais por loja física (menor é melhor).',
     { id:'rs-canc', col:'% Cancel', quality:{ stable:0.05, strong:0.5 },
       ops:{ volLabel:'pedidos', vol: m => m.pedidosTotal, cols:[{ h:'Pedidos', f: m => rsInt(m.pedidosTotal) }, { h:'Cancelados', f: m => rsInt(m.cancelados) }, { h:'% Cancel.', f: m => rsPct(m.cancel) }],
         last: { h:'Principal motivo', f: s => { const D0 = rsBrandList(R).map(b => b.D).find(D1 => D1.lojas.indexOf(s) !== -1) || R; const ml = (D0.motivosCancLoja || []).find(x => x.pid === s.pid); return ml && ml.motivos[0] ? escapeHtml(ml.motivos[0].motivo.replace(/^Partner \/ /, '')) + ' (' + rsInt(ml.motivos[0].pedidos) + ')' : '—'; } } }, get: m => m.cancel, fmt: v => rsPct(v), kind:'pp', higher:false, minBase: m => m.pedidosTotal, minN:20, minLabel:'pedidos', extra:[{ h:'Pedidos', f: s => rsInt(s.c.pedidosTotal) }, { h:'Cancelados', f: s => rsInt(s.c.cancelados) }, { h:'Principal motivo', f: s => { const D0 = rsBrandList(R).map(b => b.D).find(D1 => D1.lojas.indexOf(s) !== -1) || R; const ml = (D0.motivosCancLoja || []).find(x => x.pid === s.pid); return ml && ml.motivos[0] ? escapeHtml(ml.motivos[0].motivo.replace(/^Partner \/ /, '')) + ' (' + rsInt(ml.motivos[0].pedidos) + ')' : '—'; } }] }, 3,
