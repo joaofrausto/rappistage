@@ -2185,6 +2185,19 @@ table.dd-show-motivo .dd-optional-col{display:table-cell;}
 .day-comment-chip{ display:flex; align-items:center; gap:6px; font-size:10.5px; font-weight:700; padding:5px 9px; border-radius:8px; border:1px dashed var(--ink-300); cursor:pointer; }
 .day-comment-chip.has-comment{ border-style:solid; border-color:var(--rappi-orange-1); background:var(--bg-peach); }
 .chart-canvas-wrap{ position:relative; cursor:crosshair; height:400px; }
+.rs-kpi-add{font:inherit; font-size:12px; font-weight:800; color:#E8501B; border:1.5px dashed #E8501B; background:#fff; border-radius:999px; padding:4px 10px; cursor:pointer;} /* RappiStage 181 */
+.rs-mt-root{justify-content:flex-start !important; align-items:flex-start !important; text-align:left !important;}
+.rs-mt-root .rs-mt-grp, .rs-mt-root .rs-mt-btns{width:100%;}
+.rs-mt-root{flex-basis:100%; display:flex; flex-direction:column; gap:2px; margin:2px 0 4px;} /* RappiStage 179 */
+.rs-mt-grp{display:flex; flex-direction:column; gap:3px;}
+.rs-mt-head{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:800; color:#1E1B1A; padding:3px 0;}
+.rs-mt-head input{accent-color:#E8501B; width:15px; height:15px; cursor:pointer;}
+.rs-mt-name{cursor:pointer; user-select:none;} .rs-mt-name:hover{color:#E8501B;}
+.rs-mt-ar{display:inline-block; width:12px; color:#E8501B;}
+.rs-mt-n{font-weight:600; color:#837A76; font-size:11px; margin-left:4px;}
+.rs-mt-subs{display:flex; flex-wrap:wrap; gap:5px; padding:2px 0 8px 24px;} .rs-mt-subs[hidden]{display:none;}
+.rs-mt-allsub{font-size:11px; font-weight:700; border:1px dashed #E8501B; background:#fff; color:#E8501B; border-radius:999px; padding:3px 11px; cursor:pointer;}
+.rs-mt-btns{display:flex; flex-wrap:wrap; gap:6px; margin:4px 0;}
 .rs-dd-x{position:sticky; top:0; float:right; z-index:20; width:38px; height:38px; border-radius:50%; border:none; background:#FF5A1F; color:#fff; font-size:18px; font-weight:800; line-height:38px; text-align:center; cursor:pointer; box-shadow:0 4px 12px rgba(255,90,31,0.35); margin:-6px -6px 0 auto; padding:0; display:block; align-self:flex-end; flex-shrink:0;} .rs-dd-x:hover{background:#E8501B;} /* RappiStage 176 */
 .chart-callouts-layer{ position:absolute; inset:0; pointer-events:none; }
 .rs-fs-callout{position:absolute; transform:translate(-50%,-100%); max-width:240px; background:#fff; border:1.5px solid #FF5A1F; border-radius:12px; border-bottom-left-radius:2px; padding:8px 11px; box-shadow:0 8px 20px rgba(30,27,26,0.16); font-size:13px; font-weight:700; color:#1E1B1A;} /* RappiStage 169 */
@@ -2295,6 +2308,12 @@ details.ctype-block[open] > summary{ margin-bottom:6px; }
 /* RappiStage 97: marcar motivo de cancelamento liga a série % Cancelamento no gráfico (os motivos aparecem em qualquer lupa). */
 /* RappiStage 100: sem "Mensal (MTD)" nas lupas de KPIs Operações. */
 /* RappiStage 104: Monthly/Quarterly com período em aberto ganham "Meses até a data (MTD)" / "Trimestres até a data (QTD)". */
+/* RappiStage 184: lupa de Motivos com a árvore Motivo (Parceiro, UX, Usuário, Tech, Outros) › Submotivo › Lojas para todas as categorias (antes só Parceiro tinha a raiz); corrige as lojas por motivo (nome do motivo por loja passa a ter a categoria); card Tráfego (SST) no Quarterly; card de Search no Growth com a palavra mais buscada e lupa abrindo o detalhamento de buscas. */
+/* RappiStage 183: Growth na apresentação em sub-blocos (cards com lupa que abrem o detalhe); Usuários vira sub-bloco do Growth; qualquer bloco pode ser excluído (✕) e incluído de novo; nomes exibidos: Cancelamentos, Cancelamentos YTD e Markdown. */
+/* RappiStage 182: blocos sempre recolhidos ao abrir rascunho/modelo; sem o aviso de "Query atualizada" na etapa Gerar CSV. */
+/* RappiStage 181: lupas mostram só o KPI clicado — os demais ficam no "＋ Adicionar KPI" (lista suspensa); a árvore de motivos só aparece quando o % Cancelamento está no gráfico e fica alinhada à esquerda. */
+/* RappiStage 180: gráficos — quando duas séries dividem o mesmo eixo e uma é muito menor (ex.: Usuários Únicos × Novos Usuários), a menor ganha eixo próprio à direita (antes virava uma linha no zero e os rótulos cobriam os meses). */
+/* RappiStage 179: motivos de cancelamento em árvore (Motivo › Submotivos): clicar no motivo abre os submotivos; marcar o motivo marca todos os submotivos; "Todos os motivos", "Nenhum" e "Selecionar todos os submotivos" — nos gráficos (editor e apresentação) e nas lupas. */
 /* RappiStage 178: KPIs da apresentação no layout novo — cards grandes, 3 por linha (4 quando há mais de 9), nome em cinza maiúsculo com lupa azul à direita, número grande com "R$" menor, variação embaixo, fontes maiores. */
 /* RappiStage 176: aba "Detalhamento por produto" em Found Rate e Defect; seções e colunas da lupa de MKD com checkbox de levar ou não; botão laranja ✕ para fechar a lupa; sem cancelamento de RT; motivos de cancelamento por categoria › subcategoria, com filtro de categoria e de subcategoria. */
 /* RappiStage 175: a query copiada pelo AGM sai sem a instrução inicial (começa no SET AGM); o cabeçalho continua embutido só para o aviso de versão/novidades. */
@@ -4601,6 +4620,9 @@ const MOCK_DATA = {
             {dow:'Sex', date:'29', week:'proxima', tags:[], note:''}, {dow:'Sáb', date:'30', week:'proxima', tags:[], note:''},
             {dow:'Dom', date:'31', week:'proxima', tags:[], note:''},
           ]},
+        { id:'w-u-kpi', kind:'kpi-grid', label:'Usuários', selected:true, // RappiStage 183: sub-bloco de Usuários no Growth
+          data:[ kpi('Usuários Únicos','—','—','flat'), kpi('Novos Usuários','—','—','flat'), kpi('Mix Pro vs Non-Pro','—','—','flat'), kpi('Momentum','—','—','flat'), kpi('Retenção','—','—','flat'), kpi('Frequência','—','—','flat') ]},
+        { id:'w-u-agm', kind:'textarea', label:'Espaço do AGM', selected:true, joinTo:'w-u-kpi', placeholder:'Contexto sobre a base de usuários...', value:'', images:[], attachments:[] },
         { id:'w-g-invest', kind:'invest-calc', label:'Proposta de Investimento — Mês Seguinte', selected:false,
           hint:'Apresentar na última Weekly do mês para alinhar o budget do mês seguinte',
           note:'Sugestão de alocação de investimento para o próximo mês, com foco em reforçar o período de payday e a semana de aniversário da marca.',
@@ -4752,6 +4774,9 @@ const MOCK_DATA = {
           ]},
         { id:'m-g-commercial-calendar', kind:'commercial-calendar', label:'Calendário Comercial Rappi', selected:true, calendarImageUrl:null, calendarImageAspect:null, callouts:[] }, // RappiStage 148
         { id:'m-g-budget', kind:'commercial-calendar', budgetPrint:true, label:'Acompanhamento de Budget', selected:true, calendarImageUrl:null, calendarImageAspect:null, callouts:[] }, // RappiStage 94
+        { id:'m-u-kpi', kind:'kpi-grid', label:'Usuários', selected:true, // RappiStage 183: sub-bloco de Usuários no Growth
+          data:[ kpi('Usuários Únicos','—','—','flat'), kpi('Novos Usuários','—','—','flat'), kpi('Mix Pro vs Non-Pro','—','—','flat'), kpi('Momentum','—','—','flat'), kpi('Retenção','—','—','flat'), kpi('Frequência','—','—','flat') ]},
+        { id:'m-u-agm', kind:'textarea', label:'Espaço do AGM', selected:true, joinTo:'m-u-kpi', placeholder:'Contexto sobre a base de usuários...', value:'', images:[], attachments:[] },
         { id:'m-g-proposal', kind:'invest-calc', label:'Proposta de Investimento — Mês Seguinte', selected:false,
           hint:'Calculadora automática de ROI e faturamento projetado por campanha',
           note:'Sugestão: alocar 20% a mais no budget de mídia paga na semana de aniversário da marca (dia 14).',
@@ -4782,19 +4807,6 @@ const MOCK_DATA = {
             {label:'% de Atingimento da Meta do Mês', value:87},
             {label:'% de Fechamento / Projeção (ritmo atual)', value:104},
           ]},
-      ]
-    },
-    {
-      id:'m-usuarios', title:'Usuários', icon:'👥', theme:'peach',
-      desc:'Comportamento e composição da base',
-      insight:'Base cresce de forma saudável com aumento da participação Pro; retenção segue em trajetória de alta.',
-      items:[
-        { id:'m-u-kpi', kind:'kpi-grid', label:'Resumo de Indicadores Principais', selected:true,
-          data:[ kpi('Usuários Únicos','—','—','flat'), kpi('Novos Usuários','—','—','flat'), // RappiStage 169
-            kpi('Mix Pro vs Non-Pro','58% / 42%','+3 p.p. Pro','up'), kpi('Momentum','+3 p.p.','vs. +1 p.p. mês anterior','up','Ritmo de ganho do mix Pro acelerou: +3 p.p. este mês vs. +1 p.p. no mês anterior — 2º mês seguido em alta.'), kpi('Retenção','74,2%','+1,8 p.p.','up'), kpi('Frequência','3,2 pedidos/mês','+0,2','up') ]},
-        { id:'m-u-agm', kind:'textarea', label:'Espaço do AGM', selected:true, placeholder:'Contexto sobre a base de usuários...', value:'', images:[], attachments:[] }, // RappiStage 169
-        { id:'m-u-chart', kind:'chart', label:'Mix Pro vs Non-Pro', selected:false, chartType:'doughnut',
-          labels:['Pro','Non-Pro'], datasets:[{label:'Mix de Usuários', data:[58,42], format:'percent'}], dayComments:{}, chartCallouts:[] },
       ]
     },
     {
@@ -4898,6 +4910,7 @@ const MOCK_DATA = {
                completo (Principais/Absolutos/Steps %) que Weekly/Monthly já mostram pro deles —
                ver convFunnel em getOrBuildDrilldownChartItem — em vez de cair no seletor genérico
                de KPIs do grid q-r-kpi (QoQ/Ticket Médio/MKD). */
+            gkpi('Growth','Tráfego (SST)','—','—','flat'), // RappiStage 184: tráfego também no Quarterly (lupa só de tráfego)
             Object.assign(gkpi('Growth','Conversão','30,4%','+2,2 p.p. QoQ','up','Funil SST→OPC completo (ver detalhamento) — step com maior impacto no trimestre: Carrinho → Checkout (VC → PTC), favorecido pela recorrência de frete grátis.'), { convFunnel:true }),
             gkpi('Growth','Conversão SST→OPC YTD','—','—','flat'), gkpi('Growth','Tráfego (SST) YTD','—','—','flat'), // RappiStage 154
             /* Item (Round 12): usuariosCombo marca esse KPI pra usar o combo "sob medida" de 3
@@ -5004,6 +5017,9 @@ const MOCK_DATA = {
       noInsights:true,
       items:[
         { id:'q-g-gallery', kind:'gallery', label:'Comunicações Realizadas - Peças', selected:true, data:[] },
+        { id:'q-u-kpi', kind:'kpi-grid', label:'Usuários', selected:true, // RappiStage 183: sub-bloco de Usuários no Growth
+          data:[ kpi('Usuários Únicos','—','—','flat'), kpi('Novos Usuários','—','—','flat'), kpi('Mix Pro vs Non-Pro','—','—','flat'), kpi('Momentum','—','—','flat'), kpi('Retenção','—','—','flat'), kpi('Frequência','—','—','flat') ]},
+        { id:'q-u-agm', kind:'textarea', label:'Espaço do AGM', selected:true, joinTo:'q-u-kpi', placeholder:'Contexto sobre a base de usuários...', value:'', images:[], attachments:[] },
         { id:'q-g-commercial-calendar', kind:'commercial-calendar', label:'Calendário Comercial Rappi', selected:true, calendarImageUrl:null, calendarImageAspect:null, callouts:[] }, // RappiStage 148
       ]
     },
@@ -6950,6 +6966,7 @@ function rsQueryMarcaCopiada(){
   rsQueryAviso();
 }
 function rsQueryAviso(){
+  { var bx = document.getElementById('rs-query-aviso'); if(bx){ bx.style.display = 'none'; bx.innerHTML = ''; } return; } // RappiStage 182: aviso retirado
   var box = document.getElementById('rs-query-aviso'), v = document.getElementById('rs-query-versao');
   var meta = rsQueryMeta(), ver = meta.versao;
   if(v) v.textContent = ver || '—';
@@ -7973,7 +7990,7 @@ function renderBlockCard(block, visibleIdx){
         <h2>${block.title}</h2>
         <div class="block-desc">${block.items.some(i => i.kind === 'kpi-grid') ? '' : (block.desc || '')}${block._rsExtra ? '<span class="rs-extra-tag" style="display:inline-block;margin-left:6px;font-size:11px;font-weight:800;color:#5B3FA8;background:#EFE9FF;border-radius:999px;padding:2px 8px;">➕ Bloco adicional</span>' : ''}</div>
       </div>
-      ${block._rsExtra ? '<button type="button" class="block-collapse-btn rs-extra-del" title="Tirar este bloco adicional da apresentação">✕</button>' : ''}
+      <button type="button" class="block-collapse-btn rs-extra-del" title="Excluir este bloco da apresentação (dá para incluir de novo em ➕ Incluir blocos)">✕</button>
       <label class="toggle" title="Incluir/excluir bloco inteiro da apresentação">
         <input type="checkbox" class="block-toggle" ${block.selected === false ? '' : 'checked'}>
         <span class="track"></span><span class="thumb"></span>
@@ -8087,6 +8104,32 @@ function renderBlockCard(block, visibleIdx){
    editor mudam de lugar — itens internos (gráficos das lupas, insights anexados) mantêm as posições deles em block.items. */
 /* RappiStage 163: item "juntado" (joinTo) aparece DENTRO do card do item pai (editor e apresentação) — ex.: Detalhamento por Mecânica
    dentro de Resultados de Investimentos. Se o pai não existir no bloco, o item volta a ser um sub-bloco normal. */
+/* RappiStage 183: Growth em sub-blocos — card com resumo + lupa; o clique abre o conteúdo completo */
+function rsGrowthSummary(item){
+  const thumbs = L => L.length ? '<div class="g-thumbs">' + L.slice(0, 4).map(u => '<img src="' + escapeHtml(u) + '" alt="">').join('') + '</div>' : '';
+  const big = (v, u) => '<div class="g-big">' + escapeHtml(String(v)) + (u ? '<small>' + escapeHtml(u) + '</small>' : '') + '</div>';
+  const sub = t => t ? '<div class="g-sub">' + t + '</div>' : '';
+  const kv = lab => { const k = (item.data || []).find(x => new RegExp(lab, 'i').test(x.label || '')); return k ? k : null; };
+  if(item.kind === 'gallery'){ const L = (item.data || []).filter(g => g.selected !== false); return thumbs(L.map(g => g.photoUrl).filter(Boolean)) + big(L.length, L.length === 1 ? 'peça' : 'peças'); }
+  if(item.kind === 'list'){ const L = (item.data || []).filter(x => x && String(x).trim()); return big(L.length, L.length === 1 ? 'comunicação' : 'comunicações') + sub(L[0] ? escapeHtml(String(L[0]).slice(0, 110)) + (String(L[0]).length > 110 ? '…' : '') : ''); }
+  if(item.kind === 'ranking'){ const x = (item.data || [])[0]; if(!x) return sub('Ver detalhes'); const v = x.vals || []; /* RappiStage 184: igual ao card de Usuários — palavra mais buscada em destaque */
+    return '<div class="g-big g-word">' + escapeHtml(String(x.name || '')) + '</div>' + sub([v[0] ? escapeHtml(v[0]) + ' buscas' : '', v[1] && v[1] !== '—' ? escapeHtml(v[1]) + ' vs período anterior' : '', 'palavra mais buscada'].filter(Boolean).join(' · ')); }
+  if(item.kind === 'kpi-grid'){
+    const u = kv('^Usuários Únicos'); if(u){ const n = kv('^Novos Usuários'), mx = kv('^Mix Pro'); return big(u.value, 'únicos') + sub([n ? escapeHtml(n.value) + ' novos' + (n.delta && n.delta !== '—' ? ' (' + escapeHtml(n.delta) + ')' : '') : '', mx && mx.value !== '—' ? 'Mix Pro ' + escapeHtml(String(mx.value).split(' / ')[0]) : ''].filter(Boolean).join(' · ')); }
+    const r = kv('^ROI$'); if(r){ const bd = kv('^Consumo do Budget'), fg = kv('^Faturamento Gerado'); return big(r.value, 'ROI') + sub([bd ? 'Budget ' + escapeHtml(bd.value) : '', fg ? 'Faturamento gerado ' + escapeHtml(fg.value) : ''].filter(Boolean).join(' · ')); }
+    const k0 = (item.data || []).filter(x => x.selected !== false)[0]; return k0 ? big(k0.value, rsDisp(k0.label)) : sub('Ver detalhes'); }
+  if(item.kind === 'commercial-calendar'){ const F = typeof rsCalFiles === 'function' ? rsCalFiles(item) : []; const im = F.map(f => f.data).filter(d => /^data:image|^https?:/.test(d || '')); return thumbs(im.slice(0, 2)) + big(F.length, F.length === 1 ? 'arquivo' : 'arquivos'); }
+  if(item.kind === 'invest-calc'){ const n = (item.campaigns || []).length; return big(n, n === 1 ? 'campanha' : 'campanhas') + sub('ROI e budget por mecânica'); }
+  if(item.kind === 'textarea'){ const t = String(item.value || '').trim(); return sub(t ? escapeHtml(t.slice(0, 140)) + (t.length > 140 ? '…' : '') : 'Ver detalhes'); }
+  return sub('Ver detalhes');
+}
+function rsGrowthCards(block, its, parts){
+  const keep = its.map((it, i) => i).filter(i => !(its[i].kind === 'commercial-calendar' && typeof rsCalFiles === 'function' && !rsCalFiles(its[i]).length)); // calendário sem arquivo não vira card
+  its = keep.map(i => its[i]); parts = keep.map(i => parts[i]); if(!its.length) return '';
+  return '<div class="slide-item g-wrap" data-kind="g-grid"><div class="g-grid">' + its.map((it, i) =>
+    '<div class="g-card" onclick="' + (it.kind === 'ranking' && /search|busca/i.test(it.label || '') ? 'rsGSearch(this)' : 'rsGOpen(this)') + '" title="Clique para ver o detalhe"><div class="g-ico"></div><div class="g-lab">' + escapeHtml(it.label || '') + '</div>' + rsGrowthSummary(it) +
+    '<div class="g-full" hidden>' + parts[i] + '</div></div>').join('') + '</div></div>';
+}
 function rsJoinParent(block, it){ return it && it.joinTo ? (block.items || []).find(p => p.id === it.joinTo && p !== it) || null : null; }
 function rsJoined(block, item){ return (block.items || []).filter(j => j.joinTo === item.id && j !== item); }
 function rsVisibleItems(block){ return block.items.filter(it => !it.attachTo && !rsJoinParent(block, it) && (it.kind !== 'chart' || it.inlineChart)); }
@@ -8186,7 +8229,7 @@ function renderItemContent(item, block){
             <input type="checkbox" ${k.selected === false ? '' : 'checked'}>
           </label>
           ${showDetailBtn ? `<button type="button" class="kpi-detail-btn" title="${dd ? 'Ver detalhamento (destrinchamento)' : 'Ver gráfico deste KPI'}">🔎</button>` : ''}
-          <textarea class="kpi-label-input" placeholder="Nome do KPI" rows="1">${escapeHtml(k.label)}</textarea>
+          <textarea class="kpi-label-input" placeholder="Nome do KPI" rows="1">${escapeHtml(rsDisp(k.label))}</textarea>
           <textarea class="kpi-value-input" placeholder="Valor" rows="1">${escapeHtml(k.value)}</textarea>
           <div class="kpi-delta-row"${item.noDelta ? ' hidden' : ''}>
             <select class="kpi-dir-select" title="Direção da variação">
@@ -8224,7 +8267,7 @@ function renderItemContent(item, block){
         function autoResizeKpiLabel(el){ el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
         const kpiLabelEl = tile.querySelector('.kpi-label-input');
         const kpiValueEl = tile.querySelector('.kpi-value-input');
-        kpiLabelEl.addEventListener('input', (e) => { k.label = e.target.value; autoResizeKpiLabel(e.target); });
+        kpiLabelEl.addEventListener('input', (e) => { k.label = rsUndisp(e.target.value); autoResizeKpiLabel(e.target); }); // RappiStage 183
         kpiValueEl.addEventListener('input', (e) => { k.value = e.target.value; autoResizeKpiLabel(e.target); });
         tile.querySelector('.kpi-delta-input').addEventListener('input', (e) => { k.delta = e.target.value; applyDeltaColor(); });
         tile.querySelector('.kpi-dir-select').addEventListener('change', (e) => { k.dir = e.target.value; applyDeltaColor(); });
@@ -10166,7 +10209,7 @@ function renderInteractiveChartInto(wrap, item, opts){
             <option value="bar" ${dsType==='bar'?'selected':''}>Barra</option>
             <option value="line" ${dsType==='line'?'selected':''}>Linha</option>
           </select>` : '';
-          return `<label class="chart-metric-chip ${on ? 'on' : ''}"><input type="checkbox" data-metric="${escapeHtml(ds.label)}" ${on ? 'checked' : ''}> ${escapeHtml(ds.label)}${typeSelect}</label>`;
+          return `<label class="chart-metric-chip ${on ? 'on' : ''}"><input type="checkbox" data-metric="${escapeHtml(ds.label)}" ${on ? 'checked' : ''}> ${escapeHtml(rsDisp(ds.label))}${typeSelect}</label>`;
         }, item.kpiGroupDefs);
         /* RappiStage 106: "Variação % nos rótulos" numa linha própria, só com os KPIs que estão no gráfico. */
         const varLabels = (item.mbAllKpis ? item.mbAllKpis.filter(l => item.mbSelectedKpis[l]) : (item.datasets || []).filter(ds => item.seriesSelected[ds.label] !== false && !ds.rsMotivo).map(ds => ds.label));
@@ -10253,9 +10296,9 @@ function renderInteractiveChartInto(wrap, item, opts){
             if(!rsIsActive() || !(item.datasets || []).some(d => /^% Cancelamento/.test(d.label))) return '';
             const mot = rsMotivosData(); const names = rsMotivoNames(mot); if(!names.length) return '';
             const sel = item.rsMotivoSel || [];
-            return `<div class="chart-controls" style="flex-wrap:wrap;gap:6px;"><span class="chart-controls-label">Motivos de cancelamento:</span>` +
-              names.map(n => `<label class="chart-metric-chip ${sel.indexOf(n) !== -1 ? 'on' : ''}"><input type="checkbox" class="rs-mot-f" value="${escapeHtml(n)}" ${sel.indexOf(n) !== -1 ? 'checked' : ''}><span style="width:9px;height:9px;border-radius:50%;background:${mot.cores[n]};display:inline-block;margin-right:2px;"></span>${escapeHtml(n)}</label>`).join('') +
-              `<button type="button" class="chip-toggle-btn rs-mot-all" data-on="1" style="font-size:11px;">Todos</button><button type="button" class="chip-toggle-btn rs-mot-all" data-on="0" style="font-size:11px;">Nenhum</button>` +
+            return `<div class="chart-controls rs-mt-root" style="flex-wrap:wrap;gap:6px;"><span class="chart-controls-label">Motivos de cancelamento (clique no motivo para abrir os submotivos):</span>` + // RappiStage 179: árvore
+              `<div class="rs-mt-btns"><button type="button" class="chip-toggle-btn rs-mot-all" data-on="1" style="font-size:11px;" onclick="rsMtRefresh(this)">Todos os motivos</button><button type="button" class="chip-toggle-btn rs-mot-all" data-on="0" style="font-size:11px;" onclick="rsMtRefresh(this)">Nenhum</button></div>` +
+              rsMtTree(names, n => sel.indexOf(n) !== -1, (n, sub) => `<label class="chart-metric-chip ${sel.indexOf(n) !== -1 ? 'on' : ''}"><input type="checkbox" class="rs-mot-f" value="${escapeHtml(n)}" ${sel.indexOf(n) !== -1 ? 'checked' : ''} onchange="rsMtSub(this)"><span style="width:9px;height:9px;border-radius:50%;background:${mot.cores[n]};display:inline-block;margin-right:2px;"></span>${escapeHtml(sub)}</label>`) +
               `<span style="font-size:11px;color:#837A76;flex-basis:100%;">Marque motivos para abrir o % Cancelamento nos motivos escolhidos (barras empilhadas, com o total dos marcados no topo). Sem nenhum marcado, mostra o % total.</span></div>`;
           })()}
           <div class="chart-controls" data-week-selector-wrap style="flex-wrap:wrap;gap:6px;">
@@ -10386,6 +10429,8 @@ function renderInteractiveChartInto(wrap, item, opts){
           }
           wrap.querySelectorAll('input.rs-mot-f').forEach(i => i.closest('.chart-metric-chip').classList.toggle('on', i.checked)); regenerate(); };
         wrap.querySelectorAll('input.rs-mot-f').forEach(cb => cb.addEventListener('change', syncMotivos));
+        rsMtInit(wrap); // RappiStage 179
+        rsKpiPick(wrap, 'data-metric'); // RappiStage 181
         wrap.querySelectorAll('.rs-mot-all').forEach(btn => btn.addEventListener('click', () => { wrap.querySelectorAll('input.rs-mot-f').forEach(i => { i.checked = btn.dataset.on === '1'; }); syncMotivos(); }));
         wrap.querySelectorAll('.chart-metric-selector input[data-metric]').forEach(cb => {
           cb.addEventListener('change', (e) => {
@@ -10524,7 +10569,7 @@ function renderInteractiveChartInto(wrap, item, opts){
           const dsType = item.seriesChartType[ds.label] || item.chartType || 'bar';
           return `<div class="chart-mini-card">
             <div class="chart-mini-head">
-              <span class="chart-mini-title">${escapeHtml(ds.label)}</span>
+              <span class="chart-mini-title">${escapeHtml(rsDisp(ds.label))}</span>
               <select class="chart-mini-type-select" data-mini-metric="${escapeHtml(ds.label)}">
                 <option value="bar" ${dsType==='bar'?'selected':''}>Barra</option>
                 <option value="line" ${dsType==='line'?'selected':''}>Linha</option>
@@ -11457,9 +11502,9 @@ function pMotivoFilterHtml(gridData, st){
   var set = {}; ['weekly','monthly','quarterly'].forEach(function(g){ if(RS_MOTIVOS[g]) Object.keys(RS_MOTIVOS[g].motivos).forEach(function(n){ if(RS_MOTIVOS[g].motivos[n].some(function(v){ return v; })) set[n] = 1; }); });
   var names = Object.keys(set).sort(); if(!names.length) return '';
   var sel = st.motivoSel || [];
-  return '<div class="dd-chart-ctrl-row" style="flex-wrap:wrap;"><span class="dd-chart-ctrl-label">Motivos de cancelamento:</span>' +
-    names.map(function(n){ var on = sel.indexOf(n) !== -1; return '<label class="dd-chart-metric-chip' + (on ? ' on' : '') + '"><input type="checkbox" class="rs-mot-f" value="' + n.replace(/"/g, '&quot;') + '"' + (on ? ' checked' : '') + '><span style="width:9px;height:9px;border-radius:50%;background:' + (RS_MOTIVOS.cores[n] || '#64748B') + ';display:inline-block;margin:0 4px 0 2px;"></span>' + n + '</label>'; }).join('') +
-    '<button type="button" class="dd-chart-mode-btn rs-mot-all" data-on="1">Todos</button><button type="button" class="dd-chart-mode-btn rs-mot-all" data-on="0">Nenhum</button></div>';
+  return '<div class="dd-chart-ctrl-row rs-mt-root" style="flex-wrap:wrap;"><span class="dd-chart-ctrl-label">Motivos de cancelamento (clique no motivo para abrir os submotivos):</span>' + /* RappiStage 179 */
+    '<div class="rs-mt-btns"><button type="button" class="dd-chart-mode-btn rs-mot-all" data-on="1" onclick="rsMtRefresh(this)">Todos os motivos</button><button type="button" class="dd-chart-mode-btn rs-mot-all" data-on="0" onclick="rsMtRefresh(this)">Nenhum</button></div>' +
+    rsMtTree(names, function(n){ return sel.indexOf(n) !== -1; }, function(n, sub){ var on = sel.indexOf(n) !== -1; return '<label class="dd-chart-metric-chip' + (on ? ' on' : '') + '"><input type="checkbox" class="rs-mot-f" value="' + n.replace(/"/g, '&quot;') + '"' + (on ? ' checked' : '') + ' onchange="rsMtSub(this)"><span style="width:9px;height:9px;border-radius:50%;background:' + (RS_MOTIVOS.cores[n] || '#64748B') + ';display:inline-block;margin:0 4px 0 2px;"></span>' + sub + '</label>'; }) + '</div>';
 }
 function rsExpandMotivos(list, labels, sel, mot, types){
   if(!mot || !sel || !sel.length) return list;
@@ -11519,9 +11564,21 @@ function rsMotivosData(){
   return o;
 }
 function rsMotivoNames(mot){ const set = {}; ['weekly','monthly','quarterly'].forEach(g => { if(mot && mot[g]) Object.keys(mot[g].motivos).forEach(n => { if(mot[g].motivos[n].some(v => v)) set[n] = 1; }); }); return Object.keys(set).sort(); }
+function rsSplitScale(sc, datasets){ /* RappiStage 180: série muito menor que as outras do mesmo eixo vai para um eixo próprio à direita */
+  if(!sc || !datasets || datasets.length < 2) return;
+  var by = {}; datasets.forEach(function(d){ if(d.rsMotivo || d.hidden) return; var ax = d.yAxisID || 'y'; (by[ax] = by[ax] || []).push(d); });
+  var n = 0;
+  Object.keys(by).forEach(function(ax){ var L = by[ax]; if(L.length < 2) return;
+    var mx = function(d){ var m = 0; (d.data || []).forEach(function(v){ var x = Math.abs(typeof v === 'number' ? v : (v && typeof v.y === 'number' ? v.y : 0)); if(x > m) m = x; }); return m; };
+    var top = 0; L.forEach(function(d){ top = Math.max(top, mx(d)); }); if(!top) return;
+    L.forEach(function(d){ var m = mx(d); if(m > 0 && top / m > 8){ var id = 'ySm' + (n++); d.yAxisID = id;
+      var base = sc[ax] || {}; sc[id] = { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, ticks: Object.assign({}, base.ticks || {}, { color: d.borderColor || d.backgroundColor || undefined }), title: { display: true, text: d.label, color: d.borderColor || undefined, font: { size: 11, weight: '700' } } }; } });
+  });
+}
 function chartHeadroom(scales, type, datasets){
   if(datasets) rsApplyMotivoStack(scales, datasets);
   if(type === 'doughnut' || !scales) return scales;
+  rsSplitScale(scales, datasets); // RappiStage 180
   if(datasets && datasets.length){ const used = new Set(datasets.map(d => d.yAxisID || 'y')); Object.keys(scales).forEach(k => { if(k !== 'x' && !used.has(k) && scales[k]) scales[k].display = false; }); } // RappiStage 78
   Object.keys(scales).forEach(k => { const sc = scales[k]; if(k !== 'x' && sc && sc.display !== false) sc.grace = '20%'; });
   return scales;
@@ -14174,6 +14231,51 @@ function mountUsuariosDemografiaCharts(container){
    Motivos Ofensores Cancelamento, com linhas de categoria escondidas dentro do "Partner") ficam
    de fora pra não quebrar o expandir/recolher. Linha(s) de "Total" (primeira célula começando com
    "Total") ficam sempre fixadas no fim, em qualquer ordenação escolhida. */
+var RS_MT_OPEN = {}; /* RappiStage 179: árvore Motivo › Submotivos */
+var RS_MT_ORDER = ['Parceiro', 'UX', 'Usuário', 'Tech', 'Outros', 'Entregador'];
+function rsMtSubs(g){ return [].slice.call(g.querySelectorAll('.rs-mt-subs input[type=checkbox]')); }
+function rsMtState(g){ var L = rsMtSubs(g), on = L.filter(function(i){ return i.checked; }).length, c = g.querySelector('.rs-mt-catbox');
+  if(c){ c.checked = on > 0 && on === L.length; c.indeterminate = on > 0 && on < L.length; } var n = g.querySelector('.rs-mt-n'); if(n) n.textContent = on + '/' + L.length; }
+function rsMtToggle(el){ var g = el.closest('.rs-mt-grp'), sb = g.querySelector('.rs-mt-subs'), open = sb.hidden; sb.hidden = !open; RS_MT_OPEN[g.getAttribute('data-cat')] = open; var a = g.querySelector('.rs-mt-ar'); if(a) a.textContent = open ? '▾' : '▸'; }
+function rsMtFire(L){ if(L[0]) L[0].dispatchEvent(new Event('change', { bubbles: true })); }
+function rsMtCat(cb){ var g = cb.closest('.rs-mt-grp'), L = rsMtSubs(g); L.forEach(function(i){ i.checked = cb.checked; }); rsMtState(g); rsMtFire(L); }
+function rsMtAllSubs(btn){ var g = btn.closest('.rs-mt-grp'), L = rsMtSubs(g); L.forEach(function(i){ i.checked = true; }); rsMtState(g); rsMtFire(L); }
+function rsMtSub(cb){ rsMtState(cb.closest('.rs-mt-grp')); }
+function rsMtRefresh(el){ setTimeout(function(){ var r = el.closest('.rs-mt-root'); if(r) [].slice.call(r.querySelectorAll('.rs-mt-grp')).forEach(rsMtState); }, 0); }
+function rsMtInit(root){ if(root) [].slice.call(root.querySelectorAll('.rs-mt-grp')).forEach(rsMtState); }
+function rsMtTree(names, isOn, subHtml){
+  var by = {}, order = [];
+  names.forEach(function(n){ var i = n.indexOf(' › '), c = i > -1 ? n.slice(0, i) : 'Outros'; if(!by[c]){ by[c] = []; order.push(c); } by[c].push(n); });
+  order.sort(function(a, b){ return ((RS_MT_ORDER.indexOf(a) + 1) || 99) - ((RS_MT_ORDER.indexOf(b) + 1) || 99); });
+  return order.map(function(c){ var L = by[c], on = L.filter(isOn).length, open = !!RS_MT_OPEN[c];
+    return '<div class="rs-mt-grp" data-cat="' + c + '"><div class="rs-mt-head"><input type="checkbox" class="rs-mt-catbox"' + (on && on === L.length ? ' checked' : '') + ' onchange="rsMtCat(this)" title="Marcar/desmarcar todos os submotivos de ' + c + '">' +
+      '<span class="rs-mt-name" onclick="rsMtToggle(this)" title="Abrir os submotivos"><span class="rs-mt-ar">' + (open ? '▾' : '▸') + '</span> ' + c + ' <span class="rs-mt-n">' + on + '/' + L.length + '</span></span></div>' +
+      '<div class="rs-mt-subs"' + (open ? '' : ' hidden') + '>' + L.map(function(n){ return subHtml(n, n.indexOf(' › ') > -1 ? n.slice(n.indexOf(' › ') + 3) : n); }).join('') +
+      '<button type="button" class="rs-mt-allsub" onclick="rsMtAllSubs(this)">Selecionar todos os submotivos</button></div></div>'; }).join('');
+}
+function rsKpiPick(root, attr){ /* RappiStage 181: só os KPIs escolhidos aparecem; os outros entram pelo "＋ Adicionar KPI" */
+  if(!root) return;
+  var inputs = [].slice.call(root.querySelectorAll('input[' + attr + ']')); if(inputs.length < 2) return;
+  var chipOf = function(i){ return i.closest('label') || i.parentNode; };
+  var hidden = [];
+  inputs.forEach(function(i){ var c = chipOf(i), off = !i.checked; c.style.display = off ? 'none' : ''; if(off) hidden.push(i);
+    if(!i.getAttribute('data-rs-pick')){ i.setAttribute('data-rs-pick', '1'); i.addEventListener('change', function(){ setTimeout(function(){ rsKpiPick(root, attr); }, 0); }); } });
+  var box = chipOf(inputs[0]).parentNode, old = box.querySelector('.rs-kpi-add'); if(old) old.parentNode.removeChild(old);
+  if(hidden.length){ var sel = document.createElement('select'); sel.className = 'rs-kpi-add';
+    sel.innerHTML = '<option value="">＋ Adicionar KPI</option>' + hidden.map(function(i){ var v = i.getAttribute(attr); return '<option value="' + v.replace(/"/g, '&quot;') + '">' + rsDisp(v).replace(/</g, '&lt;') + '</option>'; }).join('');
+    sel.addEventListener('change', function(){ var v = sel.value, i = inputs.filter(function(x){ return x.getAttribute(attr) === v; })[0]; if(i && !i.checked) i.click(); setTimeout(function(){ rsKpiPick(root, attr); }, 0); });
+    box.appendChild(sel); }
+  var hasCanc = inputs.some(function(i){ return i.checked && /^% Cancelamento/.test(i.getAttribute(attr) || ''); });
+  [].slice.call(root.querySelectorAll('.rs-mt-root')).forEach(function(t){ t.style.display = hasCanc ? '' : 'none'; });
+}
+function rsDisp(l){ /* RappiStage 183: nome exibido (a chave interna continua a mesma) */
+  var t = String(l == null ? '' : l);
+  return t.replace(/^% Cancelamento( .Partner.)?( YTD)?$/, function(m, a, y){ return 'Cancelamentos' + (y || ''); }).replace(/^MKD(?=$|[ (])/, 'Markdown');
+}
+function rsUndisp(l){ var t = String(l == null ? '' : l); if(/^Cancelamentos( YTD)?$/i.test(t.trim())) return '% Cancelamento' + (/YTD/i.test(t) ? ' YTD' : ''); if(/^Markdown(?=$|[ (])/i.test(t.trim())) return t.trim().replace(/^Markdown/i, 'MKD'); return t; }
+function rsDispInstall(){ try{ if(window.Chart && !Chart.__rsDisp){ Chart.__rsDisp = 1; var gl = Chart.defaults.plugins.legend.labels.generateLabels;
+  Chart.defaults.plugins.legend.labels.generateLabels = function(ch){ return gl.call(this, ch).map(function(x){ x.text = rsDisp(x.text); return x; }); }; } }catch(e){} }
+if(typeof window !== 'undefined'){ window.addEventListener('load', rsDispInstall); setTimeout(rsDispInstall, 1500); }
 function rsHierSort(table){ /* RappiStage 169: ordena tabela com linhas que abrem (⊞) — cada data leva as lojas junto; as lojas também ordenam */
   if(!table || table.getAttribute('data-hsort-init')) return; table.setAttribute('data-hsort-init', '1');
   var tb = table.tBodies[0], ths = table.tHead ? Array.prototype.slice.call(table.tHead.rows[0].cells) : []; if(!tb || ths.length < 2) return;
@@ -14204,6 +14306,19 @@ function rsDrawCallouts(chart, host, list){ /* RappiStage 169: balões de coment
     else st = 'left:' + c.xPct + '%;top:' + c.yPct + '%;';
     return '<div class="rs-fs-callout" style="' + st + '">' + esc(c.text) + '</div>'; }).join('');
 }
+function rsGOpen(card){ /* RappiStage 183: abre o sub-bloco do Growth em tela cheia */
+  var ov = document.getElementById('gOverlay');
+  if(!ov){ ov = document.createElement('div'); ov.className = 'dd-overlay'; ov.id = 'gOverlay'; ov.innerHTML = '<div class="dd-box"><button type="button" class="rs-dd-x" title="Fechar" onclick="rsGClose()">✕</button><div id="gBody"></div></div>';
+    ov.addEventListener('click', function(e){ if(e.target === ov) rsGClose(); }); document.body.appendChild(ov); }
+  rsGClose(); var full = card.querySelector('.g-full'); if(!full) return;
+  ov.__src = card; full.hidden = false; document.getElementById('gBody').appendChild(full); ov.classList.add('show');
+}
+function rsGSearch(card){ /* RappiStage 184: Search abre o detalhamento completo de buscas (lupa) */
+  if(typeof DD_DATA !== 'undefined' && DD_DATA && DD_DATA['palavras mais buscadas'] && typeof openDrilldown === 'function'){ rsGClose(); openDrilldown('Palavras mais buscadas'); return; }
+  rsGOpen(card);
+}
+function rsGClose(){ var ov = document.getElementById('gOverlay'); if(!ov) return; var full = document.querySelector('#gBody .g-full');
+  if(full && ov.__src){ full.hidden = true; ov.__src.appendChild(full); } ov.__src = null; ov.classList.remove('show'); }
 function rsPosColor(table, idx){ /* RappiStage 172: cor pelo RESULTADO da coluna ordenada (3 melhores verdes, 3 piores vermelhos) */
   var n = parseInt(table.getAttribute('data-pos-color'), 10) || 3, tb = table.tBodies[0]; if(!tb) return;
   var th = table.tHead && table.tHead.rows[0] ? table.tHead.rows[0].cells[idx] : null, head = th ? th.textContent : '';
@@ -14867,7 +14982,7 @@ function rsLupaHead(label){
   else if(/defect/i.test(L)) txt = '<b>Defect Rate</b> é a % dos <b>pedidos com defeito causado pela loja</b> — o cliente reclamou de produto errado, danificado ou faltando, ou de pedido diferente/incompleto — sobre os pedidos da base. Problemas do entregador, cobrança/reembolso e pedido que não chegou não entram. Quanto menor, melhor.';
   else if(/^mkd/i.test(L)) txt = '<b>MKD</b> (markdown) é o <b>desconto aplicado direto no preço dos produtos</b>. <b>MKD %</b> = valor de markdown ÷ preço cheio dos itens vendidos — mostra quanto do preço cheio a marca abriu mão em desconto no período.';
   var h = '<div class="rs-lupa-head" style="margin:0 0 12px;">' +
-    '<div style="font-size:20px;font-weight:800;color:#1E1B1A;line-height:1.25;">' + esc(L) + '</div>' +
+    '<div style="font-size:20px;font-weight:800;color:#1E1B1A;line-height:1.25;">' + esc(typeof rsDisp === 'function' ? rsDisp(L) : L) + '</div>' +
     (txt ? '<div style="margin-top:8px;background:#FFF7F2;border:1px solid #FFD9C7;border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.55;color:#3B3532;">' + txt + '</div>' : '');
   return h + '</div>';
 }
@@ -15091,7 +15206,7 @@ function openChartFullscreen(item){
     const list = visible.length ? visible : (item.datasets||[]);
     multiWrap.innerHTML = list.map((ds, i) => `
       <div class="chart-mini-card">
-        <div class="chart-mini-head"><span class="chart-mini-title">${escapeHtml(ds.label)}</span></div>
+        <div class="chart-mini-head"><span class="chart-mini-title">${escapeHtml(rsDisp(ds.label))}</span></div>
         <div class="chart-canvas-wrap chart-mini-canvas-wrap">
           <canvas id="${CHART_FULLSCREEN_MINI_PREFIX}${i}"></canvas>
         </div>
@@ -15834,6 +15949,8 @@ function rsMigrateBlockItems(b, tb, allIds, stats){
 function rsMigrateBlocks(blocks, mt){
   const stats = { blocks: 0, items: 0, conv: 0 };
   if(!Array.isArray(blocks) || !MOCK_DATA[mt]) return { blocks: blocks, stats: stats };
+  { const ui = blocks.findIndex(b => b.id === 'm-usuarios'), gb = blocks.find(b => /-growth$/.test(b.id)); // RappiStage 183: Usuários vira sub-bloco do Growth
+    if(ui !== -1 && gb){ const ub = blocks[ui]; if(!(gb.items || []).some(i => /-u-kpi$/.test(i.id))){ (ub.items || []).forEach(it => { if(it.id === 'm-u-kpi'){ it.label = 'Usuários'; it.selected = ub.selected !== false && it.selected !== false; } else if(it.kind !== 'chart') it.joinTo = 'm-u-kpi'; gb.items.push(it); }); } blocks.splice(ui, 1); } }
   const tmpl = deepClone(MOCK_DATA[mt]);
   const allIds = {}; blocks.forEach(b => (b.items || []).forEach(it => { allIds[it.id] = 1; }));
   blocks.forEach(b => {
@@ -15947,6 +16064,7 @@ function restoreDraftFromRecord(draft){
   state.visualTheme = draft.visualTheme ? deepClone(draft.visualTheme) : state.visualTheme;
   applyThemeColors(state.visualTheme.colorPrimary || '#FF7A4D', state.visualTheme.colorSecondary || '#FF2526');
   state.blocks = deepClone(draft.blocks || []);
+  state.blocks.forEach(b => { b._uiCollapsed = true; }); // RappiStage 182: tudo recolhido ao abrir
   state.autoDrilldownCharts = draft.autoDrilldownCharts ? deepClone(draft.autoDrilldownCharts) : {};
   state.rsYtdCfg = draft.rsYtdCfg ? deepClone(draft.rsYtdCfg) : {}; // RappiStage 165
   state.rsCancCats = draft.rsCancCats ? draft.rsCancCats.slice() : null; // RappiStage 173
@@ -17104,12 +17222,12 @@ var RS_EXTRA_KINDS = ['textarea', 'field-cards', 'action-plan-cards', 'waterfall
 function rsExtraCatalog(){
   var cur = state.meetingType, have = {}, out = [], seen = {};
   state.blocks.forEach(function(b){ have[String(b.title).toLowerCase()] = 1; have['#' + b.id] = 1; });
-  ['quarterly', 'monthly', 'weekly'].forEach(function(mt){
-    if(mt === cur || !MOCK_DATA[mt]) return;
+  [cur].concat(['quarterly', 'monthly', 'weekly'].filter(function(x){ return x !== cur; })).forEach(function(mt){ // RappiStage 183: blocos da própria reunião também
+    if(!MOCK_DATA[mt]) return;
     MOCK_DATA[mt].forEach(function(b){
       var t = String(b.title).toLowerCase();
       if(isChartOnlyBlock(b) || seen[t] || !(b.items || []).length) return;
-      if(b.id === 'q-resumo') return; // RappiStage 169: todos os blocos de outros tipos entram (o Resumo do Quarterly repete os KPIs Performance)
+      if(b.id === 'q-resumo' && cur !== 'quarterly') return; // RappiStage 169: todos os blocos de outros tipos entram (o Resumo do Quarterly repete os KPIs Performance)
       seen[t] = 1;
       out.push({ id: b.id, from: mt, title: b.title, icon: b.icon, theme: b.theme, added: !!(have[t] || have['#' + b.id]) });
     });
@@ -17120,7 +17238,7 @@ function rsExtraAdd(id, from, silent){
   if(state.blocks.some(function(b){ return b.id === id; })) return false;
   var src = (MOCK_DATA[from] || []).find(function(b){ return b.id === id; }); if(!src) return false;
   var b = deepClone(src); blankManualFields([b]);
-  b._rsExtra = true; b._rsFrom = from; b.selected = true; b._uiCollapsed = false;
+  b._rsExtra = from !== state.meetingType; b._rsFrom = from; b.selected = true; b._uiCollapsed = false; // RappiStage 183
   (b.items || []).forEach(function(it){ if(it.kind === 'waterfall-chart' && /Quarter Anterior/i.test(it.baseLabel || '') && state.meetingType !== 'quarterly')
     it.baseLabel = state.meetingType === 'monthly' ? 'Vendas Mês Anterior' : 'Vendas Semana Anterior'; });
   state.blocks.push(b);
@@ -17130,8 +17248,8 @@ function rsExtraAdd(id, from, silent){
   return true;
 }
 function rsExtraRemove(id){
-  var b = state.blocks.find(function(x){ return x.id === id && x._rsExtra; }); if(!b) return;
-  if(!confirm('Tirar o bloco "' + b.title + '" desta apresentação? O que foi preenchido nele será perdido.')) return;
+  var b = state.blocks.find(function(x){ return x.id === id; }); if(!b) return; // RappiStage 183: qualquer bloco
+  if(!confirm('Excluir o bloco "' + b.title + '" desta apresentação? O que foi preenchido nele será perdido. Dá para incluir de novo em ➕ Incluir blocos.')) return;
   state.blocks = state.blocks.filter(function(x){ return x !== b; });
   renderBlocks(); showToast('Bloco "' + b.title + '" retirado.');
   if(document.getElementById('rs-extra-modal').classList.contains('show')) rsExtraRender();
@@ -17694,7 +17812,7 @@ function rsBuildDataset(B, base, type, periodValue, brand){
   mcLojaCur.forEach(x => {
     const o = mcLojaObj[x.pid] || (mcLojaObj[x.pid] = { pid: x.pid, nome: (B.stores.get(x.pid) || {}).nome || ('Loja ' + x.pid), total: 0, motivos: [] });
     const v = x.valor || 0; o.total += v;
-    o.motivos.push({ motivo: rsMotivoPT(x.item), pedidos: v, ant: mcLojaPrev.length ? (mcPrevMap[x.pid + '||' + x.item] || 0) : null });
+    o.motivos.push({ motivo: rsMotivoNome(x.item) /* RappiStage 184 */, pedidos: v, ant: mcLojaPrev.length ? (mcPrevMap[x.pid + '||' + x.item] || 0) : null });
   });
   const motivosCancLoja = Object.keys(mcLojaObj).map(k => {
     const o = mcLojaObj[k]; o.motivos.sort((a, b) => b.pedidos - a.pedidos);
@@ -18631,14 +18749,32 @@ function rsV170Extra(type){
     return '';
   });
 }
-function rsCancChipsHtml(label){ /* RappiStage 173 */
+function rsCancChipsHtml(label){ /* RappiStage 173/179: árvore Motivo (categoria) › Submotivos */
   const R = activeRealData(); if(!R || !R.hasCancCats) return '';
   const L = state.rsCancCats && state.rsCancCats.length ? state.rsCancCats : RS_CANC_CATS.map(c => c[0]);
-  return '<div class="rs-canc-chips" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 12px;padding:10px 12px;border:1px solid #F3D9CC;border-radius:12px;background:#FFF8F4;"><b style="font-size:12.5px;margin-right:4px;">Níveis de cancelamento:</b>' +
-    RS_CANC_CATS.map(c => '<label style="display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;border:1.5px solid ' + (L.indexOf(c[0]) !== -1 ? '#FF5A1F' : '#E5E0DC') + ';border-radius:999px;padding:3px 10px;cursor:pointer;background:#fff;"><input type="checkbox" class="rs-canc-cat" value="' + c[0] + '"' + (L.indexOf(c[0]) !== -1 ? ' checked' : '') + ' data-label="' + escapeHtml(label || '') + '"> ' + RS_CANC_PT[c[0]] + '</label>').join('') +
-    rsCancSubChips(label, L) +
-    '<span style="font-size:11.5px;color:#837A76;flex-basis:100%;">Categoria vale para o % Cancelamento (cards, gráficos, lojas e YTD), os motivos e o Motivos Ofensores; subcategoria filtra os motivos, os gráficos de motivos e o Motivos Ofensores — na plataforma e na apresentação.</span></div>';
+  const raws = {}; rsBrandList(R).forEach(b => (b.D.motivosAllRaw || []).forEach(it => { raws[it] = 1; })); (R.motivosAllRaw || []).forEach(it => { raws[it] = 1; });
+  const off = state.rsCancSubOff || {}, by = {}; Object.keys(raws).forEach(it => { const c = rsMotCat(it); (by[c] = by[c] || []).push(it); });
+  const grp = c => { const cat = c[0], nm = RS_CANC_PT[cat], subs = (by[cat] || []).sort((x, y) => rsMotivoNome(x).localeCompare(rsMotivoNome(y))), catOn = L.indexOf(cat) !== -1, on = catOn ? subs.filter(it => !off[it]).length : 0, open = !!RS_MT_OPEN[nm];
+    return '<div class="rs-mt-grp" data-cat="' + nm + '"><div class="rs-mt-head"><input type="checkbox" class="rs-canc-cat" value="' + cat + '"' + (catOn ? ' checked' : '') + ' data-label="' + escapeHtml(label || '') + '" title="Incluir/excluir o motivo ' + nm + '">' +
+      '<span class="rs-mt-name" onclick="rsMtToggle(this)" title="Abrir os submotivos"><span class="rs-mt-ar">' + (open ? '▾' : '▸') + '</span> ' + nm + ' <span class="rs-mt-n">' + on + '/' + subs.length + '</span></span></div>' +
+      '<div class="rs-mt-subs"' + (open ? '' : ' hidden') + (catOn ? '' : ' style="opacity:.45;"') + '>' + subs.map(it => { const so = catOn && !off[it];
+        return '<label style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;border:1px solid ' + (so ? '#FDBA9A' : '#E5E0DC') + ';border-radius:999px;padding:2px 9px;cursor:pointer;background:' + (so ? '#fff' : '#F5F2F0') + ';"><input type="checkbox" class="rs-canc-sub"' + (!off[it] ? ' checked' : '') + (catOn ? '' : ' disabled') + ' data-raw="' + escapeHtml(it) + '" data-label="' + escapeHtml(label || '') + '"> ' + escapeHtml(rsMotivoNome(it).replace(/^[^›]*› /, '')) + '</label>'; }).join('') +
+      (subs.length ? '<button type="button" class="rs-mt-allsub rs-canc-allsub" data-cat="' + cat + '" data-label="' + escapeHtml(label || '') + '">Selecionar todos os submotivos</button>' : '') + '</div></div>'; };
+  return '<div class="rs-canc-chips rs-mt-root" style="margin:4px 0 12px;padding:10px 14px;border:1px solid #F3D9CC;border-radius:12px;background:#FFF8F4;">' +
+    '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><b style="font-size:13px;">Motivos de cancelamento</b><span style="font-size:11.5px;color:#837A76;">(clique no motivo para abrir os submotivos)</span>' +
+    '<button type="button" class="rs-mt-allsub rs-canc-allcats" data-label="' + escapeHtml(label || '') + '">Todos os motivos</button><button type="button" class="rs-mt-allsub rs-canc-allsubs" data-label="' + escapeHtml(label || '') + '">Todos os submotivos</button></div>' +
+    RS_CANC_CATS.map(grp).join('') +
+    '<span style="font-size:11.5px;color:#837A76;">Motivo vale para o % Cancelamento (cards, gráficos, lojas e YTD), os motivos e o Motivos Ofensores; submotivo filtra os motivos, os gráficos de motivos e o Motivos Ofensores — na plataforma e na apresentação.</span></div>';
 }
+document.addEventListener('click', e => { /* RappiStage 179: botões da árvore nas lupas */
+  const b = e.target && e.target.closest && e.target.closest('.rs-canc-allcats, .rs-canc-allsubs, .rs-canc-allsub'); if(!b) return;
+  if(b.classList.contains('rs-canc-allcats')) state.rsCancCats = null;
+  else if(b.classList.contains('rs-canc-allsubs')) state.rsCancSubOff = {};
+  else { const cat = b.getAttribute('data-cat'); Object.keys(state.rsCancSubOff || {}).forEach(k => { if(rsMotCat(k) === cat) delete state.rsCancSubOff[k]; }); }
+  try{ applyRealDataOverrides(); }catch(err){ console.warn('[RappiStage] motivos', err); }
+  if(typeof renderBlocks === 'function') renderBlocks();
+  const lab = b.getAttribute('data-label'); if(lab && typeof openDrilldown === 'function') openDrilldown(lab);
+});
 function rsMotCatResumo(){ /* RappiStage 176: motivos por categoria (com as subcategorias) */
   const R = activeRealData(); if(!R || R.source !== 'rs') return '';
   return rsSections(R, (D, bi) => { const M = D.motivosCanc || []; const tot = M.reduce((t, x) => t + (x.pedidos || 0), 0); if(!tot) return '';
@@ -18667,7 +18803,7 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('change', e => {
   const cb = e.target && e.target.closest && e.target.closest('input.rs-canc-cat'); if(!cb) return;
-  const box = cb.closest('.rs-canc-chips'); const L = [...box.querySelectorAll('input.rs-canc-cat')].filter(x => x.checked).map(x => x.value);
+  const box = cb.closest('.rs-canc-chips'); const L = [...box.querySelectorAll('input.rs-canc-cat')].filter(x => x.checked).map(x => x.value); // RappiStage 179: mesmo handler, agora na árvore
   if(!L.length){ cb.checked = true; return; }
   state.rsCancCats = L.length >= RS_CANC_CATS.length ? null : L;
   try{ applyRealDataOverrides(); }catch(err){ console.warn('[RappiStage] níveis de cancelamento', err); }
@@ -18781,14 +18917,27 @@ function rsDrilldownHTML(type, kpiLabel){
         const max = Math.max.apply(null, D.motivosCanc.map(x => x.pedidos || 0).concat([1]));
         const btns = !D.hasMotivoLoja ? '' : '<div style="display:flex;gap:8px;margin:6px 0;"><button type="button" class="btn btn-ghost btn-sm" onclick="' + all(true) + '">➕ Abrir tudo</button><button type="button" class="btn btn-ghost btn-sm" onclick="' + all(false) + '">➖ Fechar tudo</button></div>';
         /* --- por motivo --- */
-        const rowsMot = D.motivosCanc.map((x, mi) => {
-          const k = 'm' + bi + '_' + mi;
-          const lojasM = porLoja.map(l => { const mm = l.motivos.find(z => z.motivo === x.motivo); return mm ? { nome: l.nome, pedidos: mm.pedidos, ant: mm.ant, total: l.total } : null; }).filter(Boolean).sort((a, b) => b.pedidos - a.pedidos);
-          const head = (D.hasMotivoLoja ? '<tr data-k="' + k + '" style="cursor:pointer;" onclick="' + tg + '"><td style="font-weight:700;"><span class="rs-tg">➕</span> ' : '<tr><td style="font-weight:700;">') + short(x.motivo) + '</td><td style="min-width:110px;">' + rsBar(x.pedidos || 0, rsInt(x.pedidos), max, '#F87171') + '</td><td>' + rsPct(x.share, 1) + '</td><td>' + rsPct(x.shareAnt, 1) + '</td><td>' + rsColorSpan(rsDPP(x.share, x.shareAnt), (x.shareAnt === null) ? null : x.share <= x.shareAnt) + '</td><td>' + (D.hasMotivoLoja ? rsInt(lojasM.length) : '—') + '</td></tr>';
-          const kids = !D.hasMotivoLoja ? '' : lojasM.map(l => '<tr class="rs-child rs-c-' + k + '" style="display:none;background:#FBFAF8;"><td style="padding-left:34px;color:#5E5652;">🏪 ' + escapeHtml(l.nome) + '</td><td>' + rsInt(l.pedidos) + '</td><td>' + rsPct(x.pedidos ? l.pedidos / x.pedidos * 100 : null, 1) + ' do motivo</td><td>' + rsPct(l.total ? l.pedidos / l.total * 100 : null, 1) + ' dos cancel. da loja</td><td>' + delta(l.pedidos, l.ant) + '</td><td></td></tr>').join('');
-          return head + kids;
+        /* RappiStage 184: árvore Motivo › Submotivo › Lojas (todas as categorias, como Parceiro) */
+        const catOrd = ['Partner', 'UX', 'User', 'Tech', 'Other'], CPT = { Partner:'Parceiro', UX:'UX', User:'Usuário', Tech:'Tech', Other:'Outros' };
+        const grp = {}; D.motivosCanc.forEach((x, mi) => { const c = x.cat || 'Partner'; (grp[c] = grp[c] || []).push([x, mi]); });
+        const cats = Object.keys(grp).sort((a, b) => ((catOrd.indexOf(a) + 1) || 99) - ((catOrd.indexOf(b) + 1) || 99));
+        const sumC = c => grp[c].reduce((t, p) => t + (p[0].pedidos || 0), 0);
+        const maxC = Math.max.apply(null, cats.map(sumC).concat([1]));
+        const tgCat = "var k=this.getAttribute('data-k'),tb=this.closest('tbody'),i=this.querySelector('.rs-tg'),op=!!i&&i.textContent==='➕';tb.querySelectorAll('tr.rs-c-'+k).forEach(function(r){r.style.display=op?'':'none'});if(!op)tb.querySelectorAll('tr.rs-g-'+k).forEach(function(r){r.style.display='none'});tb.querySelectorAll('tr.rs-c-'+k+' .rs-tg').forEach(function(x){x.textContent='➕'});if(i)i.textContent=op?'➖':'➕';";
+        const rowsMot = cats.map((c, ci) => {
+          const ck = 'c' + bi + '_' + ci, L = grp[c], ped = sumC(c);
+          const sh = L.reduce((t, p) => t + (p[0].share || 0), 0), hasA = L.some(p => p[0].shareAnt !== null), sa = hasA ? L.reduce((t, p) => t + (p[0].shareAnt || 0), 0) : null;
+          const lojasCat = {}; porLoja.forEach(l => { if(l.motivos.some(z => L.some(p => p[0].motivo === z.motivo))) lojasCat[l.nome] = 1; });
+          const headC = '<tr data-k="' + ck + '" style="cursor:pointer;background:#FFF4EE;" onclick="' + tgCat + '"><td style="font-weight:900;"><span class="rs-tg">➕</span> ' + (CPT[c] || c) + ' <span style="font-weight:600;color:#837A76;font-size:11.5px;">(' + L.length + (L.length === 1 ? ' submotivo' : ' submotivos') + ')</span></td><td style="min-width:110px;">' + rsBar(ped, rsInt(ped), maxC, '#EF4444') + '</td><td><b>' + rsPct(sh, 1) + '</b></td><td>' + rsPct(sa, 1) + '</td><td>' + rsColorSpan(rsDPP(sh, sa), sa === null ? null : sh <= sa) + '</td><td>' + (D.hasMotivoLoja ? rsInt(Object.keys(lojasCat).length) : '—') + '</td></tr>';
+          const subs = L.map(p => { const x = p[0], k = 'm' + bi + '_' + p[1];
+            const lojasM = porLoja.map(l => { const mm = l.motivos.find(z => z.motivo === x.motivo); return mm ? { nome: l.nome, pedidos: mm.pedidos, ant: mm.ant, total: l.total } : null; }).filter(Boolean).sort((a, b) => b.pedidos - a.pedidos);
+            const nm = short(x.motivo).replace(/^[^›]*› /, '');
+            const head = '<tr class="rs-child rs-c-' + ck + '" data-k="' + k + '" style="display:none;' + (D.hasMotivoLoja ? 'cursor:pointer;' : '') + '"' + (D.hasMotivoLoja ? ' onclick="' + tg + '"' : '') + '><td style="font-weight:700;padding-left:28px;">' + (D.hasMotivoLoja ? '<span class="rs-tg">➕</span> ' : '') + nm + '</td><td style="min-width:110px;">' + rsBar(x.pedidos || 0, rsInt(x.pedidos), maxC, '#F87171') + '</td><td>' + rsPct(x.share, 1) + '</td><td>' + rsPct(x.shareAnt, 1) + '</td><td>' + rsColorSpan(rsDPP(x.share, x.shareAnt), (x.shareAnt === null) ? null : x.share <= x.shareAnt) + '</td><td>' + (D.hasMotivoLoja ? rsInt(lojasM.length) : '—') + '</td></tr>';
+            const kids = !D.hasMotivoLoja ? '' : lojasM.map(l => '<tr class="rs-child rs-c-' + k + ' rs-g-' + ck + '" style="display:none;background:#FBFAF8;"><td style="padding-left:56px;color:#5E5652;">🏪 ' + escapeHtml(l.nome) + '</td><td>' + rsInt(l.pedidos) + '</td><td>' + rsPct(x.pedidos ? l.pedidos / x.pedidos * 100 : null, 1) + ' do submotivo</td><td>' + rsPct(l.total ? l.pedidos / l.total * 100 : null, 1) + ' dos cancel. da loja</td><td>' + delta(l.pedidos, l.ant) + '</td><td></td></tr>').join('');
+            return head + kids; }).join('');
+          return headC + subs;
         }).join('');
-        const tabMot = '<div class="dd-sub" style="margin-top:6px;"><b>Por motivo</b> — share = cancelamentos do motivo ÷ total com motivo; Δ em p.p. vs período anterior.</div>' +
+        const tabMot = '<div class="dd-sub" style="margin-top:6px;"><b>Por motivo</b> — clique no motivo (Parceiro, UX, Usuário, Tech, Outros) para abrir os submotivos e no submotivo para ver as lojas. Share = cancelamentos ÷ total com motivo; Δ em p.p. vs período anterior.</div>' +
           '<div style="overflow-x:auto;"><table class="dd-table" data-sort-init="1" style="min-width:760px;"><thead><tr><th>Motivo</th><th>Cancelamentos</th><th>Share</th><th>Share anterior</th><th>Δ p.p.</th><th>Lojas</th></tr></thead><tbody>' + rowsMot + '</tbody></table></div>';
         /* --- por loja --- */
         let tabLoja = '';
@@ -19473,7 +19622,7 @@ function rsYoyDraw(cv, y, metric){
   cv.__rsYoy = y; new Chart(cv, rsYoyChartCfg(y, metric || 'fat'));
 }
 /* RappiStage 155: painel de gráficos YTD — mesmo modelo dos gráficos da lupa (modo, tipo, KPIs), só com dados YTD */
-var RS_YTD_K = [['fat', 'Faturamento'], ['ped', 'Pedidos'], ['ticket', 'Ticket Médio'], ['canc', '% Cancelamento'], ['conv', 'Conversão SST→OPC'], ['sst', 'Tráfego (SST)']];
+var RS_YTD_K = [['fat', 'Faturamento'], ['ped', 'Pedidos'], ['ticket', 'Ticket Médio'], ['canc', 'Cancelamentos'], ['conv', 'Conversão SST→OPC'], ['sst', 'Tráfego (SST)']];
 var RS_YTD_COL = { fat: '#FF5A1F', ped: '#3560AA', ticket: '#1E7A44', canc: '#CC1008', conv: '#8551D3', sst: '#B07A00' };
 var RS_YTD_MES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 function rsYtdName(k){ for(var i = 0; i < RS_YTD_K.length; i++){ if(RS_YTD_K[i][0] === k) return RS_YTD_K[i][1]; } return k; }
@@ -19790,7 +19939,7 @@ function renderItemStatic(item, block){
             </div>`;
           }).join('');
           return `<div class="p-kpi-tile p-kpi-tile-mb${showDetailBtn ? ' clickable' : ''}" ${showDetailBtn ? `onclick='openDrilldown(${JSON.stringify(k.label)})'` : ''}>
-            <div class="p-kpi-label">${escapeHtml(k.label)}${showDetailBtn ? ' <span class="p-kpi-dd-icon" title="Ver detalhamento">🔎</span>' : ''}</div>
+            <div class="p-kpi-label">${escapeHtml(rsDisp(k.label))}${showDetailBtn ? ' <span class="p-kpi-dd-icon" title="Ver detalhamento">🔎</span>' : ''}</div>
             <div class="p-kpi-mb-rows">${rowsHtml}</div>
             ${k.note ? `<div class="p-kpi-note">${k.note}</div>` : ''}
           </div>`;
@@ -19817,7 +19966,7 @@ function renderItemStatic(item, block){
           const nod178 = !String(k.delta || '').trim() || /^[•\s—-]*$/.test(String(k.delta || '').trim());
           const len178 = vt178.replace(/^R\$\s?/, '').length, lc178 = !num178 ? '' : len178 > 13 ? ' rs-xlong' : len178 > 9 ? ' rs-long' : '';
           return `<div class="p-kpi-tile${showDetailBtn ? ' clickable' : ''}${num178 ? '' : ' rs-txt'}${lc178}${nod178 ? ' rs-nodelta' : ''}" ${showDetailBtn ? `onclick='openDrilldown(${JSON.stringify(k.label)})'` : ''}>
-            <div class="p-kpi-label">${escapeHtml(k.label)}${showDetailBtn ? ' <span class="p-kpi-dd-icon" title="Ver detalhamento">🔎</span>' : ''}</div>
+            <div class="p-kpi-label">${escapeHtml(rsDisp(k.label))}${showDetailBtn ? ' <span class="p-kpi-dd-icon" title="Ver detalhamento">🔎</span>' : ''}</div>
             <div class="p-kpi-value${/^(🔍|Ver\s)/.test(String(k.value || '').trim()) ? ' p-kpi-value-link' : kpiValueSizeClass(k.value)}">${num178 && /^R\$/.test(vt178) ? '<span class="rs-cur">R$</span>' + escapeHtml(vt178.replace(/^R\$\s?/, '')) : escapeHtml(k.value).replace(/R\$ /g, () => 'R$ ')}</div>
             ${(item.noDelta || !String(k.delta || '').trim()) ? '' : `<div class="p-kpi-delta ${effColor}">${dirIcon} ${escapeHtml(k.delta)}</div>`}
             ${k.dataAte ? `<div class="p-kpi-asof">📅 ${escapeHtml(k.dataAte)}</div>` : ''}
@@ -20631,12 +20780,12 @@ function buildPresentationDocument(){
           </div>
           <div class="slide-items${block.twoColItems && block.id !== 'q-conquistas-desafios' ? ' slide-items-2col' : ''}">
             ${(block.noInsights || block.insightsOff || (block.items || []).some(i => i.kind === 'ai-insight' && !i.attachTo)) ? '' : (block.insights || []).filter(ins => ins.selected).map(ins => `<div class="slide-item slide-insight-item"><div class="slide-insight"><b>Insights ·</b> ${linkifyInsightText(block, ins.text)}</div></div>`).join('')}
-            ${block.items.filter(i => i.selected !== false && !i.attachTo && !(rsJoinParent(block, i) && rsJoinParent(block, i).selected !== false) && (i.kind !== 'chart' || i.inlineChart) && !isEmptyStandaloneInsight(i, block) && !isEmptyManualItem(i)).map(item => `
+            ${(() => { const its183 = block.items.filter(i => i.selected !== false && !i.attachTo && !(rsJoinParent(block, i) && rsJoinParent(block, i).selected !== false) && (i.kind !== 'chart' || i.inlineChart) && !isEmptyStandaloneInsight(i, block) && !isEmptyManualItem(i)); const parts183 = its183.map(item => `
               <div class="slide-item" data-item-id="${escapeHtml(item.id)}" data-kind="${escapeHtml(item.kind)}">
                 <div class="slide-item-label${item.kind === 'kpi-grid' && /\bvs\b|\bx\b/i.test(item.label || '') ? ' rs-hide-label' : ''}">${escapeHtml(item.label)}</div>
                 ${renderItemStatic(item, block)}
                 ${rsJoined(block, item).filter(j => j.selected !== false && !isEmptyManualItem(j)).map(j => `<div class="slide-joined" data-item-id="${escapeHtml(j.id)}"><div class="slide-item-label">${escapeHtml(j.label)}</div>${renderItemStatic(j, block)}</div>`).join('')}
-              </div>`).join('')}
+              </div>`); return /-growth$/.test(block.id) ? rsGrowthCards(block, its183, parts183) : parts183.join(''); })()}
           </div>
         </section>`);
       });
@@ -20785,6 +20934,19 @@ function buildPresentationDocument(){
 .slide[data-block-id="q-conquistas-desafios"] .slide-head h2, .slide[data-block-id="q-roadmap"] .slide-head h2{font-size:22px !important;} /* RappiStage 168: título menor = mais espaço */
 .slide[data-block-id="q-conquistas-desafios"] .slide-head, .slide[data-block-id="q-roadmap"] .slide-head{margin-bottom:10px !important;}
 .slide[data-block-id="q-conquistas-desafios"], .slide[data-block-id="q-roadmap"]{padding-top:40px;}
+.g-grid{display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:22px;} /* RappiStage 183 */
+.slide-item.g-wrap{background:transparent; border:none; box-shadow:none; padding:0;}
+.g-card{position:relative; background:#FAFAF9; border:1px solid #EFEAE6; border-radius:18px; padding:26px 28px 24px; min-height:200px; display:flex; flex-direction:column; cursor:pointer; transition:box-shadow .15s, border-color .15s;}
+.g-card:hover{border-color:#FF5A1F; box-shadow:0 6px 18px rgba(255,90,31,.12);}
+.g-lab{font-size:14px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#8A8481; margin-bottom:16px; padding-right:34px; line-height:1.35;}
+.g-ico{position:absolute; top:24px; right:26px; width:20px; height:20px; background:no-repeat center/20px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6FE4' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E");}
+.g-big{font-size:46px; font-weight:900; line-height:1.08; color:#111; overflow-wrap:anywhere;} .g-big small{font-size:22px; font-weight:800; margin-left:8px; color:#3B3532;}
+.g-sub{font-size:15px; font-weight:700; color:#5E5652; margin-top:auto; padding-top:10px; line-height:1.4;}
+.g-big.g-word{font-size:36px; line-height:1.15; text-transform:none;} /* RappiStage 184 */
+.g-list{font-size:16px; font-weight:800; color:#1E1B1A; line-height:1.6;}
+.g-thumbs{display:flex; gap:8px; margin:0 0 12px;} .g-thumbs img{width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid #EFEAE6; background:#fff;}
+#gBody .g-full > .slide-item{border:none; box-shadow:none; padding:0;}
+@media (max-width:1100px){ .g-grid{grid-template-columns:repeat(2, minmax(0, 1fr));} }
 .slide-joined{margin-top:18px; padding-top:14px; border-top:1px dashed var(--ink1);}
 /* Item (rodada de ajustes): auto-fit em vez de auto-fill — mesmo raciocínio do editor (ver
    .kpi-grid) — os tiles esticam pra preencher toda a largura da última linha em vez de deixar um
@@ -21150,6 +21312,19 @@ function buildPresentationDocument(){
    no script exportado. Item 1 (Round 4): passou a ocupar a tela quase toda (antes 640px) pra
    caber tabelas largas sem cortar dados. */
 .dd-box{background:#fff; border-radius:20px; padding:30px; max-width:96vw; width:96vw; max-height:94vh; height:94vh; overflow:auto;}
+.rs-kpi-add{font:inherit; font-size:12px; font-weight:800; color:#E8501B; border:1.5px dashed #E8501B; background:#fff; border-radius:999px; padding:4px 10px; cursor:pointer;} /* RappiStage 181 */
+.rs-mt-root{justify-content:flex-start !important; align-items:flex-start !important; text-align:left !important;}
+.rs-mt-root .rs-mt-grp, .rs-mt-root .rs-mt-btns{width:100%;}
+.rs-mt-root{flex-basis:100%; display:flex; flex-direction:column; gap:2px; margin:2px 0 4px;} /* RappiStage 179 */
+.rs-mt-grp{display:flex; flex-direction:column; gap:3px;}
+.rs-mt-head{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:800; color:#1E1B1A; padding:3px 0;}
+.rs-mt-head input{accent-color:#E8501B; width:15px; height:15px; cursor:pointer;}
+.rs-mt-name{cursor:pointer; user-select:none;} .rs-mt-name:hover{color:#E8501B;}
+.rs-mt-ar{display:inline-block; width:12px; color:#E8501B;}
+.rs-mt-n{font-weight:600; color:#837A76; font-size:11px; margin-left:4px;}
+.rs-mt-subs{display:flex; flex-wrap:wrap; gap:5px; padding:2px 0 8px 24px;} .rs-mt-subs[hidden]{display:none;}
+.rs-mt-allsub{font-size:11px; font-weight:700; border:1px dashed #E8501B; background:#fff; color:#E8501B; border-radius:999px; padding:3px 11px; cursor:pointer;}
+.rs-mt-btns{display:flex; flex-wrap:wrap; gap:6px; margin:4px 0;}
 .rs-dd-x{position:sticky; top:0; float:right; z-index:20; width:38px; height:38px; border-radius:50%; border:none; background:#FF5A1F; color:#fff; font-size:18px; font-weight:800; line-height:38px; text-align:center; cursor:pointer; box-shadow:0 4px 12px rgba(255,90,31,0.35); margin:-6px -6px 0 auto; padding:0; display:block; align-self:flex-end; flex-shrink:0;} .rs-dd-x:hover{background:#E8501B;} /* RappiStage 176 */
 
 .dd-box #ddBox.hidden, .dd-box #ddChartBox.hidden, .dd-box #ddLojaNivelBox.hidden, .dd-box #ddConvTypeBox.hidden{display:none;}
@@ -21586,6 +21761,7 @@ function refreshSlideList(){
 }
 function showSlide(i){
   if(!slides.length) refreshSlideList();
+  { if(typeof rsGClose === 'function') rsGClose(); } // RappiStage 183
   { const ov = document.getElementById('ddOverlay'); if(ov && ov.classList.contains('show')) ov.classList.remove('show'); // RappiStage 169: passar o slide fecha a lupa aberta
     const lb = document.getElementById('pLightboxOverlay'); if(lb && lb.classList.contains('show') && typeof closePLightbox === 'function') closePLightbox(); }
   current = Math.max(0, Math.min(slides.length-1, i));
@@ -21816,7 +21992,7 @@ if(window.opener && !window.opener.closed){
   });
 }
 document.addEventListener('keydown', (e) => {
-  if(e.key==='Escape'){ closePLightbox(); return; }
+  if(e.key==='Escape'){ closePLightbox(); if(typeof rsGClose === 'function') rsGClose(); return; }
   if(document.getElementById('pLightboxOverlay').classList.contains('show') && !/^Arrow(Right|Left)$/.test(e.key)) return;
   if(e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
   if(e.key==='ArrowRight') showSlide(current+1);
@@ -22371,6 +22547,51 @@ function ddEnableGenericTableSort(table){
     });
   });
 }
+var RS_MT_OPEN = {}; /* RappiStage 179: árvore Motivo › Submotivos */
+var RS_MT_ORDER = ['Parceiro', 'UX', 'Usuário', 'Tech', 'Outros', 'Entregador'];
+function rsMtSubs(g){ return [].slice.call(g.querySelectorAll('.rs-mt-subs input[type=checkbox]')); }
+function rsMtState(g){ var L = rsMtSubs(g), on = L.filter(function(i){ return i.checked; }).length, c = g.querySelector('.rs-mt-catbox');
+  if(c){ c.checked = on > 0 && on === L.length; c.indeterminate = on > 0 && on < L.length; } var n = g.querySelector('.rs-mt-n'); if(n) n.textContent = on + '/' + L.length; }
+function rsMtToggle(el){ var g = el.closest('.rs-mt-grp'), sb = g.querySelector('.rs-mt-subs'), open = sb.hidden; sb.hidden = !open; RS_MT_OPEN[g.getAttribute('data-cat')] = open; var a = g.querySelector('.rs-mt-ar'); if(a) a.textContent = open ? '▾' : '▸'; }
+function rsMtFire(L){ if(L[0]) L[0].dispatchEvent(new Event('change', { bubbles: true })); }
+function rsMtCat(cb){ var g = cb.closest('.rs-mt-grp'), L = rsMtSubs(g); L.forEach(function(i){ i.checked = cb.checked; }); rsMtState(g); rsMtFire(L); }
+function rsMtAllSubs(btn){ var g = btn.closest('.rs-mt-grp'), L = rsMtSubs(g); L.forEach(function(i){ i.checked = true; }); rsMtState(g); rsMtFire(L); }
+function rsMtSub(cb){ rsMtState(cb.closest('.rs-mt-grp')); }
+function rsMtRefresh(el){ setTimeout(function(){ var r = el.closest('.rs-mt-root'); if(r) [].slice.call(r.querySelectorAll('.rs-mt-grp')).forEach(rsMtState); }, 0); }
+function rsMtInit(root){ if(root) [].slice.call(root.querySelectorAll('.rs-mt-grp')).forEach(rsMtState); }
+function rsMtTree(names, isOn, subHtml){
+  var by = {}, order = [];
+  names.forEach(function(n){ var i = n.indexOf(' › '), c = i > -1 ? n.slice(0, i) : 'Outros'; if(!by[c]){ by[c] = []; order.push(c); } by[c].push(n); });
+  order.sort(function(a, b){ return ((RS_MT_ORDER.indexOf(a) + 1) || 99) - ((RS_MT_ORDER.indexOf(b) + 1) || 99); });
+  return order.map(function(c){ var L = by[c], on = L.filter(isOn).length, open = !!RS_MT_OPEN[c];
+    return '<div class="rs-mt-grp" data-cat="' + c + '"><div class="rs-mt-head"><input type="checkbox" class="rs-mt-catbox"' + (on && on === L.length ? ' checked' : '') + ' onchange="rsMtCat(this)" title="Marcar/desmarcar todos os submotivos de ' + c + '">' +
+      '<span class="rs-mt-name" onclick="rsMtToggle(this)" title="Abrir os submotivos"><span class="rs-mt-ar">' + (open ? '▾' : '▸') + '</span> ' + c + ' <span class="rs-mt-n">' + on + '/' + L.length + '</span></span></div>' +
+      '<div class="rs-mt-subs"' + (open ? '' : ' hidden') + '>' + L.map(function(n){ return subHtml(n, n.indexOf(' › ') > -1 ? n.slice(n.indexOf(' › ') + 3) : n); }).join('') +
+      '<button type="button" class="rs-mt-allsub" onclick="rsMtAllSubs(this)">Selecionar todos os submotivos</button></div></div>'; }).join('');
+}
+function rsKpiPick(root, attr){ /* RappiStage 181: só os KPIs escolhidos aparecem; os outros entram pelo "＋ Adicionar KPI" */
+  if(!root) return;
+  var inputs = [].slice.call(root.querySelectorAll('input[' + attr + ']')); if(inputs.length < 2) return;
+  var chipOf = function(i){ return i.closest('label') || i.parentNode; };
+  var hidden = [];
+  inputs.forEach(function(i){ var c = chipOf(i), off = !i.checked; c.style.display = off ? 'none' : ''; if(off) hidden.push(i);
+    if(!i.getAttribute('data-rs-pick')){ i.setAttribute('data-rs-pick', '1'); i.addEventListener('change', function(){ setTimeout(function(){ rsKpiPick(root, attr); }, 0); }); } });
+  var box = chipOf(inputs[0]).parentNode, old = box.querySelector('.rs-kpi-add'); if(old) old.parentNode.removeChild(old);
+  if(hidden.length){ var sel = document.createElement('select'); sel.className = 'rs-kpi-add';
+    sel.innerHTML = '<option value="">＋ Adicionar KPI</option>' + hidden.map(function(i){ var v = i.getAttribute(attr); return '<option value="' + v.replace(/"/g, '&quot;') + '">' + rsDisp(v).replace(/</g, '&lt;') + '</option>'; }).join('');
+    sel.addEventListener('change', function(){ var v = sel.value, i = inputs.filter(function(x){ return x.getAttribute(attr) === v; })[0]; if(i && !i.checked) i.click(); setTimeout(function(){ rsKpiPick(root, attr); }, 0); });
+    box.appendChild(sel); }
+  var hasCanc = inputs.some(function(i){ return i.checked && /^% Cancelamento/.test(i.getAttribute(attr) || ''); });
+  [].slice.call(root.querySelectorAll('.rs-mt-root')).forEach(function(t){ t.style.display = hasCanc ? '' : 'none'; });
+}
+function rsDisp(l){ /* RappiStage 183: nome exibido (a chave interna continua a mesma) */
+  var t = String(l == null ? '' : l);
+  return t.replace(/^% Cancelamento( .Partner.)?( YTD)?$/, function(m, a, y){ return 'Cancelamentos' + (y || ''); }).replace(/^MKD(?=$|[ (])/, 'Markdown');
+}
+function rsUndisp(l){ var t = String(l == null ? '' : l); if(/^Cancelamentos( YTD)?$/i.test(t.trim())) return '% Cancelamento' + (/YTD/i.test(t) ? ' YTD' : ''); if(/^Markdown(?=$|[ (])/i.test(t.trim())) return t.trim().replace(/^Markdown/i, 'MKD'); return t; }
+function rsDispInstall(){ try{ if(window.Chart && !Chart.__rsDisp){ Chart.__rsDisp = 1; var gl = Chart.defaults.plugins.legend.labels.generateLabels;
+  Chart.defaults.plugins.legend.labels.generateLabels = function(ch){ return gl.call(this, ch).map(function(x){ x.text = rsDisp(x.text); return x; }); }; } }catch(e){} }
+if(typeof window !== 'undefined'){ window.addEventListener('load', rsDispInstall); setTimeout(rsDispInstall, 1500); }
 function rsHierSort(table){ /* RappiStage 169: ordena tabela com linhas que abrem (⊞) — cada data leva as lojas junto; as lojas também ordenam */
   if(!table || table.getAttribute('data-hsort-init')) return; table.setAttribute('data-hsort-init', '1');
   var tb = table.tBodies[0], ths = table.tHead ? Array.prototype.slice.call(table.tHead.rows[0].cells) : []; if(!tb || ths.length < 2) return;
@@ -22401,6 +22622,19 @@ function rsDrawCallouts(chart, host, list){ /* RappiStage 169: balões de coment
     else st = 'left:' + c.xPct + '%;top:' + c.yPct + '%;';
     return '<div class="rs-fs-callout" style="' + st + '">' + esc(c.text) + '</div>'; }).join('');
 }
+function rsGOpen(card){ /* RappiStage 183: abre o sub-bloco do Growth em tela cheia */
+  var ov = document.getElementById('gOverlay');
+  if(!ov){ ov = document.createElement('div'); ov.className = 'dd-overlay'; ov.id = 'gOverlay'; ov.innerHTML = '<div class="dd-box"><button type="button" class="rs-dd-x" title="Fechar" onclick="rsGClose()">✕</button><div id="gBody"></div></div>';
+    ov.addEventListener('click', function(e){ if(e.target === ov) rsGClose(); }); document.body.appendChild(ov); }
+  rsGClose(); var full = card.querySelector('.g-full'); if(!full) return;
+  ov.__src = card; full.hidden = false; document.getElementById('gBody').appendChild(full); ov.classList.add('show');
+}
+function rsGSearch(card){ /* RappiStage 184: Search abre o detalhamento completo de buscas (lupa) */
+  if(typeof DD_DATA !== 'undefined' && DD_DATA && DD_DATA['palavras mais buscadas'] && typeof openDrilldown === 'function'){ rsGClose(); openDrilldown('Palavras mais buscadas'); return; }
+  rsGOpen(card);
+}
+function rsGClose(){ var ov = document.getElementById('gOverlay'); if(!ov) return; var full = document.querySelector('#gBody .g-full');
+  if(full && ov.__src){ full.hidden = true; ov.__src.appendChild(full); } ov.__src = null; ov.classList.remove('show'); }
 function rsPosColor(table, idx){ /* RappiStage 172: cor pelo RESULTADO da coluna ordenada (3 melhores verdes, 3 piores vermelhos) */
   var n = parseInt(table.getAttribute('data-pos-color'), 10) || 3, tb = table.tBodies[0]; if(!tb) return;
   var th = table.tHead && table.tHead.rows[0] ? table.tHead.rows[0].cells[idx] : null, head = th ? th.textContent : '';
@@ -23446,7 +23680,7 @@ function mountChartPanel(container, panelKey, label, opts){
     if(st.layoutMode === 'separate'){
       singleWrap.classList.add('hidden');
       multiWrap.classList.remove('hidden');
-      multiWrap.innerHTML = datasets.map((ds, i) => '<div class="dd-chart-mini-card"><div class="dd-chart-mini-title">' + ds.label.replace(/</g,'&lt;') + '</div><div class="dd-chart-mini-canvas-wrap" data-chart-holder="' + canvasId + '-mini-' + i + '"><canvas id="' + canvasId + '-mini-' + i + '"></canvas></div></div>').join('');
+      multiWrap.innerHTML = datasets.map((ds, i) => '<div class="dd-chart-mini-card"><div class="dd-chart-mini-title">' + rsDisp(ds.label).replace(/</g,'&lt;') + '</div><div class="dd-chart-mini-canvas-wrap" data-chart-holder="' + canvasId + '-mini-' + i + '"><canvas id="' + canvasId + '-mini-' + i + '"></canvas></div></div>').join('');
       currentSeparateCfgs = datasets.map((ds, i) => ({ canvasId: canvasId + '-mini-' + i, type: (st.seriesChartType[ds.label] || st.seriesChartType[ds.label.split(' · ')[0]] || st.type), labels: activeLabels(), datasets: [ds], callouts: initialCallouts.filter(c => c.chartKey === ds.label), title: ds.label }));
       currentSeparateCfgs.forEach((miniCfg) => {
         renderExportChart(miniCfg);
@@ -23481,7 +23715,7 @@ function mountChartPanel(container, panelKey, label, opts){
         const ds = activeGridData.series.find(d => d.label === label);
         const on = !!st.selected[ds.label];
         const typeSelect = panelTypeSelectHtml(ds.label);
-        return '<label class="dd-chart-metric-chip' + (on?' on':'') + '"><input type="checkbox" data-panel-metric="' + ds.label.replace(/"/g,'&quot;') + '" ' + (on?'checked':'') + '> ' + ds.label + typeSelect + '</label>';
+        return '<label class="dd-chart-metric-chip' + (on?' on':'') + '"><input type="checkbox" data-panel-metric="' + ds.label.replace(/"/g,'&quot;') + '" ' + (on?'checked':'') + '> ' + rsDisp(ds.label) + typeSelect + '</label>';
       }, COMBO_GROUP_DEFS[gridId]);
   const brandChipsHtml = IS_MULTI_BRAND
     ? mbAllBrands.map(b => '<label class="dd-chart-metric-chip' + (st.mbSelectedBrands[b]?' on':'') + '"><input type="checkbox" data-panel-mb-brand="' + b.replace(/"/g,'&quot;') + '" ' + (st.mbSelectedBrands[b]?'checked':'') + '> ' + b + '</label>').join('')
@@ -23522,6 +23756,8 @@ function mountChartPanel(container, panelKey, label, opts){
     }
     container.querySelectorAll('input.rs-mot-f').forEach(function(i){ i.closest('.dd-chart-metric-chip').classList.toggle('on', i.checked); }); buildAndRender(); };
   container.querySelectorAll('input.rs-mot-f').forEach(function(cb){ cb.addEventListener('change', syncMot); });
+  rsMtInit(container); // RappiStage 179
+  rsKpiPick(container, 'data-panel-metric'); // RappiStage 181
   container.querySelectorAll('.rs-mot-all').forEach(function(btn){ btn.addEventListener('click', function(){ container.querySelectorAll('input.rs-mot-f').forEach(function(i){ i.checked = btn.getAttribute('data-on') === '1'; }); syncMot(); }); });
   container.querySelectorAll('[data-panel-metric]').forEach(cb => {
     cb.addEventListener('change', (e) => {
@@ -23738,9 +23974,9 @@ function pMotivoFilterHtml(gridData, st){
   var set = {}; ['weekly','monthly','quarterly'].forEach(function(g){ if(RS_MOTIVOS[g]) Object.keys(RS_MOTIVOS[g].motivos).forEach(function(n){ if(RS_MOTIVOS[g].motivos[n].some(function(v){ return v; })) set[n] = 1; }); });
   var names = Object.keys(set).sort(); if(!names.length) return '';
   var sel = st.motivoSel || [];
-  return '<div class="dd-chart-ctrl-row" style="flex-wrap:wrap;"><span class="dd-chart-ctrl-label">Motivos de cancelamento:</span>' +
-    names.map(function(n){ var on = sel.indexOf(n) !== -1; return '<label class="dd-chart-metric-chip' + (on ? ' on' : '') + '"><input type="checkbox" class="rs-mot-f" value="' + n.replace(/"/g, '&quot;') + '"' + (on ? ' checked' : '') + '><span style="width:9px;height:9px;border-radius:50%;background:' + (RS_MOTIVOS.cores[n] || '#64748B') + ';display:inline-block;margin:0 4px 0 2px;"></span>' + n + '</label>'; }).join('') +
-    '<button type="button" class="dd-chart-mode-btn rs-mot-all" data-on="1">Todos</button><button type="button" class="dd-chart-mode-btn rs-mot-all" data-on="0">Nenhum</button></div>';
+  return '<div class="dd-chart-ctrl-row rs-mt-root" style="flex-wrap:wrap;"><span class="dd-chart-ctrl-label">Motivos de cancelamento (clique no motivo para abrir os submotivos):</span>' + /* RappiStage 179 */
+    '<div class="rs-mt-btns"><button type="button" class="dd-chart-mode-btn rs-mot-all" data-on="1" onclick="rsMtRefresh(this)">Todos os motivos</button><button type="button" class="dd-chart-mode-btn rs-mot-all" data-on="0" onclick="rsMtRefresh(this)">Nenhum</button></div>' +
+    rsMtTree(names, function(n){ return sel.indexOf(n) !== -1; }, function(n, sub){ var on = sel.indexOf(n) !== -1; return '<label class="dd-chart-metric-chip' + (on ? ' on' : '') + '"><input type="checkbox" class="rs-mot-f" value="' + n.replace(/"/g, '&quot;') + '"' + (on ? ' checked' : '') + ' onchange="rsMtSub(this)"><span style="width:9px;height:9px;border-radius:50%;background:' + (RS_MOTIVOS.cores[n] || '#64748B') + ';display:inline-block;margin:0 4px 0 2px;"></span>' + sub + '</label>'; }) + '</div>';
 }
 function rsExpandMotivos(list, labels, sel, mot, types){
   if(!mot || !sel || !sel.length) return list;
@@ -23791,9 +24027,21 @@ function rsApplyMotivoStack(sc, datasets){
     }
   }
 }
+function rsSplitScale(sc, datasets){ /* RappiStage 180: série muito menor que as outras do mesmo eixo vai para um eixo próprio à direita */
+  if(!sc || !datasets || datasets.length < 2) return;
+  var by = {}; datasets.forEach(function(d){ if(d.rsMotivo || d.hidden) return; var ax = d.yAxisID || 'y'; (by[ax] = by[ax] || []).push(d); });
+  var n = 0;
+  Object.keys(by).forEach(function(ax){ var L = by[ax]; if(L.length < 2) return;
+    var mx = function(d){ var m = 0; (d.data || []).forEach(function(v){ var x = Math.abs(typeof v === 'number' ? v : (v && typeof v.y === 'number' ? v.y : 0)); if(x > m) m = x; }); return m; };
+    var top = 0; L.forEach(function(d){ top = Math.max(top, mx(d)); }); if(!top) return;
+    L.forEach(function(d){ var m = mx(d); if(m > 0 && top / m > 8){ var id = 'ySm' + (n++); d.yAxisID = id;
+      var base = sc[ax] || {}; sc[id] = { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, ticks: Object.assign({}, base.ticks || {}, { color: d.borderColor || d.backgroundColor || undefined }), title: { display: true, text: d.label, color: d.borderColor || undefined, font: { size: 11, weight: '700' } } }; } });
+  });
+}
 function pChartHeadroom(sc, type, datasets){
   if(type === 'doughnut' || !sc) return sc;
   if(datasets) rsApplyMotivoStack(sc, datasets);
+  rsSplitScale(sc, datasets); // RappiStage 180
   if(datasets && datasets.length){ var used = {}; datasets.forEach(function(d){ used[d.yAxisID || 'y'] = 1; }); Object.keys(sc).forEach(function(k){ if(k !== 'x' && !used[k] && sc[k]) sc[k].display = false; }); }
   Object.keys(sc).forEach(function(k){ if(k !== 'x' && sc[k] && sc[k].display !== false) sc[k].grace = '20%'; });
   return sc;
@@ -24018,7 +24266,7 @@ function buildChartControls(cfg){
         '<option value="bar"' + (dsType==='bar'?' selected':'') + '>Barra</option>' +
         '<option value="line"' + (dsType==='line'?' selected':'') + '>Linha</option>' +
         '</select>' : '';
-      return '<label class="p-chart-metric-chip' + (on?' on':'') + '"><input type="checkbox" data-metric="' + ds.label.replace(/"/g,'&quot;') + '" ' + (on?'checked':'') + '> ' + ds.label + typeSelect + '</label>';
+      return '<label class="p-chart-metric-chip' + (on?' on':'') + '"><input type="checkbox" data-metric="' + ds.label.replace(/"/g,'&quot;') + '" ' + (on?'checked':'') + '> ' + rsDisp(ds.label) + typeSelect + '</label>';
     }, COMBO_GROUP_DEFS[cfg.gridId]) +
     '</div>';
   host.querySelector('.p-chart-type-select').addEventListener('change', function(e){ cfg.type = e.target.value; cfg.seriesChartType = {}; renderExportChart(cfg); buildChartControls(cfg); });
@@ -24243,7 +24491,7 @@ function rsYoyDraw(cv, y, metric){
   cv.__rsYoy = y; new Chart(cv, rsYoyChartCfg(y, metric || 'fat'));
 }
 /* RappiStage 155: painel de gráficos YTD — mesmo modelo dos gráficos da lupa (modo, tipo, KPIs), só com dados YTD */
-var RS_YTD_K = [['fat', 'Faturamento'], ['ped', 'Pedidos'], ['ticket', 'Ticket Médio'], ['canc', '% Cancelamento'], ['conv', 'Conversão SST→OPC'], ['sst', 'Tráfego (SST)']];
+var RS_YTD_K = [['fat', 'Faturamento'], ['ped', 'Pedidos'], ['ticket', 'Ticket Médio'], ['canc', 'Cancelamentos'], ['conv', 'Conversão SST→OPC'], ['sst', 'Tráfego (SST)']];
 var RS_YTD_COL = { fat: '#FF5A1F', ped: '#3560AA', ticket: '#1E7A44', canc: '#CC1008', conv: '#8551D3', sst: '#B07A00' };
 var RS_YTD_MES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 function rsYtdName(k){ for(var i = 0; i < RS_YTD_K.length; i++){ if(RS_YTD_K[i][0] === k) return RS_YTD_K[i][1]; } return k; }
